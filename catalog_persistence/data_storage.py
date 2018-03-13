@@ -1,5 +1,7 @@
 # coding = utf-8
 
+import json
+
 
 class DataStorage:
 
@@ -7,4 +9,5 @@ class DataStorage:
         pass
 
     def save(self, record_data):
+        content = json.dumps(record_data)
         return 'id'

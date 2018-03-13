@@ -18,21 +18,13 @@ class XMLTree:
 
     def __init__(self, xml):
         self.load(xml)
-        f = StringIO(self._content)
-        self.tree = etree.parse(f)
 
     @property
     def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, value):
-        self._content = value
-        self._load_xml()
+        return etree.tostring(self.tree.getroot())
 
     def load(self, xml):
-        self.content = self.read(xml)
-        self.tree, self.xml_error = self.parse(self.content)
+        self.tree, self.xml_error = self.parse(self.read(xml))
 
     def read(self, xml):
         self.filename = None
@@ -41,12 +33,12 @@ class XMLTree:
             self.filename = xml
             self.basename = os.path.basename(self.filename)
             xml = open(xml).read()
-        return xml
+        return StringIO(xml)
 
     def parse(self, content):
         message = None
         try:
-            r = etree.parse(StringIO(content))
+            r = etree.parse(content)
         except Exception as e:
             message = 'XML is not well formed\n'
             r = None
