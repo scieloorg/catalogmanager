@@ -5,6 +5,7 @@ import os
 from lxml import etree
 from StringIO import StringIO
 
+
 namespaces = {}
 namespaces['mml'] = 'http://www.w3.org/1998/Math/MathML'
 namespaces['xlink'] = 'http://www.w3.org/1999/xlink'

@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 
-from . import article_xml_tree
+from ..xml import article_xml_tree
 
 
 class Asset:

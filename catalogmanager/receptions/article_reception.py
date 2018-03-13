@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from . import article_record
+from ..records import article_record
 
 
 class ArticleReception:
@@ -14,22 +14,22 @@ class ArticleReception:
         if article.assets is not None:
             return {name: asset_record.input(asset, article_id) for name, asset in article.assets.items()}
 
-    def save_asset_records(self, asset_records):
+    def register_asset_records(self, asset_records):
         if asset_records is not None:
-            saved = {}
+            registered = {}
             for name, record in asset_records.items():
-                save_id = self.data_storage.save(record)
-                saved[name] = save_id
-            return saved
+                registered_id = self.data_storage.register(record)
+                registered[name] = registered_id
+            return registered
 
-    def save_article(self, article, article_id):
+    def register_article(self, article, article_id):
         if article.assets is not None:
             article.link_files_to_assets()
             asset_records = self.asset_data_record_items()
-            asset_id_items = self.save_asset_records(asset_records)
+            asset_id_items = self.register_asset_records(asset_records)
             article.update_href(asset_id_items)
 
         a_record = article_record.ArticleRecord()
         record = a_record.input(
             article, article_id, asset_id_items)
-        return self.data_storage.save(record)
+        return self.data_storage.register(record)

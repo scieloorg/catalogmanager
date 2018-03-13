@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from . import article_data
+from ..models import article_data
 
 
 class AssetRecord:
