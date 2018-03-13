@@ -3,7 +3,7 @@
 import os
 
 from lxml import etree
-from StringIO import StringIO
+from io import StringIO
 
 
 namespaces = {}
@@ -18,6 +18,8 @@ for namespace_id, namespace_link in namespaces.items():
 class XMLTree:
 
     def __init__(self, xml):
+        self.tree = None
+        self.xml_error = None
         self.load(xml)
 
     @property
@@ -33,7 +35,7 @@ class XMLTree:
         if '<' not in xml:
             self.filename = xml
             self.basename = os.path.basename(self.filename)
-            xml = open(xml).read()
+            xml = open(self.filename).read()
         return StringIO(xml)
 
     def parse(self, content):
@@ -42,20 +44,7 @@ class XMLTree:
             r = etree.parse(content)
         except Exception as e:
             message = 'XML is not well formed\n'
+            raise e
             r = None
         return (r, message)
 
-
-class XMLNode:
-
-    def __init__(self, node):
-        self.node = node
-
-    @property
-    def href(self):
-        return self.xml_node.get('{http://www.w3.org/1999/xlink}href')
-
-    @property
-    def local_href(self):
-        if self.href is not None and '/' not in self.href:
-            return self.href

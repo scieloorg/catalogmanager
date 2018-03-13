@@ -5,11 +5,22 @@ from . import xml_tree
 
 class AssetXMLNode:
 
-    def __init__(self, xml_node):
-        self.xml_node = xml_node
+    _xpath = '{http://www.w3.org/1999/xlink}href'
+
+    def __init__(self, node):
+        self.node = node
 
     def update_href(self, value):
-        self.xml_node.set('{http://www.w3.org/1999/xlink}href]', value)
+        self.node.set(self._xpath, value)
+
+    @property
+    def href(self):
+        return self.node.get(self._xpath)
+
+    @property
+    def local_href(self):
+        if self.href is not None and '/' not in self.href:
+            return self.href
 
 
 class AssetXMLNodesFinder:
@@ -19,15 +30,15 @@ class AssetXMLNodesFinder:
 
     @property
     def nodes_which_has_xlink_href(self):
-        return self.tree.xpath('.//*[@{http://www.w3.org/1999/xlink}href]')
+        return self.tree.findall('.//*[@{http://www.w3.org/1999/xlink}href]')
 
     @property
     def asset_nodes(self):
         items = {}
         for node in self.nodes_which_has_xlink_href:
-            xml_node = xml_tree.XMLNode(node)
-            if xml_node.local_href is not None:
-                items[xml_node.local_href] = AssetXMLNode(xml_node)
+            asset_xml_node = AssetXMLNode(node)
+            if asset_xml_node.local_href is not None:
+                items[asset_xml_node.local_href] = asset_xml_node
         return items
 
 
@@ -37,5 +48,10 @@ class ArticleXMLTree:
         self.xml_tree = xml_tree.XMLTree(xml_filename)
 
     @property
+    def is_valid_xml(self):
+        return self.xml_tree.tree is not None
+
+    @property
     def asset_nodes(self):
-        return AssetXMLNodesFinder(self.xml_tree.tree).asset_nodes
+        if self.xml_tree.tree is not None:
+            return AssetXMLNodesFinder(self.xml_tree.tree).asset_nodes

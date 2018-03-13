@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 requires = [
     'pyramid~=1.9',
     'waitress',
+    'lxml',
 ]
 
 test_requires = ['webtest', 'pytest', 'pytest-cov']

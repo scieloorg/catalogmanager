@@ -37,3 +37,8 @@ class ArticleRecord:
 
     def output(self, record):
         return article_data.Article(record.get('file'), record.get('files'))
+
+    def asset_record_items(self, article, article_id):
+        asset_record = AssetRecord()
+        if article.assets is not None:
+            return {name: asset_record.input(asset, article_id) for name, asset in article.assets.items()}
