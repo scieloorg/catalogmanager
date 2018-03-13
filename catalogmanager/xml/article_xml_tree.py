@@ -22,6 +22,10 @@ class AssetXMLNode:
         if self.href is not None and '/' not in self.href:
             return self.href
 
+    @property
+    def xml(self):
+        return xml_tree.etree.tostring(self.node)
+
 
 class AssetXMLNodesFinder:
 
@@ -48,10 +52,10 @@ class ArticleXMLTree:
         self.xml_tree = xml_tree.XMLTree(xml_filename)
 
     @property
-    def is_valid_xml(self):
-        return self.xml_tree.tree is not None
-
-    @property
     def asset_nodes(self):
         if self.xml_tree.tree is not None:
             return AssetXMLNodesFinder(self.xml_tree.tree).asset_nodes
+
+    @property
+    def content(self):
+        return self.xml_tree.content

@@ -52,3 +52,7 @@ class Article:
         if self.assets is not None:
             for name, asset in self.assets.items():
                 asset.update_href(asset_id_items[name])
+
+    @property
+    def content(self):
+        return self.article_xml_tree.content

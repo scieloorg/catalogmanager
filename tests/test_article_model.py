@@ -20,6 +20,7 @@ def test_article():
     assert article.basename == os.path.basename(xml_filename)
     assert article.filename == xml_filename
     assert article.article_xml_tree.xml_tree.xml_error == None
+    assert type(article.content) == type(b'')
 
 
 def test_link_files_to_assets():
@@ -38,6 +39,7 @@ def test_link_files_to_assets():
 def test_update_href():
     xml_filename, files = get_files()
     article = create_article(xml_filename, files)
+    content = article.content
     article.link_files_to_assets()
     asset = article.assets.get('0034-8910-rsp-S01518-87872016050006741-gf01.jpg')
     asset.update_href('novo href')
@@ -45,3 +47,5 @@ def test_update_href():
     assert len(items) == 1
     assert items[0].href == 'novo href'
     assert items[0].original_href == '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+
+    assert not article.content == content

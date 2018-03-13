@@ -47,4 +47,3 @@ class XMLTree:
             raise e
             r = None
         return (r, message)
-
