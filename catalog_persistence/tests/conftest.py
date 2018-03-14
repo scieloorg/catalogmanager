@@ -1,9 +1,13 @@
-#!/usr/bin/python
+from datetime import datetime
+
 from pyramid import testing
 import pytest
 
-from catalog_persistence.couchdb import CouchDBManager
-from catalog_persistence.changes import ChangeInMemory, ChangeService
+from catalog_persistence.databases import (
+    CouchDBManager,
+    InMemoryDBManager,
+    DatabaseService
+)
 
 
 @pytest.yield_fixture
@@ -13,9 +17,9 @@ def persistence_config(request):
 
 
 @pytest.fixture
-def change_service(persistence_config):
-    store = ChangeInMemory()
-    return ChangeService(store)
+def get_inmemory_manager(persistence_config):
+    store = InMemoryDBManager()
+    return DatabaseService(store)
 
 
 @pytest.fixture
@@ -31,11 +35,10 @@ def change_service_list(change_service, fake_change_list):
 
 
 @pytest.fixture
-def get_database_manager(request):
+def get_couchdb_manager(request, persistence_config):
     return CouchDBManager(
         settings={
             'couchdb.uri': 'http://localhost:5984',
-            'couchdb.db_name': 'catalog_manager',
             'couchdb.username': 'admin',
             'couchdb.password': 'password'
         }
@@ -43,7 +46,21 @@ def get_database_manager(request):
 
 
 @pytest.fixture
-def setup(request, persistence_config, get_database_manager):
+def database_service(get_couchdb_manager):
+    return DatabaseService(get_couchdb_manager)
+
+
+@pytest.fixture
+def setup(request, persistence_config, get_couchdb_manager):
     def fin():
-        get_database_manager.drop_database()
+        get_couchdb_manager.drop_database()
     request.addfinalizer(fin)
+
+
+@pytest.fixture
+def document_test():
+    create_date = datetime.utcnow()
+    return {
+        'type': 'A',
+        'created_date': create_date,
+    }
