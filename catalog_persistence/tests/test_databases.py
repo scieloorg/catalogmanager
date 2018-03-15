@@ -3,19 +3,23 @@ import pytest
 from catalog_persistence.databases import DocumentNotFound
 
 
-def test_couchdb_register_document(setup,
-                                   database_service,
-                                   get_couchdb_manager,
-                                   document_test):
+def generate_id():
+    from uuid import uuid4
+    return uuid4().hex
+
+
+def test_register_document(setup,
+                           database_service,
+                           document_test):
     document_test.update({
+        '_id': generate_id(),
         'content': 'Test'
     })
     document_id = database_service.register(document_test)
     assert document_id is not None
     assert isinstance(document_id, str)
 
-    get_couchdb_manager._database = document_test['type']
-    check_document = get_couchdb_manager._database.get(document_id)
+    check_document = database_service.collection.database.get(document_id)
     assert check_document is not None
     assert check_document['type'] == document_test['type']
     assert check_document['content'] == document_test['content']
@@ -23,8 +27,9 @@ def test_couchdb_register_document(setup,
     assert check_document['created_date'] == converted_date
 
 
-def test_couchdb_read_document(setup, database_service, document_test):
+def test_read_document(setup, database_service, document_test):
     document_test.update({
+        '_id': generate_id(),
         'content': 'Test2'
     })
     document_id = database_service.register(document_test)
@@ -39,8 +44,9 @@ def test_couchdb_read_document(setup, database_service, document_test):
     assert check_document['created_date'] == converted_date
 
 
-def test_couchdb_update_document(setup, database_service, document_test):
+def test_update_document(setup, database_service, document_test):
     document_test.update({
+        '_id': generate_id(),
         'content': 'Test3'
     })
     document_id = database_service.register(document_test)
@@ -57,8 +63,9 @@ def test_couchdb_update_document(setup, database_service, document_test):
     assert check_document['content'] == update_document['content']
 
 
-def test_couchdb_delete_document(setup, database_service, document_test):
+def test_delete_document(setup, database_service, document_test):
     document_test.update({
+        '_id': generate_id(),
         'content': 'Test4'
     })
     document_id = database_service.register(document_test)

@@ -17,12 +17,6 @@ def persistence_config(request):
 
 
 @pytest.fixture
-def get_inmemory_manager(persistence_config):
-    store = InMemoryDBManager()
-    return DatabaseService(store)
-
-
-@pytest.fixture
 def fake_change_list():
     return ['Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6']
 
@@ -40,20 +34,36 @@ def get_couchdb_manager(request, persistence_config):
         settings={
             'couchdb.uri': 'http://localhost:5984',
             'couchdb.username': 'admin',
-            'couchdb.password': 'password'
+            'couchdb.password': 'password',
+            'database_name': 'articles'
         }
     )
 
 
 @pytest.fixture
-def database_service(get_couchdb_manager):
-    return DatabaseService(get_couchdb_manager)
+def get_inmemorydb_manager(persistence_config):
+    return InMemoryDBManager('articles')
+
+
+@pytest.fixture(params=[
+    CouchDBManager(
+        settings={
+            'couchdb.uri': 'http://localhost:5984',
+            'couchdb.username': 'admin',
+            'couchdb.password': 'password',
+            'database_name': 'articles'
+        }
+    ),
+    InMemoryDBManager('articles')
+])
+def database_service(request):
+    return DatabaseService(request.param)
 
 
 @pytest.fixture
-def setup(request, persistence_config, get_couchdb_manager):
+def setup(request, persistence_config, database_service):
     def fin():
-        get_couchdb_manager.drop_database()
+        database_service.collection.drop_database()
     request.addfinalizer(fin)
 
 

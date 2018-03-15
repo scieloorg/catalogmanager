@@ -11,6 +11,11 @@ class DocumentNotFound(Exception):
 
 class BaseDBManager(metaclass=abc.ABCMeta):
 
+    database_names = {
+        'A': 'articles',
+        'D': 'assets'
+    }
+
     @abc.abstractmethod
     def drop_database(self) -> None:
         return NotImplemented
@@ -34,35 +39,49 @@ class BaseDBManager(metaclass=abc.ABCMeta):
 
 class InMemoryDBManager(BaseDBManager):
 
-    def __init__(self):
-        self.data = []
+    def __init__(self, database_name):
+        self._db_name = database_name
+        self._database = {}
+
+    @property
+    def database(self):
+        table = self._database.get(self._db_name)
+        if not table:
+            self._database[self._db_name] = {}
+        return self._database[self._db_name]
 
     def drop_database(self):
-        del self.data[:]
+        self._database = {}
 
     def create(self, document):
-        pass
+        doc = {}
+        for key, value in document.items():
+            if type(value) == str:
+                doc.update({key: value})
+            elif type(value) == datetime:
+                doc.update({key: str(value.timestamp())})
+        self.database.update({document['_id']: doc})
+        return document['_id']
 
     def read(self, id):
-        pass
+        doc = self.database.get(id)
+        if not doc:
+            raise DocumentNotFound
+        return doc
 
     def update(self, document):
-        pass
+        self.database[document['_id']] = document
+        return document['_id']
 
     def delete(self, id):
-        pass
+        del self.database[id]
 
 
 class CouchDBManager(BaseDBManager):
 
-    database_names = {
-        'A': 'articles',
-        'D': 'assets'
-    }
-
     def __init__(self, settings):
-        self._db_name = None
-        self.__database = None
+        self._db_name = settings['database_name']
+        self._database = None
         self._db_server = couchdb.Server(settings['couchdb.uri'])
         self._db_server.resource.credentials = (
             settings['couchdb.username'],
@@ -70,16 +89,12 @@ class CouchDBManager(BaseDBManager):
         )
 
     @property
-    def _database(self):
-        return self.__database
-
-    @_database.setter
-    def _database(self, document_type):
-        self._db_name = self.database_names[document_type]
+    def database(self):
         try:
-            self.__database = self._db_server[self._db_name]
+            self._database = self._db_server[self._db_name]
         except couchdb.http.ResourceNotFound:
-            self.__database = self._db_server.create(self._db_name)
+            self._database = self._db_server.create(self._db_name)
+        return self._database
 
     def drop_database(self):
         if self._db_name:
@@ -93,42 +108,41 @@ class CouchDBManager(BaseDBManager):
             elif type(value) == datetime:
                 doc.update({key: str(value.timestamp())})
 
-        self._database = document['type']
-        id, rev = self._database.save(doc)
+        id, rev = self.database.save(doc)
         return id
 
     def read(self, id):
         try:
-            doc = self._database[id]
+            doc = self.database[id]
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         return dict(doc)
 
     def update(self, document):
-        self._database[document['_id']] = document
+        self.database[document['_id']] = document
         return document['_id']
 
     def delete(self, id):
-        doc = self._database[id]
-        self._database.delete(doc)
+        doc = self.database[id]
+        self.database.delete(doc)
 
 
 class DatabaseService():
 
-    def __init__(self, store):
-        self.store = store
+    def __init__(self, collection):
+        self.collection = collection
 
     def register(self, document):
-        return self.store.create(document)
+        return self.collection.create(document)
 
     def read(self, id):
-        return self.store.read(id)
+        return self.collection.read(id)
 
     def update(self, document):
-        return self.store.update(document)
+        return self.collection.update(document)
 
     def delete(self, id):
-        self.store.delete(id)
+        self.collection.delete(id)
 
     def list(self):
-        return self.store.list()
+        return self.collection.list()
