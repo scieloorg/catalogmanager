@@ -20,7 +20,7 @@ def test_article():
     assert article.basename == os.path.basename(xml_filename)
     assert article.filename == xml_filename
     assert article.article_xml_tree.xml_tree.xml_error == None
-    assert type(article.content) == type(b'')
+    assert type(article.content) == type('')
 
 
 def test_link_files_to_assets():
