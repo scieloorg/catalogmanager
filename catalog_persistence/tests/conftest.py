@@ -22,27 +22,11 @@ def fake_change_list():
 
 
 @pytest.fixture
-def change_service_list(change_service, fake_change_list):
-    for description in fake_change_list:
-        change_service.register(description)
-    return change_service
-
-
-@pytest.fixture
-def get_couchdb_manager(request, persistence_config):
-    return CouchDBManager(
-        settings={
-            'couchdb.uri': 'http://localhost:5984',
-            'couchdb.username': 'admin',
-            'couchdb.password': 'password',
-            'database_name': 'articles'
-        }
+def change_service(persistence_config):
+    return DatabaseService(
+        InMemoryDBManager('changes'),
+        'articles'
     )
-
-
-@pytest.fixture
-def get_inmemorydb_manager(persistence_config):
-    return InMemoryDBManager('articles')
 
 
 @pytest.fixture(params=[
@@ -51,13 +35,13 @@ def get_inmemorydb_manager(persistence_config):
             'couchdb.uri': 'http://localhost:5984',
             'couchdb.username': 'admin',
             'couchdb.password': 'password',
-            'database_name': 'articles'
+            'couchdb.changes_database': 'changes'
         }
     ),
-    InMemoryDBManager('articles')
+    InMemoryDBManager('changes')
 ])
 def database_service(request):
-    return DatabaseService(request.param)
+    return DatabaseService(request.param, 'articles')
 
 
 @pytest.fixture
@@ -65,12 +49,3 @@ def setup(request, persistence_config, database_service):
     def fin():
         database_service.collection.drop_database()
     request.addfinalizer(fin)
-
-
-@pytest.fixture
-def document_test():
-    create_date = datetime.utcnow()
-    return {
-        'type': 'A',
-        'created_date': create_date,
-    }
