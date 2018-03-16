@@ -22,9 +22,16 @@ class XMLTree:
         self.xml_error = None
         self.load(xml)
 
+    def _tostring(self):
+        return etree.tostring(self.tree.getroot(), encoding='utf-8')
+
     @property
     def content(self):
-        return etree.tostring(self.tree.getroot())
+        return str(self.bytes_content)
+
+    @property
+    def bytes_content(self):
+        return self._tostring()
 
     def load(self, xml):
         self.tree, self.xml_error = self.parse(self.read(xml))

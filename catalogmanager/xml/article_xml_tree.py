@@ -26,6 +26,17 @@ class AssetXMLNode:
     def xml(self):
         return xml_tree.etree.tostring(self.node)
 
+    @property
+    def id(self):
+        _id = self.get(
+                'id',
+                self.getparent().get(
+                    'id',
+                    self.original_href
+                    )
+                )
+        return _id
+
 
 class AssetXMLNodesFinder:
 

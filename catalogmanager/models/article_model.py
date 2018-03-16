@@ -15,12 +15,12 @@ class Asset:
     def file(self):
         return open(self.filename)
 
-    def update_href(self, href):
-        self.asset_node.update_href(href)
-
     @property
     def href(self):
         return self.asset_node.href
+
+    def update_href(self, href):
+        self.asset_node.update_href(href)
 
 
 class Article:
@@ -46,7 +46,8 @@ class Article:
                     self.unlinked_files.append(fname)
                 else:
                     self.unlinked_assets.remove(fname)
-                    self.assets[fname] = Asset(f, asset_node)
+                    self.assets[fname] = Asset(
+                        f, asset_node)
 
     def update_href(self, asset_id_items):
         if self.assets is not None:

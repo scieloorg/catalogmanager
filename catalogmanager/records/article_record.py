@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from ..models import article_data
+from ..models import article_model
 
 
 class AssetRecord:
@@ -15,10 +15,15 @@ class AssetRecord:
         record['file'] = asset.file
         record['node'] = asset.asset_node
         record['article_id'] = article_id
+        record['asset_id'] = asset.asset_node.id
+        record['id'] = self.gen_id(record)
         return record
 
+    def gen_id(self, record):
+        return record.get('article_id')+'_'+record.get('asset_id')
+
     def output(self, record):
-        return article_data.Asset(record.get('filename'), record.get('node'))
+        return article_model.Asset(record.get('filename'), record.get('node'))
 
 
 class ArticleRecord:
@@ -30,13 +35,17 @@ class ArticleRecord:
         record = {}
         record['filename'] = article.filename
         record['basename'] = article.basename
-        record['content'] = article.xml_tree.content
+        record['content'] = article.content
         record['assets'] = asset_id_items
         record['article_id'] = article_id
+        record['id'] = self.gen_id(record)
         return record
 
+    def gen_id(self, record):
+        return record.get('article_id')
+
     def output(self, record):
-        return article_data.Article(record.get('file'), record.get('files'))
+        return article_model.Article(record.get('file'), record.get('files'))
 
     def asset_record_items(self, article, article_id):
         asset_record = AssetRecord()

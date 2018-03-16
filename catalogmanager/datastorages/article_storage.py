@@ -12,7 +12,7 @@ class ArticleStorage:
         return self.location(record_id)
 
     def location(self, id):
-        return '{}/assets/{}'.format(
+        return '{}/articles/{}'.format(
             self.datastorage.location(), id)
 
 
@@ -27,5 +27,5 @@ class AssetStorage:
         return self.location(record_id)
 
     def location(self, id):
-        return '{}/articles/{}'.format(
+        return '{}/assets/{}'.format(
             self.datastorage.location(), id)
