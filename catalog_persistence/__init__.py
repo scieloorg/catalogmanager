@@ -1,4 +1,4 @@
-from wsgiref.simple_server import make_server
+#!/usr/bin/python
 from pyramid.config import Configurator
 from pyramid.response import Response
 from pyramid.view import view_config

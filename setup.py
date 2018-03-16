@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 requires = [
-    'pyramid~=1.9',
+    'pyramid>=1.9',
     'waitress',
     'lxml',
 ]
@@ -16,14 +16,14 @@ setup(
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
     license="BSD 2-clause",
-    url="http://docs.scielo.org",
+    url="https://github.com/scieloorg/catalogmanager",
     keywords='scielo catalogmanager',
     packages=find_packages(),
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.6",
         "Operating System :: POSIX :: Linux",
         "Topic :: System",
         "Topic :: Utilities",
