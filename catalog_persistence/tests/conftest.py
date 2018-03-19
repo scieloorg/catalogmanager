@@ -34,8 +34,7 @@ def change_service(persistence_config):
         settings={
             'couchdb.uri': 'http://localhost:5984',
             'couchdb.username': 'admin',
-            'couchdb.password': 'password',
-            'couchdb.changes_database': 'changes'
+            'couchdb.password': 'password'
         }
     ),
     InMemoryDBManager('changes')
@@ -47,5 +46,8 @@ def database_service(request):
 @pytest.fixture
 def setup(request, persistence_config, database_service):
     def fin():
-        database_service.collection.drop_database()
+        databases = ['articles', 'changes']
+        for database in databases:
+            database_service.db_manager.database = database
+            database_service.db_manager.drop_database()
     request.addfinalizer(fin)
