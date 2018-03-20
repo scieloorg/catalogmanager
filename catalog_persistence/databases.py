@@ -223,10 +223,13 @@ class DatabaseService:
         return self.db_manager.read(id)
 
     def update(self, document_record):
-        return self.db_manager.update(document_record)
+        document_id = self.db_manager.update(document_record)
+        self._register_change(document_record, ChangeType.UPDATE)
+        return document_id
 
-    def delete(self, id):
-        self.db_manager.delete(id)
+    def delete(self, document_record):
+        self.db_manager.delete(document_record.get_id)
+        self._register_change(document_record, ChangeType.DELETE)
 
     def find(self):
         return self.db_manager.find()

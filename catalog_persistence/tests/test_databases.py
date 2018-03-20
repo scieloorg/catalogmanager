@@ -27,8 +27,6 @@ def test_register_document(setup,
 def test_read_document(setup, database_service):
     article = ArticleRecord({'content': 'Test2'})
     document_id = database_service.register(article)
-    assert document_id is not None
-    assert isinstance(document_id, str)
 
     check_document = database_service.read(document_id)
     assert check_document is not None
@@ -57,8 +55,7 @@ def test_read_document(setup, database_service):
 def test_delete_document(setup, database_service):
     article = ArticleRecord({'content': 'Test4'})
     document_id = database_service.register(article)
-    assert document_id is not None
-    assert isinstance(document_id, str)
 
-    database_service.delete(document_id)
+    check_document = database_service.read(document_id)
+    database_service.delete(check_document)
     pytest.raises(DocumentNotFound, 'database_service.read(document_id)')
