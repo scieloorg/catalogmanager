@@ -2,7 +2,11 @@
 from setuptools import setup, find_packages
 
 requires = [
-    'pyramid>=1.9',
+    'CouchDB>=1.2',
+    'Mako>=1.0.7',
+    'pyramid>=1.9.1',
+    'pyramid-mako>=1.0.2',
+    'pyramid_debugtoolbar>=4.4',
     'waitress',
     'lxml',
 ]

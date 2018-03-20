@@ -1,21 +1,15 @@
-#!/usr/bin/env python
-import pytest
-from webtest import TestApp
-
-from catalog_persistence import main
-
-
-@pytest.fixture
-def app():
-    return main({})
-
-
-@pytest.fixture
-def testapp(app):
-    return TestApp(app)
 
 
 def test_functional_home(testapp):
     resp = testapp.get('/', status=200)
     assert resp.status == '200 OK'
     assert resp.status_code == 200
+
+
+def test_add_article_register_change(functional_config,
+                                     change_service):
+    # An item is registered in persistence module. E.g.: Article
+    # A change register must be created. E.g.: Article insertion
+    # First, check if list of changes bring the change register
+    # Finally, get the register by identification
+    pass
