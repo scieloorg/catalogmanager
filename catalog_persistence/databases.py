@@ -22,9 +22,17 @@ class Change:
 
     def __init__(self, document_record, change_type):
         self._record_id = uuid4().hex
-        self.document_id = document_record.get_id
-        self.document_type = document_record.document_type.value
-        self.type = change_type.value
+        self._document_id = document_record.document_id
+        self._document_type = document_record.document_type.value
+        self._type = change_type.value
+
+    @property
+    def document_id(self):
+        return self._record_id
+
+    @document_id.setter
+    def document_id(self, record_id):
+        self._record_id = record_id
 
     @property
     def created_date(self):
@@ -34,16 +42,12 @@ class Change:
     def created_date(self, created_date):
         self._created_date = created_date
 
-    @property
-    def get_id(self):
-        return self._record_id
-
     def input(self):
         return {
-            'record_id': self.get_id,
-            'document_id': self.document_id,
-            'document_type': self.document_type,
-            'type': self.type,
+            'record_id': self.document_id,
+            'document_id': self._document_id,
+            'document_type': self._document_type,
+            'type': self._type,
             'created_date': self.created_date,
         }
 
@@ -108,18 +112,18 @@ class InMemoryDBManager(BaseDBManager):
 
     def create(self, document):
         document.created_date = str(datetime.utcnow().timestamp())
-        self.database.update({document.get_id: document.input()})
-        return document.get_id
+        self.database.update({document.document_id: document.input()})
+        return document.document_id
 
     def read(self, id):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
-        return DocumentRecord(doc).output(doc)
+        return doc
 
     def update(self, document):
-        self.database.update({document.get_id: document.input()})
-        return document.get_id
+        self.database.update({document.document_id: document.input()})
+        return document.document_id
 
     def delete(self, id):
         doc = self.database.get(id)
@@ -128,11 +132,7 @@ class InMemoryDBManager(BaseDBManager):
         del self.database[id]
 
     def find(self):
-        return [
-            DocumentRecord(document).output(document)
-            for id, document
-            in self.database.items()
-        ]
+        return [document for id, document in self.database.items()]
 
 
 class CouchDBManager(BaseDBManager):
@@ -168,23 +168,23 @@ class CouchDBManager(BaseDBManager):
 
     def create(self, document):
         document.created_date = str(datetime.utcnow().timestamp())
-        self.database[document.get_id] = document.input()
-        return document.get_id
+        self.database[document.document_id] = document.input()
+        return document.document_id
 
     def read(self, id):
         try:
             doc = dict(self.database[id])
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
-        return DocumentRecord(doc).output(doc)
+        return doc
 
     def update(self, document):
         try:
-            doc = self.database[document.get_id]
-            self.database[doc.id] = document.input()
+            doc = self.database[document.document_id]
+            self.database[doc.document_id] = document.input()
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
-        return document.get_id
+        return document.document_id
 
     def delete(self, id):
         try:
@@ -197,10 +197,7 @@ class CouchDBManager(BaseDBManager):
         mango = {
             'selector': {'document_type': 'ART'}
         }
-        return [
-            DocumentRecord(dict(doc)).output(dict(doc))
-            for doc in self.database.find(mango)
-        ]
+        return [dict(document) for document in self.database.find(mango)]
 
 
 class DatabaseService:
@@ -255,7 +252,8 @@ class DatabaseService:
         Erro:
         DocumentNotFound: Documento não encontrado na base de dados.
         """
-        return self.db_manager.read(id)
+        document_record = self.db_manager.read(id)
+        return DocumentRecord(document_record, id).output(document_record)
 
     def update(self, document_record):
         """
@@ -287,8 +285,11 @@ class DatabaseService:
         Erro:
         DocumentNotFound: Documento não encontrado na base de dados.
         """
-        self.db_manager.delete(document_record.get_id)
+        self.db_manager.delete(document_record.document_id)
         self._register_change(document_record, ChangeType.DELETE)
 
     def find(self):
-        return self.db_manager.find()
+        return [
+            DocumentRecord(document, document['document_id']).output(document)
+            for document in self.db_manager.find()
+        ]
