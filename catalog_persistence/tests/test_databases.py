@@ -36,6 +36,10 @@ def test_read_document(setup, database_service):
     assert check_document.created_date is not None
 
 
+def test_read_document_not_found(setup, database_service):
+    pytest.raises(DocumentNotFound, "database_service.read('idnaoexistente')")
+
+
 # def test_update_document(setup, database_service):
 #     article = ArticleRecord({'content': 'Test3'})
 #     document_id = database_service.register(article)
@@ -59,3 +63,8 @@ def test_delete_document(setup, database_service):
     check_document = database_service.read(document_id)
     database_service.delete(check_document)
     pytest.raises(DocumentNotFound, 'database_service.read(document_id)')
+
+
+def test_delete_document_not_found(setup, database_service):
+    article = ArticleRecord({'content': 'Test5'})
+    pytest.raises(DocumentNotFound, 'database_service.delete(article)')

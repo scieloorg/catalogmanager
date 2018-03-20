@@ -122,6 +122,9 @@ class InMemoryDBManager(BaseDBManager):
         return document.get_id
 
     def delete(self, id):
+        doc = self.database.get(id)
+        if not doc:
+            raise DocumentNotFound
         del self.database[id]
 
     def find(self):
@@ -184,7 +187,10 @@ class CouchDBManager(BaseDBManager):
         return document.get_id
 
     def delete(self, id):
-        doc = self.database[id]
+        try:
+            doc = self.database[id]
+        except couchdb.http.ResourceNotFound:
+            raise DocumentNotFound
         self.database.delete(doc)
 
     def find(self):
@@ -198,6 +204,14 @@ class CouchDBManager(BaseDBManager):
 
 
 class DatabaseService:
+    """
+    Database Service é responsável por persistir DocumentRecords no DBManager,
+    ambos informados na instanciação desta classe.
+
+    db_manager: Instância do DBManager
+    database_name: Nome da base de dados para persistir DocumentRecord
+    changes_database(opcional): Nome da base de dados para persistir Change
+    """
 
     def __init__(self, db_manager, database_name, changes_database='changes'):
         self.db_manager = db_manager
@@ -215,19 +229,64 @@ class DatabaseService:
         return change_id
 
     def register(self, document_record):
+        """
+        Registra DocumentRecord e Change na base de dados.
+
+        Params:
+        document_record: Instância de DocumentRecord
+
+        Retorno:
+        ID do documento criado
+        """
         document_id = self.db_manager.create(document_record)
         self._register_change(document_record, ChangeType.CREATE)
         return document_id
 
     def read(self, id):
+        """
+        Obtém DocumentRecord pelo ID do documento na base de dados.
+
+        Params:
+        id: ID do documento
+
+        Retorno:
+        DocumentRecord registrado na base de dados
+
+        Erro:
+        DocumentNotFound: Documento não encontrado na base de dados.
+        """
         return self.db_manager.read(id)
 
     def update(self, document_record):
+        """
+        Atualiza DocumentRecord na base de dados.
+
+        Params:
+        document_record: DocumentRecord a ser atualizado
+
+        Retorno:
+        ID do documento atualizado
+
+        Erro:
+        DocumentNotFound: Documento não encontrado na base de dados.
+        """
         document_id = self.db_manager.update(document_record)
         self._register_change(document_record, ChangeType.UPDATE)
         return document_id
 
     def delete(self, document_record):
+        """
+        Obtém DocumentRecord pelo ID do documento na base de dados.
+
+        Params:
+        id: ID do documento
+
+        Retorno:
+        DocumentRecord registrado na base de dados
+
+        Erro:
+        DocumentNotFound: Documento não encontrado na base de dados.
+        """
         self.db_manager.delete(document_record.get_id)
         self._register_change(document_record, ChangeType.DELETE)
 
