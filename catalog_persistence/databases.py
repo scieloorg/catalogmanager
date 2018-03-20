@@ -1,5 +1,4 @@
 import abc
-import copy
 from datetime import datetime
 from enum import Enum
 from uuid import uuid4
@@ -22,8 +21,8 @@ class ChangeType(Enum):
 class Change:
 
     def __init__(self, document_record, change_type):
-        self.record_id = uuid4().hex
-        self.document_id = document_record.document_id
+        self._record_id = uuid4().hex
+        self.document_id = document_record.get_id
         self.document_type = document_record.document_type.value
         self.type = change_type.value
 
@@ -35,16 +34,21 @@ class Change:
     def created_date(self, created_date):
         self._created_date = created_date
 
+    @property
+    def get_id(self):
+        return self._record_id
+
     def input(self):
         return {
-            'record_id': self.record_id,
+            'record_id': self.get_id,
             'document_id': self.document_id,
             'document_type': self.document_type,
             'type': self.type,
+            'created_date': self.created_date,
         }
 
     def output(self):
-        return Article()
+        return {}
 
 
 class BaseDBManager(metaclass=abc.ABCMeta):
@@ -104,25 +108,25 @@ class InMemoryDBManager(BaseDBManager):
 
     def create(self, document):
         document.created_date = str(datetime.utcnow().timestamp())
-        self.database.update({document.document_id: document.input()})
-        return document.document_id
+        self.database.update({document.get_id: document.input()})
+        return document.get_id
 
     def read(self, id):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
-        return DocumentRecord(doc['content']).output(doc)
+        return DocumentRecord(doc).output(doc)
 
     def update(self, document):
-        self.database.update({document.document_id: document.input()})
-        return document.document_id
+        self.database.update({document.get_id: document.input()})
+        return document.get_id
 
     def delete(self, id):
         del self.database[id]
 
     def find(self):
         return [
-            document
+            DocumentRecord(document).output(document)
             for id, document
             in self.database.items()
         ]
@@ -161,23 +165,23 @@ class CouchDBManager(BaseDBManager):
 
     def create(self, document):
         document.created_date = str(datetime.utcnow().timestamp())
-        self.database[document.document_id] = document.input()
-        return document.document_id
+        self.database[document.get_id] = document.input()
+        return document.get_id
 
     def read(self, id):
         try:
             doc = dict(self.database[id])
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
-        return DocumentRecord(doc['content']).output(doc)
+        return DocumentRecord(doc).output(doc)
 
     def update(self, document):
         try:
-            doc = self.database[document.document_id]
+            doc = self.database[document.get_id]
             self.database[doc.id] = document.input()
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
-        return document.document_id
+        return document.get_id
 
     def delete(self, id):
         doc = self.database[id]
@@ -188,8 +192,8 @@ class CouchDBManager(BaseDBManager):
             'selector': {'document_type': 'ART'}
         }
         return [
-            document
-            for document in self.database.find(mango)
+            DocumentRecord(dict(doc)).output(dict(doc))
+            for doc in self.database.find(mango)
         ]
 
 
@@ -206,8 +210,9 @@ class DatabaseService:
             self.db_manager.database_name
         )
         change_record = Change(document_record, change_type)
-        self.db_manager.create(change_record)
+        change_id = self.db_manager.create(change_record)
         self.db_manager.database = document_database
+        return change_id
 
     def register(self, document_record):
         document_id = self.db_manager.create(document_record)

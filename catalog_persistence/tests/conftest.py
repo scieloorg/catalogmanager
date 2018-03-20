@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from pyramid import testing
 import pytest
 
@@ -19,14 +17,6 @@ def persistence_config(request):
 @pytest.fixture
 def fake_change_list():
     return ['Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6']
-
-
-@pytest.fixture
-def change_service(persistence_config):
-    return DatabaseService(
-        InMemoryDBManager('changes'),
-        'articles'
-    )
 
 
 @pytest.fixture(params=[

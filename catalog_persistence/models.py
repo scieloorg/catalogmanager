@@ -11,8 +11,8 @@ class DocumentRecord(metaclass=abc.ABCMeta):
         ISSUE = 'ISS'
         JOURNAL = 'JOR'
 
-    def __init__(self, content):
-        self.content = content
+    def __init__(self, document):
+        self.content = document['content']
         self._document_type = None
         self._created_date = None
 
@@ -36,7 +36,7 @@ class DocumentRecord(metaclass=abc.ABCMeta):
         document = None
         if document_record['document_type'] == self.DocumentType.ARTICLE.value:
             document = ArticleRecord(
-                self.content,
+                document_record,
                 document_record['document_id']
             )
             document.created_date = document_record['created_date']
@@ -45,18 +45,18 @@ class DocumentRecord(metaclass=abc.ABCMeta):
 
 class ArticleRecord(DocumentRecord):
 
-    def __init__(self, content, document_id=uuid4().hex):
-        super().__init__(content)
+    def __init__(self, document, document_id=uuid4().hex):
+        super().__init__(document)
         self.document_type = self.DocumentType.ARTICLE
         self._document_id = document_id
 
     @property
-    def document_id(self):
+    def get_id(self):
         return self._document_id
 
     def input(self):
         return {
-            'document_id': self.document_id,
+            'document_id': self.get_id,
             'document_type': self.document_type.value,
             'content': self.content,
             'created_date': self.created_date,
