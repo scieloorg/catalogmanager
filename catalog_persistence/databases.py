@@ -253,7 +253,7 @@ class DatabaseService:
         DocumentNotFound: Documento não encontrado na base de dados.
         """
         document_record = self.db_manager.read(id)
-        return DocumentRecord(document_record, id).output(document_record)
+        return DocumentRecord(document_record, id).output()
 
     def update(self, document_record):
         """
@@ -290,6 +290,6 @@ class DatabaseService:
 
     def find(self):
         return [
-            DocumentRecord(document, document['document_id']).output(document)
+            DocumentRecord(document, document['document_id']).output()
             for document in self.db_manager.find()
         ]
