@@ -18,7 +18,7 @@ def test_register_document(setup,
 
     check_document = database_service.find()
     assert check_document is not None
-    assert check_document[0].get_id == article.get_id
+    assert check_document[0].document_id == article.document_id
     assert check_document[0].document_type == article.document_type
     assert check_document[0].content == article.content
     assert check_document[0].created_date is not None
@@ -30,7 +30,7 @@ def test_read_document(setup, database_service):
 
     check_document = database_service.read(document_id)
     assert check_document is not None
-    assert check_document.get_id == article.get_id
+    assert check_document.document_id == article.document_id
     assert check_document.document_type == article.document_type
     assert check_document.content == article.content
     assert check_document.created_date is not None
