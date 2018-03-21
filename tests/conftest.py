@@ -15,9 +15,8 @@ def functional_config(request):
 @pytest.fixture
 def change_service(functional_config):
     return DatabaseService(
-        InMemoryDBManager('test1'),
-        'test',
-        InMemoryDBManager('test2')
+        InMemoryDBManager({'database_name': 'test1'}),
+        InMemoryDBManager({'database_name': 'test2'})
     )
 
 

@@ -1,3 +1,5 @@
+import copy
+
 from pyramid import testing
 import pytest
 
@@ -20,11 +22,22 @@ def fake_change_list():
 
 
 @pytest.fixture
-def db_settings():
+def article_db_settings():
     return {
         'couchdb.uri': 'http://localhost:5984',
         'couchdb.username': 'admin',
-        'couchdb.password': 'password'
+        'couchdb.password': 'password',
+        'database_name': 'articles',
+    }
+
+
+@pytest.fixture
+def change_db_settings():
+    return {
+        'couchdb.uri': 'http://localhost:5984',
+        'couchdb.username': 'admin',
+        'couchdb.password': 'password',
+        'database_name': 'changes',
     }
 
 
@@ -32,11 +45,10 @@ def db_settings():
     CouchDBManager,
     InMemoryDBManager
 ])
-def database_service(request, db_settings):
+def database_service(request, article_db_settings, change_db_settings):
     return DatabaseService(
-        request.param(db_settings),
-        'articles',
-        request.param(db_settings)
+        request.param(article_db_settings),
+        request.param(change_db_settings)
     )
 
 
