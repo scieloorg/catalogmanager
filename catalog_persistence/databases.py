@@ -46,6 +46,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
 class InMemoryDBManager(BaseDBManager):
 
     def __init__(self, config):
+        self.database_name = config['database_name']
         self._database = {}
 
     @property
@@ -85,6 +86,7 @@ class InMemoryDBManager(BaseDBManager):
 class CouchDBManager(BaseDBManager):
 
     def __init__(self, settings):
+        self.database_name = settings['database_name']
         self._database = None
         self._db_server = couchdb.Server(settings['couchdb.uri'])
         self._db_server.resource.credentials = (
@@ -144,17 +146,13 @@ class DatabaseService:
     Database Service é responsável por persistir documentos(dicts) no
     DBManager, ambos informados na instanciação desta classe.
 
-    db_manager: Instância do DBManager
-    database_name: Nome da base de dados para persistir documentos
-    changes_database(opcional): Nome da base de dados para persistir Change
+    db_manager: Instância do DBManager para persistir documento
+    changes_db_manager: Instância do DBManager para persistir change
     """
 
-    def __init__(self, db_manager, database_name, changes_db_manager,
-                 changes_database_name='changes'):
+    def __init__(self, db_manager, changes_db_manager):
         self.db_manager = db_manager
-        self.db_manager.database_name = database_name
         self.changes_db_manager = changes_db_manager
-        self.changes_db_manager.database_name = changes_database_name
 
     def _register_change(self, document_record, change_type):
         change_record = {
