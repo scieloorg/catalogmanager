@@ -19,25 +19,30 @@ def fake_change_list():
     return ['Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6']
 
 
+@pytest.fixture
+def db_settings():
+    return {
+        'couchdb.uri': 'http://localhost:5984',
+        'couchdb.username': 'admin',
+        'couchdb.password': 'password'
+    }
+
+
 @pytest.fixture(params=[
-    CouchDBManager(
-        settings={
-            'couchdb.uri': 'http://localhost:5984',
-            'couchdb.username': 'admin',
-            'couchdb.password': 'password'
-        }
-    ),
-    InMemoryDBManager('changes')
+    CouchDBManager,
+    InMemoryDBManager
 ])
-def database_service(request):
-    return DatabaseService(request.param, 'articles')
+def database_service(request, db_settings):
+    return DatabaseService(
+        request.param(db_settings),
+        'articles',
+        request.param(db_settings)
+    )
 
 
 @pytest.fixture
 def setup(request, persistence_config, database_service):
     def fin():
-        databases = ['articles', 'changes']
-        for database in databases:
-            database_service.db_manager.database = database
-            database_service.db_manager.drop_database()
+        database_service.db_manager.drop_database()
+        database_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
