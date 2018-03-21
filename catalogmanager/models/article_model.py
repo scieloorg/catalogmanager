@@ -2,6 +2,7 @@
 import os
 
 from ..xml import article_xml_tree
+from . import document_model
 
 
 class Asset:
@@ -10,6 +11,23 @@ class Asset:
         self.original_href = os.path.basename(filename)
         self.filename = filename
         self.asset_node = asset_node
+
+    def get_content(self):
+        record = {}
+        record['filename'] = self.filename
+        record['basename'] = self.basename
+        record['file'] = self.file
+        record['node'] = self.asset_node
+        return record
+
+    def serialize(self):
+        record = {}
+        record['content'] = self.get_content()
+        return record
+
+    @property
+    def name(self):
+        return self.original_href
 
     @property
     def file(self):
@@ -31,6 +49,19 @@ class Article:
         self.article_xml_tree = article_xml_tree.ArticleXMLTree(xml_filename)
         self.files = files
         self.assets = None
+
+    def get_content(self, asset_id_items=None):
+        content = {}
+        content['filename'] = self.filename
+        content['basename'] = self.basename
+        content['xml_content'] = self.content
+        content['assets'] = asset_id_items
+        return content
+
+    def serialize(self):
+        record = {}
+        record['content'] = self.get_content()
+        return record
 
     def link_files_to_assets(self):
         if self.article_xml_tree.asset_nodes is not None:

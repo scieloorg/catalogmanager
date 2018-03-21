@@ -8,7 +8,6 @@ class ArticleStorage:
 
     def register(self, record_id, record_data):
         self.datastorage.register(record_data)
-        self.datastorage.register_changes('article', record_id)
         return self.location(record_id)
 
     def location(self, id):
@@ -23,7 +22,6 @@ class AssetStorage:
 
     def register(self, record_id, record_data):
         self.datastorage.register(record_data)
-        self.datastorage.register_changes('asset', record_id)
         return self.location(record_id)
 
     def location(self, id):
