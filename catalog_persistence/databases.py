@@ -146,9 +146,8 @@ class DatabaseService:
     Database Service é responsável por persistir documentos(dicts) no
     DBManager, ambos informados na instanciação desta classe.
 
-    db_manager: Instância do DBManager
-    database_name: Nome da base de dados para persistir documentos
-    changes_database(opcional): Nome da base de dados para persistir Change
+    db_manager: Instância do DBManager para persistir documento
+    changes_db_manager: Instância do DBManager para persistir change
     """
 
     def __init__(self, db_manager, changes_db_manager):
