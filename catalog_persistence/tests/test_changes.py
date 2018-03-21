@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from catalog_persistence.databases import ChangeType
 from catalog_persistence.models import ArticleRecord
 
@@ -8,51 +10,48 @@ def generate_id():
 
 
 def test_register_create_change(setup, database_service):
-    article = ArticleRecord({'content': 'ChangeRecord'})
-    change_id = database_service._register_change(article, ChangeType.CREATE)
-
-    database_service.db_manager.database, document_database = (
-        database_service.changes_database,
-        database_service.db_manager.database_name
+    article_record = ArticleRecord('ChangeRecord').serialize()
+    article_record.update({'created_date': str(datetime.utcnow().timestamp())})
+    change_id = database_service._register_change(
+        article_record,
+        ChangeType.CREATE
     )
-    check_change = dict(database_service.db_manager.database[change_id])
-    database_service.db_manager.database = document_database
+
+    check_change = dict(database_service.changes_db_manager.database[change_id])
     assert check_change is not None
-    assert check_change['document_id'] == article.document_id
-    assert check_change['document_type'] == article.document_type.value
+    assert check_change['document_id'] == article_record['document_id']
+    assert check_change['document_type'] == article_record['document_type']
     assert check_change['type'] == ChangeType.CREATE.value
     assert check_change['created_date'] is not None
 
 
 def test_register_update_change(setup, database_service):
-    article = ArticleRecord({'content': 'ChangeRecord2'})
-    change_id = database_service._register_change(article, ChangeType.UPDATE)
-
-    database_service.db_manager.database, document_database = (
-        database_service.changes_database,
-        database_service.db_manager.database_name
+    article_record = ArticleRecord('ChangeRecord2').serialize()
+    article_record.update({'created_date': str(datetime.utcnow().timestamp())})
+    change_id = database_service._register_change(
+        article_record,
+        ChangeType.UPDATE
     )
-    check_change = dict(database_service.db_manager.database[change_id])
-    database_service.db_manager.database = document_database
+
+    check_change = dict(database_service.changes_db_manager.database[change_id])
     assert check_change is not None
-    assert check_change['document_id'] == article.document_id
-    assert check_change['document_type'] == article.document_type.value
+    assert check_change['document_id'] == article_record['document_id']
+    assert check_change['document_type'] == article_record['document_type']
     assert check_change['type'] == ChangeType.UPDATE.value
     assert check_change['created_date'] is not None
 
 
 def test_register_delete_change(setup, database_service):
-    article = ArticleRecord({'content': 'ChangeRecord3'})
-    change_id = database_service._register_change(article, ChangeType.DELETE)
-
-    database_service.db_manager.database, document_database = (
-        database_service.changes_database,
-        database_service.db_manager.database_name
+    article_record = ArticleRecord('ChangeRecord3').serialize()
+    article_record.update({'created_date': str(datetime.utcnow().timestamp())})
+    change_id = database_service._register_change(
+        article_record,
+        ChangeType.DELETE
     )
-    check_change = dict(database_service.db_manager.database[change_id])
-    database_service.db_manager.database = document_database
+
+    check_change = dict(database_service.changes_db_manager.database[change_id])
     assert check_change is not None
-    assert check_change['document_id'] == article.document_id
-    assert check_change['document_type'] == article.document_type.value
+    assert check_change['document_id'] == article_record['document_id']
+    assert check_change['document_type'] == article_record['document_type']
     assert check_change['type'] == ChangeType.DELETE.value
     assert check_change['created_date'] is not None
