@@ -122,7 +122,14 @@ class CouchDBManager(BaseDBManager):
 
     def update(self, id, document):
         try:
-            self.database[id] = document
+            """
+            Para atualizar documento no CouchDB, é necessário informar a
+            revisão do documento atual. Por isso, é obtido o documento atual
+            para que os dados dele sejam atualizados com o registro informado.
+            """
+            doc = dict(self.database[id])
+            doc.update(document)
+            self.database[id] = doc
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         return id
