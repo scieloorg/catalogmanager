@@ -2,18 +2,20 @@ from enum import Enum
 from uuid import uuid4
 
 
-class DocumentType(Enum):
+class RecordType(Enum):
+    DOCUMENT = 'DOC'
     ARTICLE = 'ART'
     ASSET = 'ASS'
     ISSUE = 'ISS'
     JOURNAL = 'JOR'
 
 
-class ArticleRecord:
+class Record:
 
-    def __init__(self, content=None, document_id=uuid4().hex):
+    def __init__(self, content=None, document_id=uuid4().hex,
+                 document_type=RecordType.DOCUMENT):
         self.document_id = document_id
-        self.document_type = DocumentType.ARTICLE
+        self.document_type = document_type
         self.content = content
 
     def serialize(self):
@@ -26,6 +28,8 @@ class ArticleRecord:
     def deserialize(self, document):
         self.content = document.get('content')
         self.document_id = document.get('document_id')
-        self.document_type = DocumentType.ARTICLE
+        self.document_type = RecordType(
+            document.get('document_type', RecordType.DOCUMENT)
+        )
         self.created_date = document.get('created_date')
         return self

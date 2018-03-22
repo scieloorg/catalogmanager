@@ -143,11 +143,13 @@ class CouchDBManager(BaseDBManager):
 
 class DatabaseService:
     """
-    Database Service é responsável por persistir documentos(dicts) no
-    DBManager, ambos informados na instanciação desta classe.
+    Database Service é responsável por persistir registros de documentos(dicts)
+    em um DBManager e de mudanças relacionadas a eles em outro DBManager, ambos
+    informados na instanciação desta classe.
 
-    db_manager: Instância do DBManager para persistir documento
-    changes_db_manager: Instância do DBManager para persistir change
+    db_manager: Instância do DBManager para persistir registro de documentos
+    changes_db_manager: Instância do DBManager para persistir registro de
+        mudanças
     """
 
     def __init__(self, db_manager, changes_db_manager):
@@ -170,11 +172,11 @@ class DatabaseService:
 
     def register(self, document_id, document_record):
         """
-        Registra documento e mudança na base de dados.
+        Persiste registro de um documento e a mudança na base de dados.
 
         Params:
         document_id: ID do documento
-        document_record: dict
+        document_record: registro do documento
 
         Retorno:
         ID do documento
@@ -188,13 +190,13 @@ class DatabaseService:
 
     def read(self, document_id):
         """
-        Obtém documento pelo ID do documento na base de dados.
+        Obtém registro de um documento pelo ID do documento na base de dados.
 
         Params:
         document_id: ID do documento
 
         Retorno:
-        documento (dict) registrado na base de dados
+        registro de documento registrado na base de dados
 
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
@@ -203,11 +205,11 @@ class DatabaseService:
 
     def update(self, document_id, document_record):
         """
-        Atualiza documento na base de dados.
+        Atualiza o registro de um documento e a mudança na base de dados.
 
         Params:
         document_id: ID do documento a ser atualizado
-        document_record: documento a ser atualizado
+        document_record: registro de documento a ser atualizado
 
         Retorno:
         ID do documento atualizado
@@ -221,11 +223,11 @@ class DatabaseService:
 
     def delete(self, document_id, document_record):
         """
-        Marca documento como deletado na base de dados.
+        Remove registro de um documento e a mudança na base de dados.
 
         Params:
         document_id: ID do documento a ser deletado
-        document_record: documento a ser deletado
+        document_record: registro de documento a ser deletado
 
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
@@ -234,4 +236,10 @@ class DatabaseService:
         self._register_change(document_record, ChangeType.DELETE)
 
     def find(self):
-        return [document for document in self.db_manager.find()]
+        """
+        Busca registros de documento pelo ID do documento na base de dados.
+
+        Retorno:
+        Lista de registros de documento registrado na base de dados
+        """
+        return self.db_manager.find()
