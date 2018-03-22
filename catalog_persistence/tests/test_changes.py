@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from catalog_persistence.databases import ChangeType
-from catalog_persistence.models import ArticleRecord
+from catalog_persistence.models import Record
 
 
 def generate_id():
@@ -10,7 +10,7 @@ def generate_id():
 
 
 def test_register_create_change(setup, database_service):
-    article_record = ArticleRecord('ChangeRecord').serialize()
+    article_record = Record('ChangeRecord').serialize()
     article_record.update({'created_date': str(datetime.utcnow().timestamp())})
     change_id = database_service._register_change(
         article_record,
@@ -26,7 +26,7 @@ def test_register_create_change(setup, database_service):
 
 
 def test_register_update_change(setup, database_service):
-    article_record = ArticleRecord('ChangeRecord2').serialize()
+    article_record = Record('ChangeRecord2').serialize()
     article_record.update({'created_date': str(datetime.utcnow().timestamp())})
     change_id = database_service._register_change(
         article_record,
@@ -42,7 +42,7 @@ def test_register_update_change(setup, database_service):
 
 
 def test_register_delete_change(setup, database_service):
-    article_record = ArticleRecord('ChangeRecord3').serialize()
+    article_record = Record('ChangeRecord3').serialize()
     article_record.update({'created_date': str(datetime.utcnow().timestamp())})
     change_id = database_service._register_change(
         article_record,

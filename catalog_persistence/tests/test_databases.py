@@ -1,12 +1,14 @@
 import pytest
 
 from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.models import ArticleRecord, DocumentType
+from catalog_persistence.models import Record, RecordType
 
 
-def test_register_document(setup,
-                           database_service):
-    article = ArticleRecord('Test')
+def test_register_document(setup, database_service):
+    article = Record(
+        content={'Test': 'Test1'},
+        document_type=RecordType.ARTICLE
+    )
     document_id = database_service.register(
         article.document_id,
         article.serialize()
@@ -16,7 +18,7 @@ def test_register_document(setup,
 
     check_list = database_service.find()
     assert isinstance(check_list[0], dict)
-    article_check = ArticleRecord().deserialize(check_list[0])
+    article_check = Record().deserialize(check_list[0])
     assert article_check.document_id == article.document_id
     assert article_check.document_type == article.document_type
     assert article_check.content == article.content
@@ -24,7 +26,10 @@ def test_register_document(setup,
 
 
 def test_read_document(setup, database_service):
-    article = ArticleRecord('Test2')
+    article = Record(
+        content={'Test': 'Test2'},
+        document_type=RecordType.ARTICLE
+    )
     document_id = database_service.register(
         article.document_id,
         article.serialize()
@@ -32,7 +37,7 @@ def test_read_document(setup, database_service):
 
     document = database_service.read(document_id)
     assert document is not None
-    article_check = ArticleRecord().deserialize(document)
+    article_check = Record().deserialize(document)
     assert article_check.document_id == article.document_id
     assert article_check.document_type == article.document_type
     assert article_check.content == article.content
@@ -44,7 +49,7 @@ def test_read_document_not_found(setup, database_service):
 
 
 # def test_update_document(setup, database_service):
-#     article = ArticleRecord({'content': 'Test3'})
+#     article = Record({'content': 'Test3'})
 #     document_id = database_service.register(article)
 #     assert document_id is not None
 #     assert isinstance(document_id, str)
@@ -60,14 +65,17 @@ def test_read_document_not_found(setup, database_service):
 #
 #
 def test_delete_document(setup, database_service):
-    article = ArticleRecord({'content': 'Test4'})
+    article = Record(
+        content={'Test': 'Test4'},
+        document_type=RecordType.ARTICLE
+    )
     document_id = database_service.register(
         article.document_id,
         article.serialize()
     )
 
     check_document = database_service.read(document_id)
-    deleted_article = ArticleRecord().deserialize(check_document)
+    deleted_article = Record().deserialize(check_document)
     database_service.delete(
         deleted_article.document_id,
         check_document
@@ -78,7 +86,7 @@ def test_delete_document(setup, database_service):
 def test_delete_document_not_found(setup, database_service):
     article_record = {
         'document_id': '336abebdd318942101f99930da28ada5',
-        'document_type': DocumentType.ARTICLE.value,
+        'document_type': RecordType.ARTICLE.value,
         'content': 'Test5',
         'created_date': '01010101'
     }
