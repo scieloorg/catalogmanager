@@ -2,7 +2,6 @@
 import os
 
 from ..xml import article_xml_tree
-from . import document_model
 
 
 class Asset:
@@ -11,18 +10,16 @@ class Asset:
         self.original_href = os.path.basename(filename)
         self.filename = filename
         self.asset_node = asset_node
+        self.article_id = None
 
     def get_content(self):
         record = {}
+        record['article_id'] = self.article_id
         record['filename'] = self.filename
-        record['basename'] = self.basename
         record['file'] = self.file
         record['node'] = self.asset_node
-        return record
-
-    def serialize(self):
-        record = {}
-        record['content'] = self.get_content()
+        record['location'] = self.href
+        record['original_href'] = self.original_href
         return record
 
     @property
@@ -31,7 +28,8 @@ class Asset:
 
     @property
     def file(self):
-        return open(self.filename)
+        if os.path.isfile(self.filename):
+            return open(self.filename)
 
     @property
     def href(self):
@@ -49,19 +47,16 @@ class Article:
         self.article_xml_tree = article_xml_tree.ArticleXMLTree(xml_filename)
         self.files = files
         self.assets = None
+        self.location = None
 
     def get_content(self, asset_id_items=None):
         content = {}
+        content['location'] = self.location
         content['filename'] = self.filename
         content['basename'] = self.basename
         content['xml_content'] = self.content
         content['assets'] = asset_id_items
         return content
-
-    def serialize(self):
-        record = {}
-        record['content'] = self.get_content()
-        return record
 
     def link_files_to_assets(self):
         if self.article_xml_tree.asset_nodes is not None:
@@ -83,7 +78,7 @@ class Article:
     def update_href(self, asset_id_items):
         if self.assets is not None:
             for name, asset in self.assets.items():
-                asset.update_href(asset_id_items[name])
+                self.assets[name].update_href(asset_id_items[name])
 
     @property
     def content(self):

@@ -1,7 +1,6 @@
-import pytest
 import os
 
-from catalogmanager.models import article_model
+from catalogmanager.models.article_model import Article
 
 
 def get_files():
@@ -10,13 +9,9 @@ def get_files():
     return (xml_filename, files)
 
 
-def create_article(xml_filename, files):
-    return article_model.Article(xml_filename, files)
-
-
 def test_article():
     xml_filename, files = get_files()
-    article = create_article(xml_filename, files)
+    article = Article(xml_filename, files)
     assert article.basename == os.path.basename(xml_filename)
     assert article.filename == xml_filename
     assert article.article_xml_tree.xml_tree.xml_error == None
@@ -25,7 +20,7 @@ def test_article():
 
 def test_link_files_to_assets():
     xml_filename, files = get_files()
-    article = create_article(xml_filename, files)
+    article = Article(xml_filename, files)
 
     article.link_files_to_assets()
     assert len(article.assets) == 2
@@ -38,7 +33,7 @@ def test_link_files_to_assets():
 
 def test_update_href():
     xml_filename, files = get_files()
-    article = create_article(xml_filename, files)
+    article = Article(xml_filename, files)
     content = article.content
     article.link_files_to_assets()
     asset = article.assets.get('0034-8910-rsp-S01518-87872016050006741-gf01.jpg')

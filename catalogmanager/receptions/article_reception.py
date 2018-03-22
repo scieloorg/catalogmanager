@@ -1,28 +1,54 @@
 # coding=utf-8
 
-from ..records import article_record
+from catalog_persistence.models import (
+        Record,
+        RecordType,
+    )
+from ..data_services import DataServices
+from ..models.article_model import Article
+
+
+class ReceivedArticle:
+
+    def __init__(self, xml_filename, files):
+        self.article = Article(xml_filename, files)
+        self.article.link_files_to_assets()
+
+    @property
+    def asset_records(self):
+        items = {}
+        for name, asset in self.article.assets.items():
+            asset.article_id = self.article_record.document_id
+            items[asset.name] = Record(asset.get_content(), RecordType.ASSET)
+        return items
+
+    @property
+    def article_record(self):
+        return Record(self.article.get_content(), RecordType.ARTICLE)
+
+    def update_assets_location(self, assets_locations):
+        self.article.update_href(assets_locations)
 
 
 class ArticleReception:
 
-    def __init__(self, article_data_storage, asset_data_storage):
-        self.article_data_storage = article_data_storage
-        self.asset_data_storage = asset_data_storage
+    def __init__(self, articles_db_manager, assets_db_manager, changes_db_manager):
+        self.article_services = DataServices(
+            articles_db_manager, changes_db_manager)
+        self.asset_services = DataServices(
+            assets_db_manager, changes_db_manager)
 
-    def register_asset_records(self, assets):
-        if assets is not None:
-            registered = {}
-            for asset in assets:
-                asset_record = article_record.AssetRecord(asset.get_content())
-                registered_id = self.asset_data_storage.register(asset_record)
-                registered[asset.name] = registered_id
-            return registered
+    def receive(self, xml_filename, files):
+        received = ReceivedArticle(xml_filename, files)
 
-    def register_article(self, article, article_id):
-        asset_id_items = None
-        if article.assets is not None:
-            article.link_files_to_assets()
-            asset_id_items = self.register_assets(article.assets)
-            article.update_href(asset_id_items)
-        a_record = article_record.ArticleRecord(article.get_content())
-        return self.article_data_storage.register(a_record)
+        locations = {}
+        for name, record in received.asset_records.items():
+            asset_id = self.asset_services.register(record.document_id, record.serialize())
+            locations[name] = self.asset_services.location(asset_id)
+        received.update_assets_location(locations)
+
+        article_record = received.article_record
+        id = self.article_services.register(
+            article_record.document_id, article_record.serialize())
+        received.article.location = self.article_services.location(id)
+        return received
