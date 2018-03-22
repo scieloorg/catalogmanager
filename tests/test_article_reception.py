@@ -4,8 +4,8 @@ from catalog_persistence.databases import (
     InMemoryDBManager,
 )
 
-from catalogmanager.receptions.article_reception import(
-    ArticleReception,
+from catalogmanager.article_services import(
+    ArticleServices,
 )
 
 
@@ -22,6 +22,6 @@ def test_article_reception():
     articles_db_manager = InMemoryDBManager({'database_name': 'articles'})
     assets_db_manager = InMemoryDBManager({'database_name': 'assets'})
 
-    reception = ArticleReception(articles_db_manager, assets_db_manager, changes_db_manager)
-    received = reception.receive(xml_filename, files)
-    assert received.article.location == reception.article_services.location(received.article_record.document_id)
+    article_services = ArticleServices(articles_db_manager, assets_db_manager, changes_db_manager)
+    received = article_services.receive(xml_filename, files)
+    assert received.article.location == article_services.article_services.location(received.article_record.document_id)

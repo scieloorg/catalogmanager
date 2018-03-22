@@ -4,8 +4,8 @@ from catalog_persistence.models import (
         Record,
         RecordType,
     )
-from ..data_services import DataServices
-from ..models.article_model import Article
+from .data_services import DataServices
+from .models.article_model import Article
 
 
 class ReceivedArticle:
@@ -30,7 +30,7 @@ class ReceivedArticle:
         self.article.update_href(assets_locations)
 
 
-class ArticleReception:
+class ArticleServices:
 
     def __init__(self, articles_db_manager, assets_db_manager, changes_db_manager):
         self.article_services = DataServices(
