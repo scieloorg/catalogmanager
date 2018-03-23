@@ -1,5 +1,3 @@
-import copy
-
 from pyramid import testing
 import pytest
 

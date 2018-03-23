@@ -18,7 +18,7 @@ def test_register_document(setup, database_service):
 
     check_list = database_service.find()
     assert isinstance(check_list[0], dict)
-    article_check = Record().deserialize(check_list[0])
+    article_check = Record(document_id=document_id).deserialize(check_list[0])
     assert article_check.document_id == article.document_id
     assert article_check.document_type == article.document_type
     assert article_check.content == article.content
@@ -37,7 +37,7 @@ def test_read_document(setup, database_service):
 
     record = database_service.read(document_id)
     assert record is not None
-    article_check = Record().deserialize(record)
+    article_check = Record(document_id=document_id).deserialize(record)
     assert article_check.document_id == article.document_id
     assert article_check.document_type == article.document_type
     assert article_check.content == article.content
@@ -63,7 +63,7 @@ def test_update_document(setup, database_service):
     )
 
     record = database_service.read(document_id)
-    article_update = Record().deserialize(record)
+    article_update = Record(document_id=document_id).deserialize(record)
     article_update.content = {'Test': 'Test3-updated'}
     update_id = database_service.update(
         document_id,
@@ -71,10 +71,14 @@ def test_update_document(setup, database_service):
     )
     assert update_id is not None
 
-    record = database_service.read(document_id)
+    record = database_service.read(update_id)
     assert record is not None
-    article_check = Record().deserialize(record)
+    article_check = Record(document_id=update_id).deserialize(record)
+    assert article_check.document_id == article_update.document_id
+    assert article_check.document_type == article_update.document_type
     assert article_check.content == article_update.content
+    assert article_check.created_date is not None
+    assert article_check.updated_date is not None
 
 
 def test_delete_document(setup, database_service):

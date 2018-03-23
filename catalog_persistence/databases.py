@@ -224,6 +224,9 @@ class DatabaseService:
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
         """
+        document_record.update({
+            'updated_date': str(datetime.utcnow().timestamp())
+        })
         document_id = self.db_manager.update(document_id, document_record)
         self._register_change(document_record, ChangeType.UPDATE)
         return document_id
