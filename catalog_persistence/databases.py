@@ -23,7 +23,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
-    def create(self, id, document) -> str:
+    def create(self, id, document) -> None:
         return NotImplemented
 
     @abc.abstractmethod
@@ -31,7 +31,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
-    def update(self, id, document) -> str:
+    def update(self, id, document) -> None:
         return NotImplemented
 
     @abc.abstractmethod
@@ -61,7 +61,6 @@ class InMemoryDBManager(BaseDBManager):
 
     def create(self, id, document):
         self.database.update({id: document})
-        return id
 
     def read(self, id):
         doc = self.database.get(id)
@@ -71,7 +70,6 @@ class InMemoryDBManager(BaseDBManager):
 
     def update(self, id, document):
         self.database.update({id: document})
-        return id
 
     def delete(self, id):
         doc = self.database.get(id)
@@ -111,7 +109,6 @@ class CouchDBManager(BaseDBManager):
 
     def create(self, id, document):
         self.database[id] = document
-        return id
 
     def read(self, id):
         try:
@@ -132,7 +129,6 @@ class CouchDBManager(BaseDBManager):
             self.database[id] = doc
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
-        return id
 
     def delete(self, id):
         try:
@@ -171,11 +167,11 @@ class DatabaseService:
             'type': change_type.value,
             'created_date': str(datetime.utcnow().timestamp()),
         }
-        change_id = self.changes_db_manager.create(
+        self.changes_db_manager.create(
             change_record['change_id'],
             change_record
         )
-        return change_id
+        return change_record['change_id']
 
     def register(self, document_id, document_record):
         """
@@ -184,16 +180,12 @@ class DatabaseService:
         Params:
         document_id: ID do documento
         document_record: registro do documento
-
-        Retorno:
-        ID do documento
         """
         document_record.update({
             'created_date': str(datetime.utcnow().timestamp())
         })
-        document_id = self.db_manager.create(document_id, document_record)
+        self.db_manager.create(document_id, document_record)
         self._register_change(document_record, ChangeType.CREATE)
-        return document_id
 
     def read(self, document_id):
         """
@@ -218,18 +210,14 @@ class DatabaseService:
         document_id: ID do documento a ser atualizado
         document_record: registro de documento a ser atualizado
 
-        Retorno:
-        ID do documento atualizado
-
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         document_record.update({
             'updated_date': str(datetime.utcnow().timestamp())
         })
-        document_id = self.db_manager.update(document_id, document_record)
+        self.db_manager.update(document_id, document_record)
         self._register_change(document_record, ChangeType.UPDATE)
-        return document_id
 
     def delete(self, document_id, document_record):
         """

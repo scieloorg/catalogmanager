@@ -1,47 +1,48 @@
 import pytest
+from datetime import datetime
+from uuid import uuid4
 
 from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.models import Record, RecordType
+from catalog_persistence.models import get_record, RecordType
+
+
+def get_article_record(content={'Test': 'Test'}):
+    document_id = uuid4().hex
+    return get_record(document_id=document_id,
+                      document_type=RecordType.ARTICLE,
+                      content=content,
+                      created_date=datetime.utcnow())
 
 
 def test_register_document(setup, database_service):
-    article = Record(
-        content={'Test': 'Test1'},
-        document_type=RecordType.ARTICLE
+    article_record = get_article_record()
+    database_service.register(
+        article_record['document_id'],
+        article_record
     )
-    document_id = database_service.register(
-        article.document_id,
-        article.serialize()
-    )
-    assert document_id is not None
-    assert isinstance(document_id, str)
 
     check_list = database_service.find()
     assert isinstance(check_list[0], dict)
-    article_check = Record(document_id=document_id).deserialize(check_list[0])
-    assert article_check.document_id == article.document_id
-    assert article_check.document_type == article.document_type
-    assert article_check.content == article.content
-    assert article_check.created_date is not None
+    article_check = check_list[0]
+    assert article_check['document_id'] == article_record['document_id']
+    assert article_check['document_type'] == article_record['document_type']
+    assert article_check['content'] == article_record['content']
+    assert article_check['created_date'] is not None
 
 
 def test_read_document(setup, database_service):
-    article = Record(
-        content={'Test': 'Test2'},
-        document_type=RecordType.ARTICLE
-    )
-    document_id = database_service.register(
-        article.document_id,
-        article.serialize()
+    article_record = get_article_record({'Test': 'Test2'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
     )
 
-    record = database_service.read(document_id)
-    assert record is not None
-    article_check = Record(document_id=document_id).deserialize(record)
-    assert article_check.document_id == article.document_id
-    assert article_check.document_type == article.document_type
-    assert article_check.content == article.content
-    assert article_check.created_date is not None
+    record_check = database_service.read(article_record['document_id'])
+    assert record_check is not None
+    assert record_check['document_id'] == article_record['document_id']
+    assert record_check['document_type'] == article_record['document_type']
+    assert record_check['content'] == article_record['content']
+    assert record_check['created_date'] is not None
 
 
 def test_read_document_not_found(setup, database_service):
@@ -53,63 +54,60 @@ def test_read_document_not_found(setup, database_service):
 
 
 def test_update_document(setup, database_service):
-    article = Record(
-        content={'Test': 'Test3'},
-        document_type=RecordType.ARTICLE
-    )
-    document_id = database_service.register(
-        article.document_id,
-        article.serialize()
+    article_record = get_article_record({'Test': 'Test3'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
     )
 
-    record = database_service.read(document_id)
-    article_update = Record(document_id=document_id).deserialize(record)
-    article_update.content = {'Test': 'Test3-updated'}
-    update_id = database_service.update(
-        document_id,
-        article_update.serialize()
-    )
-    assert update_id is not None
-
-    record = database_service.read(update_id)
-    assert record is not None
-    article_check = Record(document_id=update_id).deserialize(record)
-    assert article_check.document_id == article_update.document_id
-    assert article_check.document_type == article_update.document_type
-    assert article_check.content == article_update.content
-    assert article_check.created_date is not None
-    assert article_check.updated_date is not None
-
-
-def test_delete_document(setup, database_service):
-    article = Record(
-        content={'Test': 'Test4'},
-        document_type=RecordType.ARTICLE
-    )
-    document_id = database_service.register(
-        article.document_id,
-        article.serialize()
+    article_update = database_service.read(article_record['document_id'])
+    article_update['content'] = {'Test': 'Test3-updated'}
+    database_service.update(
+        article_record['document_id'],
+        article_update
     )
 
-    check_document = database_service.read(document_id)
-    deleted_article = Record().deserialize(check_document)
-    database_service.delete(
-        deleted_article.document_id,
-        check_document
-    )
-    pytest.raises(DocumentNotFound, 'database_service.read(document_id)')
+    record_check = database_service.read(article_record['document_id'])
+    assert record_check is not None
+    assert record_check['document_id'] == article_update['document_id']
+    assert record_check['document_type'] == article_update['document_type']
+    assert record_check['content'] == article_update['content']
+    assert record_check['created_date'] is not None
+    assert record_check['updated_date'] is not None
 
 
-def test_delete_document_not_found(setup, database_service):
-    article_record = {
-        'document_id': '336abebdd31894idnaoexistente',
-        'document_type': RecordType.ARTICLE.value,
-        'content': {'Test': 'Test4'},
-        'created_date': '01010101'
-    }
+def test_update_document_not_found(setup, database_service):
+    article_record = get_article_record({'Test': 'Test4'})
     pytest.raises(
         DocumentNotFound,
         database_service.delete,
-        '336abebdd31894idnaoexistente',
+        article_record['document_id'],
+        article_record
+    )
+
+
+def test_delete_document(setup, database_service):
+    article_record = get_article_record({'Test': 'Test5'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    record_check = database_service.read(article_record['document_id'])
+    database_service.delete(
+        article_record['document_id'],
+        record_check
+    )
+    pytest.raises(DocumentNotFound,
+                  database_service.read,
+                  article_record['document_id'])
+
+
+def test_delete_document_not_found(setup, database_service):
+    article_record = get_article_record({'Test': 'Test6'})
+    pytest.raises(
+        DocumentNotFound,
+        database_service.delete,
+        article_record['document_id'],
         article_record
     )
