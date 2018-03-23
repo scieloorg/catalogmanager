@@ -1,17 +1,20 @@
 from datetime import datetime
+from uuid import uuid4
 
 from catalog_persistence.databases import ChangeType
-from catalog_persistence.models import Record
+from catalog_persistence.models import get_record, RecordType
 
 
-def generate_id():
-    from uuid import uuid4
-    return uuid4().hex
+def get_article_record(content={'Test': 'ChangeRecord'}):
+    document_id = uuid4().hex
+    return get_record(document_id=document_id,
+                      document_type=RecordType.ARTICLE,
+                      content=content,
+                      created_date=datetime.utcnow())
 
 
 def test_register_create_change(setup, database_service):
-    article_record = Record('ChangeRecord').serialize()
-    article_record.update({'created_date': str(datetime.utcnow().timestamp())})
+    article_record = get_article_record()
     change_id = database_service._register_change(
         article_record,
         ChangeType.CREATE
@@ -26,8 +29,7 @@ def test_register_create_change(setup, database_service):
 
 
 def test_register_update_change(setup, database_service):
-    article_record = Record('ChangeRecord2').serialize()
-    article_record.update({'created_date': str(datetime.utcnow().timestamp())})
+    article_record = get_article_record({'Test': 'ChangeRecord2'})
     change_id = database_service._register_change(
         article_record,
         ChangeType.UPDATE
@@ -42,8 +44,7 @@ def test_register_update_change(setup, database_service):
 
 
 def test_register_delete_change(setup, database_service):
-    article_record = Record('ChangeRecord3').serialize()
-    article_record.update({'created_date': str(datetime.utcnow().timestamp())})
+    article_record = get_article_record({'Test': 'ChangeRecord3'})
     change_id = database_service._register_change(
         article_record,
         ChangeType.DELETE
