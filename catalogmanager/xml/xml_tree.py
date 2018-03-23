@@ -26,6 +26,11 @@ class XMLTree:
         return etree.tostring(self.tree.getroot(), encoding='utf-8')
 
     @property
+    def basename(self):
+        if os.path.isfile(self.filename):
+            return os.path.basename(self.filename)
+
+    @property
     def content(self):
         return str(self.bytes_content)
 
@@ -38,10 +43,8 @@ class XMLTree:
 
     def read(self, xml):
         self.filename = None
-        self.basename = None
         if '<' not in xml:
             self.filename = xml
-            self.basename = os.path.basename(self.filename)
             xml = open(self.filename).read()
         return StringIO(xml)
 

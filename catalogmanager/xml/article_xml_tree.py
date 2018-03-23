@@ -1,6 +1,9 @@
 # coding=utf-8
 
-from . import xml_tree
+from .xml_tree import (
+    XMLTree,
+    etree
+)
 
 
 class AssetXMLNode:
@@ -24,7 +27,7 @@ class AssetXMLNode:
 
     @property
     def xml(self):
-        return xml_tree.etree.tostring(self.node)
+        return etree.tostring(self.node)
 
     @property
     def id(self):
@@ -57,16 +60,12 @@ class AssetXMLNodesFinder:
         return items
 
 
-class ArticleXMLTree:
+class ArticleXMLTree(XMLTree):
 
-    def __init__(self, xml_filename):
-        self.xml_tree = xml_tree.XMLTree(xml_filename)
+    def __init__(self, xml):
+        super().__init__(xml)
 
     @property
     def asset_nodes(self):
-        if self.xml_tree.tree is not None:
-            return AssetXMLNodesFinder(self.xml_tree.tree).asset_nodes
-
-    @property
-    def content(self):
-        return self.xml_tree.content
+        if self.tree is not None:
+            return AssetXMLNodesFinder(self.tree).asset_nodes

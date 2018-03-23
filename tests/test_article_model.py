@@ -1,6 +1,8 @@
 import os
 
-from catalogmanager.models.article_model import Article
+from catalogmanager.models.article_model import (
+    Article,
+)
 
 
 def get_files():
@@ -12,10 +14,10 @@ def get_files():
 def test_article():
     xml_filename, files = get_files()
     article = Article(xml_filename, files)
-    assert article.basename == os.path.basename(xml_filename)
-    assert article.filename == xml_filename
-    assert article.article_xml_tree.xml_tree.xml_error == None
-    assert type(article.content) == type('')
+    assert article.xml_tree.basename == os.path.basename(xml_filename)
+    assert article.xml_tree.filename == xml_filename
+    assert article.xml_tree.xml_error == None
+    assert type(article.xml_content) == type('')
 
 
 def test_link_files_to_assets():
@@ -34,7 +36,7 @@ def test_link_files_to_assets():
 def test_update_href():
     xml_filename, files = get_files()
     article = Article(xml_filename, files)
-    content = article.content
+    content = article.xml_content
     article.link_files_to_assets()
     asset = article.assets.get('0034-8910-rsp-S01518-87872016050006741-gf01.jpg')
     asset.update_href('novo href')
@@ -43,4 +45,4 @@ def test_update_href():
     assert items[0].href == 'novo href'
     assert items[0].original_href == '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
 
-    assert not article.content == content
+    assert not article.xml_content == content

@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 
-from ..xml import article_xml_tree
+from ..xml.article_xml_tree import ArticleXMLTree
 
 
 class Asset:
@@ -41,33 +41,37 @@ class Asset:
 
 class Article:
 
-    def __init__(self, xml_filename, files):
-        self.basename = os.path.basename(xml_filename)
-        self.filename = xml_filename
-        self.article_xml_tree = article_xml_tree.ArticleXMLTree(xml_filename)
+    def __init__(self, xml=None, files=None):
+        self.xml_tree = xml
         self.files = files
         self.assets = None
         self.location = None
 
+    @property
+    def xml_tree(self):
+        return self._xml_tree
+
+    @xml_tree.setter
+    def xml_tree(self, xml):
+        self._xml_tree = ArticleXMLTree(xml)
+
     def get_content(self, asset_id_items=None):
-        content = {}
-        content['location'] = self.location
-        content['filename'] = self.filename
-        content['basename'] = self.basename
-        content['xml_content'] = self.content
-        content['assets'] = asset_id_items
-        return content
+        record_content = {}
+        record_content['location'] = self.location
+        record_content['filename'] = self.xml_tree.filename
+        record_content['basename'] = self.xml_tree.basename
+        record_content['xml_content'] = self.xml_content
+        record_content['assets'] = asset_id_items
+        return record_content
 
     def link_files_to_assets(self):
-        if self.article_xml_tree.asset_nodes is not None:
+        if self.xml_tree.asset_nodes is not None:
             self.assets = {}
-            self.unlinked_assets = list(
-                [os.path.basename(f) for f in self.files])
+            self.unlinked_assets = [os.path.basename(f) for f in self.files]
             self.unlinked_files = []
-
             for f in self.files:
                 fname = os.path.basename(f)
-                asset_node = self.article_xml_tree.asset_nodes.get(fname)
+                asset_node = self.xml_tree.asset_nodes.get(fname)
                 if asset_node is None:
                     self.unlinked_files.append(fname)
                 else:
@@ -81,5 +85,5 @@ class Article:
                 self.assets[name].update_href(asset_id_items[name])
 
     @property
-    def content(self):
-        return self.article_xml_tree.content
+    def xml_content(self):
+        return self.xml_tree.content
