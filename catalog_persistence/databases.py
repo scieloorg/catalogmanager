@@ -42,12 +42,17 @@ class BaseDBManager(metaclass=abc.ABCMeta):
     def find(self) -> list:
         return NotImplemented
 
+    @abc.abstractmethod
+    def add_attachment(self, id, filename, content) -> None:
+        return NotImplemented
+
 
 class InMemoryDBManager(BaseDBManager):
 
     def __init__(self, config):
         self.database_name = config['database_name']
         self._database = {}
+        self._attachments_key = '_attachments'
 
     @property
     def database(self):
@@ -80,6 +85,17 @@ class InMemoryDBManager(BaseDBManager):
     def find(self):
         return [document for id, document in self.database.items()]
 
+    def add_attachment(self, id, filename, content):
+        doc = self.database.get(id)
+        if not doc:
+            raise DocumentNotFound
+        attachment = {filename: content}
+        if doc.get('_attachments'):
+            doc[self._attachments_key].update(attachment)
+        else:
+            doc[self._attachments_key] = attachment
+        self.database.update({id: doc})
+
 
 class CouchDBManager(BaseDBManager):
 
@@ -91,6 +107,7 @@ class CouchDBManager(BaseDBManager):
             settings['couchdb.username'],
             settings['couchdb.password']
         )
+        self._attachments_key = '_attachments'
 
     @property
     def database(self):
@@ -143,6 +160,22 @@ class CouchDBManager(BaseDBManager):
         }
         return [dict(document) for document in self.database.find(mango)]
 
+    def add_attachment(self, id, filename, content):
+        try:
+            """
+            Para criar anexos no CouchDB, é necessário informar o documento com
+            revisão atual. Por isso, é obtido o documento pelo id
+            para que os dados dele sejam informados para anexar o arquivo.
+            """
+            doc = self.database[id]
+            self.database.put_attachment(
+                doc=doc,
+                content=content,
+                filename=filename
+            )
+        except couchdb.http.ResourceNotFound:
+            raise DocumentNotFound
+
 
 class DatabaseService:
     """
@@ -159,7 +192,10 @@ class DatabaseService:
         self.db_manager = db_manager
         self.changes_db_manager = changes_db_manager
 
-    def _register_change(self, document_record, change_type):
+    def _register_change(self,
+                         document_record,
+                         change_type,
+                         attachment_id=None):
         change_record = {
             'change_id': uuid4().hex,
             'document_id': document_record['document_id'],
@@ -167,6 +203,8 @@ class DatabaseService:
             'type': change_type.value,
             'created_date': str(datetime.utcnow().timestamp()),
         }
+        if attachment_id:
+            change_record.update({'attachment_id': attachment_id})
         self.changes_db_manager.create(
             change_record['change_id'],
             change_record
@@ -241,3 +279,25 @@ class DatabaseService:
         Lista de registros de documento registrado na base de dados
         """
         return self.db_manager.find()
+
+    def add_attachment(self, document_id, filename, content):
+        """
+        Anexa arquivo no registro de um documento pelo ID do documento e
+        registra mudança na base de dados.
+
+        Params:
+        document_id: ID do documento ao qual deve ser anexado o arquivo
+        filename: identificação do arquivo a ser anexado
+        content: conteúdo do arquivo a ser anexado
+
+        Erro:
+        DocumentNotFound: documento não encontrado na base de dados.
+        """
+        self.db_manager.add_attachment(document_id, filename, content)
+        read_record = self.db_manager.read(document_id)
+        document_record = {
+            'document_id': read_record['document_id'],
+            'document_type': read_record['document_type'],
+            'created_date': read_record['created_date'],
+        }
+        self._register_change(document_record, ChangeType.CREATE, filename)

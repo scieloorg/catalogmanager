@@ -1,8 +1,15 @@
+import io
+from unittest.mock import patch
+
 import pytest
 from datetime import datetime
 from uuid import uuid4
 
-from catalog_persistence.databases import DocumentNotFound
+from catalog_persistence.databases import (
+    DocumentNotFound,
+    ChangeType,
+    DatabaseService
+)
 from catalog_persistence.models import get_record, RecordType
 
 
@@ -28,6 +35,20 @@ def test_register_document(setup, database_service):
     assert article_check['document_type'] == article_record['document_type']
     assert article_check['content'] == article_record['content']
     assert article_check['created_date'] is not None
+
+
+@patch.object(DatabaseService, '_register_change')
+def test_register_document_register_change(mocked_register_change,
+                                           setup,
+                                           database_service):
+    article_record = get_article_record()
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    mocked_register_change.assert_called_with(article_record,
+                                              ChangeType.CREATE)
 
 
 def test_read_document(setup, database_service):
@@ -76,6 +97,27 @@ def test_update_document(setup, database_service):
     assert record_check['updated_date'] is not None
 
 
+@patch.object(DatabaseService, '_register_change')
+def test_update_document_register_change(mocked_register_change,
+                                         setup,
+                                         database_service):
+    article_record = get_article_record({'Test': 'Test3'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    article_update = database_service.read(article_record['document_id'])
+    article_update['content'] = {'Test': 'Test3-updated'}
+    database_service.update(
+        article_record['document_id'],
+        article_update
+    )
+
+    mocked_register_change.assert_called_with(article_update,
+                                              ChangeType.UPDATE)
+
+
 def test_update_document_not_found(setup, database_service):
     article_record = get_article_record({'Test': 'Test4'})
     pytest.raises(
@@ -103,6 +145,26 @@ def test_delete_document(setup, database_service):
                   article_record['document_id'])
 
 
+@patch.object(DatabaseService, '_register_change')
+def test_delete_document_register_change(mocked_register_change,
+                                         setup,
+                                         database_service):
+    article_record = get_article_record({'Test': 'Test5'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    record_check = database_service.read(article_record['document_id'])
+    database_service.delete(
+        article_record['document_id'],
+        record_check
+    )
+
+    mocked_register_change.assert_called_with(record_check,
+                                              ChangeType.DELETE)
+
+
 def test_delete_document_not_found(setup, database_service):
     article_record = get_article_record({'Test': 'Test6'})
     pytest.raises(
@@ -110,4 +172,62 @@ def test_delete_document_not_found(setup, database_service):
         database_service.delete,
         article_record['document_id'],
         article_record
+    )
+
+
+def test_attach_file_to_document(setup, database_service, xml_test):
+    article_record = get_article_record({'Test': 'Test7'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    database_service.add_attachment(
+        article_record['document_id'],
+        "filename",
+        io.StringIO(xml_test)
+    )
+
+    record_check = dict(
+        database_service.db_manager.database[article_record['document_id']]
+    )
+    assert record_check is not None
+    assert len(record_check[database_service.db_manager._attachments_key]) > 0
+
+
+@patch.object(DatabaseService, '_register_change')
+def test_attach_file_to_document_register_change(mocked_register_change,
+                                                 setup,
+                                                 database_service,
+                                                 xml_test):
+    article_record = get_article_record({'Test': 'Test7'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    record = database_service.read(article_record['document_id'])
+    document_record = {
+        'document_id': record['document_id'],
+        'document_type': record['document_type'],
+        'created_date': record['created_date'],
+    }
+    attachment_id = "filename"
+    database_service.add_attachment(
+        article_record['document_id'],
+        attachment_id,
+        io.StringIO(xml_test)
+    )
+
+    mocked_register_change.assert_called_with(document_record,
+                                              ChangeType.CREATE,
+                                              attachment_id)
+
+
+def test_attach_file_to_document_not_found(setup, database_service, xml_test):
+    article_record = get_article_record({'Test': 'Test8'})
+    pytest.raises(
+        DocumentNotFound,
+        database_service.add_attachment,
+        article_record['document_id'],
+        "filename",
+        io.StringIO(xml_test)
     )
