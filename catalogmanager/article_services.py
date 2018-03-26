@@ -1,7 +1,9 @@
 # coding=utf-8
 
+import os
+
 from catalog_persistence.models import (
-        Record,
+        get_record,
         RecordType,
     )
 from catalog_persistence.databases import (
@@ -11,50 +13,37 @@ from .data_services import DataServices
 from .models.article_model import Article
 
 
-class ReceivedArticle:
-
-    def __init__(self, xml, files):
-        self.article = Article(xml, files)
-        self.article.link_files_to_assets()
-
-    @property
-    def asset_records(self):
-        items = {}
-        for name, asset in self.article.assets.items():
-            asset.article_id = self.article_record.document_id
-            items[asset.name] = Record(asset.get_content(), RecordType.ASSET)
-        return items
-
-    @property
-    def article_record(self):
-        return Record(self.article.get_content(), RecordType.ARTICLE)
-
-    def update_assets_location(self, assets_locations):
-        self.article.update_href(assets_locations)
+Record = get_record
 
 
 class ArticleServices:
 
-    def __init__(self, articles_db_manager, assets_db_manager, changes_db_manager):
-        self.article_services = DataServices('articles')
-        self.asset_services = DataServices('assets')
-        self.article_db_services = DatabaseService(
+    def __init__(self, articles_db_manager, changes_db_manager):
+        self.article_data_services = DataServices('articles')
+        self.article_db_service = DatabaseService(
             articles_db_manager, changes_db_manager)
-        self.asset_db_services = DatabaseService(
-            assets_db_manager, changes_db_manager)
 
-    def receive(self, xml_filename, files):
-        received = ReceivedArticle(xml_filename, files)
+    def receive_article(self, xml, files):
+        article = Article(xml, files)
+        article_record = Record(
+            document_id=article.id,
+            content=article.get_record_content(),
+            document_type=RecordType.ARTICLE)
 
-        locations = {}
-        for name, record in received.asset_records.items():
-            asset_id = self.asset_db_services.register(
-                record.document_id, record.serialize())
-            locations[name] = self.asset_services.location(asset_id)
-        received.update_assets_location(locations)
+        self.article_db_service.register(
+            article.id, article_record)
 
-        article_record = received.article_record
-        id = self.article_db_services.register(
-            article_record.document_id, article_record.serialize())
-        received.article.location = self.article_services.location(id)
-        return received
+        self.article_db_service.register_attachment(
+                document_id=article.id,
+                attach_name=article.xml_tree.basename,
+                content=article.xml_tree.filename
+            )
+
+        if files is not None:
+            for f in files:
+                self.article_db_service.register_attachment(
+                        document_id=article.id,
+                        attach_name=os.path.basename(f),
+                        content=f
+                    )
+        return self.article_data_services.location(article.id)

@@ -6,46 +6,35 @@ from ..xml.article_xml_tree import ArticleXMLTree
 
 class Asset:
 
-    def __init__(self, filename, asset_node):
-        self.original_href = os.path.basename(filename)
+    def __init__(self, filename):
+        self.name = os.path.basename(filename)
         self.filename = filename
-        self.asset_node = asset_node
         self.article_id = None
 
-    def get_content(self):
-        record = {}
-        record['article_id'] = self.article_id
-        record['filename'] = self.filename
-        record['file'] = self.file
-        record['node'] = self.asset_node
-        record['location'] = self.href
-        record['original_href'] = self.original_href
-        return record
-
-    @property
-    def name(self):
-        return self.original_href
-
-    @property
-    def file(self):
-        if os.path.isfile(self.filename):
-            return open(self.filename)
+    def get_record_content(self):
+        record_content = {}
+        record_content['article_id'] = self.article_id
+        record_content['name'] = self.name
+        record_content['filename'] = self.filename
+        return record_content
 
     @property
     def href(self):
-        return self.asset_node.href
+        if self.asset_node is not None:
+            return self.asset_node.href
+        return self.name
 
     def update_href(self, href):
-        self.asset_node.update_href(href)
+        if self.asset_node is not None:
+            self.asset_node.update_href(href)
 
 
 class Article:
 
     def __init__(self, xml=None, files=None):
+        self.id = None
         self.xml_tree = xml
         self.files = files
-        self.assets = None
-        self.location = None
 
     @property
     def xml_tree(self):
@@ -55,35 +44,31 @@ class Article:
     def xml_tree(self, xml):
         self._xml_tree = ArticleXMLTree(xml)
 
-    def get_content(self, asset_id_items=None):
+    def get_record_content(self):
         record_content = {}
-        record_content['location'] = self.location
-        record_content['filename'] = self.xml_tree.filename
-        record_content['basename'] = self.xml_tree.basename
-        record_content['xml_content'] = self.xml_content
-        record_content['assets'] = asset_id_items
+        record_content['xml_name'] = self.xml_tree.basename
+        record_content['assets_names'] = self.xml_tree.asset_nodes.keys()
         return record_content
 
-    def link_files_to_assets(self):
+    @property
+    def required_files(self):
+        _required_files = []
         if self.xml_tree.asset_nodes is not None:
-            self.assets = {}
-            self.unlinked_assets = [os.path.basename(f) for f in self.files]
-            self.unlinked_files = []
-            for f in self.files:
-                fname = os.path.basename(f)
-                asset_node = self.xml_tree.asset_nodes.get(fname)
-                if asset_node is None:
-                    self.unlinked_files.append(fname)
-                else:
-                    self.unlinked_assets.remove(fname)
-                    self.assets[fname] = Asset(
-                        f, asset_node)
-
-    def update_href(self, asset_id_items):
-        if self.assets is not None:
-            for name, asset in self.assets.items():
-                self.assets[name].update_href(asset_id_items[name])
+            _required_files = self.xml_tree.asset_nodes.keys()
+            if self.files is not None:
+                for f in self.files:
+                    name = os.path.basename(f)
+                    if name in _required_files:
+                        _required_files.remove(name)
+        return _required_files
 
     @property
-    def xml_content(self):
-        return self.xml_tree.content
+    def unexpected_files(self):
+        _unexpected_files = []
+        if self.files is not None:
+            _unexpected_files = [os.path.basename(f) for f in self.files]
+            if self.xml_tree.asset_nodes is not None:
+                for name in self.xml_tree.asset_nodes.keys():
+                    if name in _unexpected_files:
+                        _unexpected_files.remove(name)
+        return _unexpected_files

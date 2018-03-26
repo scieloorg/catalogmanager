@@ -41,25 +41,6 @@ class AssetXMLNode:
         return _id
 
 
-class AssetXMLNodesFinder:
-
-    def __init__(self, tree):
-        self.tree = tree
-
-    @property
-    def nodes_which_has_xlink_href(self):
-        return self.tree.findall('.//*[@{http://www.w3.org/1999/xlink}href]')
-
-    @property
-    def asset_nodes(self):
-        items = {}
-        for node in self.nodes_which_has_xlink_href:
-            asset_xml_node = AssetXMLNode(node)
-            if asset_xml_node.local_href is not None:
-                items[asset_xml_node.local_href] = asset_xml_node
-        return items
-
-
 class ArticleXMLTree(XMLTree):
 
     def __init__(self, xml):
@@ -68,4 +49,14 @@ class ArticleXMLTree(XMLTree):
     @property
     def asset_nodes(self):
         if self.tree is not None:
-            return AssetXMLNodesFinder(self.tree).asset_nodes
+            items = {}
+            for node in self.nodes_which_has_xlink_href:
+                asset_xml_node = AssetXMLNode(node)
+                if asset_xml_node.local_href is not None:
+                    items[asset_xml_node.local_href] = asset_xml_node
+            return items
+
+    @property
+    def nodes_which_has_xlink_href(self):
+        if self.tree is not None:
+            return self.tree.findall('.//*[@{http://www.w3.org/1999/xlink}href]')
