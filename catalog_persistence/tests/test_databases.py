@@ -175,13 +175,13 @@ def test_delete_document_not_found(setup, database_service):
     )
 
 
-def test_attach_file_to_document(setup, database_service, xml_test):
+def test_put_attachment_to_document(setup, database_service, xml_test):
     article_record = get_article_record({'Test': 'Test7'})
     database_service.register(
         article_record['document_id'],
         article_record
     )
-    database_service.add_attachment(
+    database_service.put_attachment(
         article_record['document_id'],
         "filename",
         io.StringIO(xml_test)
@@ -191,14 +191,17 @@ def test_attach_file_to_document(setup, database_service, xml_test):
         database_service.db_manager.database[article_record['document_id']]
     )
     assert record_check is not None
-    assert len(record_check[database_service.db_manager._attachments_key]) > 0
+    assert database_service.db_manager.attachment_exists(
+        article_record['document_id'],
+        "filename"
+    )
 
 
 @patch.object(DatabaseService, '_register_change')
-def test_attach_file_to_document_register_change(mocked_register_change,
-                                                 setup,
-                                                 database_service,
-                                                 xml_test):
+def test_put_attachment_to_document_register_change(mocked_register_change,
+                                                    setup,
+                                                    database_service,
+                                                    xml_test):
     article_record = get_article_record({'Test': 'Test7'})
     database_service.register(
         article_record['document_id'],
@@ -211,7 +214,7 @@ def test_attach_file_to_document_register_change(mocked_register_change,
         'created_date': record['created_date'],
     }
     attachment_id = "filename"
-    database_service.add_attachment(
+    database_service.put_attachment(
         article_record['document_id'],
         attachment_id,
         io.StringIO(xml_test)
@@ -222,12 +225,55 @@ def test_attach_file_to_document_register_change(mocked_register_change,
                                               attachment_id)
 
 
-def test_attach_file_to_document_not_found(setup, database_service, xml_test):
+def test_put_attachment_to_document_not_found(setup,
+                                              database_service,
+                                              xml_test):
     article_record = get_article_record({'Test': 'Test8'})
     pytest.raises(
         DocumentNotFound,
-        database_service.add_attachment,
+        database_service.put_attachment,
         article_record['document_id'],
         "filename",
         io.StringIO(xml_test)
     )
+
+
+@patch.object(DatabaseService, '_register_change')
+def test_update_attachment_register_change_if_it_exists(mocked_register_change,
+                                                        setup,
+                                                        database_service,
+                                                        xml_test):
+    article_record = get_article_record({'Test': 'Test9'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    attachment_id = "filename"
+    database_service.put_attachment(
+        article_record['document_id'],
+        attachment_id,
+        io.StringIO(xml_test)
+    )
+    record = database_service.read(article_record['document_id'])
+    document_record = {
+        'document_id': record['document_id'],
+        'document_type': record['document_type'],
+        'created_date': record['created_date'],
+    }
+    database_service.put_attachment(
+        article_record['document_id'],
+        attachment_id,
+        io.StringIO(xml_test)
+    )
+
+    record_check = dict(
+        database_service.db_manager.database[article_record['document_id']]
+    )
+    assert record_check is not None
+    assert database_service.db_manager.attachment_exists(
+        article_record['document_id'],
+        attachment_id
+    )
+    mocked_register_change.assert_called_with(document_record,
+                                              ChangeType.UPDATE,
+                                              attachment_id)

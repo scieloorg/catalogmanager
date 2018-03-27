@@ -66,7 +66,7 @@ def test_add_attachment_create_change(setup, database_service, xml_test):
         article_record
     )
     attachment_id = "filename"
-    database_service.add_attachment(
+    database_service.put_attachment(
         article_record['document_id'],
         attachment_id,
         io.StringIO(xml_test)
@@ -93,7 +93,7 @@ def test_update_attachment_create_change(setup, database_service, xml_test):
         article_record
     )
     attachment_id = "filename"
-    database_service.add_attachment(
+    database_service.put_attachment(
         article_record['document_id'],
         attachment_id,
         io.StringIO(xml_test)
