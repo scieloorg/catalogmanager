@@ -4,6 +4,9 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 
+db_server = None
+
+
 @view_config()
 def hello_world(request):
     return Response('Hello!')
