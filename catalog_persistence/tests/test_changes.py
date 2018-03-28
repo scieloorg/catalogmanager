@@ -67,9 +67,11 @@ def test_add_attachment_create_change(setup, database_service, xml_test):
     )
     attachment_id = "filename"
     database_service.put_attachment(
-        article_record['document_id'],
-        attachment_id,
-        io.StringIO(xml_test)
+        document_id=article_record['document_id'],
+        file_id=attachment_id,
+        content=io.StringIO(xml_test),
+        content_type="text/xml",
+        content_size=len(xml_test)
     )
     change_id = database_service._register_change(
         article_record,
@@ -94,9 +96,11 @@ def test_update_attachment_create_change(setup, database_service, xml_test):
     )
     attachment_id = "filename"
     database_service.put_attachment(
-        article_record['document_id'],
-        attachment_id,
-        io.StringIO(xml_test)
+        document_id=article_record['document_id'],
+        file_id=attachment_id,
+        content=io.StringIO(xml_test),
+        content_type="text/xml",
+        content_size=len(xml_test)
     )
     change_id = database_service._register_change(
         article_record,
