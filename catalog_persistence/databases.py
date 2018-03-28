@@ -43,11 +43,12 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
-    def put_attachment(self, id, filename, content) -> None:
+    def put_attachment(self, id, file_id, content, content_type,
+                       content_size) -> None:
         return NotImplemented
 
     @abc.abstractmethod
-    def attachment_exists(self, id, filename) -> bool:
+    def attachment_exists(self, id, file_id) -> bool:
         return NotImplemented
 
 
@@ -55,8 +56,8 @@ class InMemoryDBManager(BaseDBManager):
 
     def __init__(self, config):
         self.database_name = config['database_name']
+        self.attachments_key = 'attachments'
         self._database = {}
-        self._attachments_key = '_attachments'
 
     @property
     def database(self):
@@ -89,15 +90,24 @@ class InMemoryDBManager(BaseDBManager):
     def find(self):
         return [document for id, document in self.database.items()]
 
-    def put_attachment(self, id, filename, content):
+    def put_attachment(self, id, file_id, content, content_type,
+                       content_size):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
-        attachment = {filename: content}
-        if doc.get(self._attachments_key):
-            doc[self._attachments_key].update(attachment)
+
+        if not doc.get(self.attachments_key):
+            doc[self.attachments_key] = {}
+
+        if doc[self.attachments_key].get(file_id):
+            doc[self.attachments_key][file_id]['revision'] += 1
         else:
-            doc[self._attachments_key] = attachment
+            doc[self.attachments_key][file_id] = {}
+            doc[self.attachments_key][file_id]['revision'] = 1
+
+        doc[self.attachments_key][file_id]['content'] = content
+        doc[self.attachments_key][file_id]['content_type'] = content_type
+        doc[self.attachments_key][file_id]['content_size'] = content_size
         self.database.update({id: doc})
 
     def attachment_exists(self, id, filename):
@@ -105,8 +115,8 @@ class InMemoryDBManager(BaseDBManager):
         if not doc:
             raise DocumentNotFound
         return (
-            doc.get(self._attachments_key) and
-            doc[self._attachments_key].get(filename)
+            doc.get(self.attachments_key) and
+            doc[self.attachments_key].get(filename)
         )
 
 
@@ -114,13 +124,13 @@ class CouchDBManager(BaseDBManager):
 
     def __init__(self, settings):
         self.database_name = settings['database_name']
+        self.attachments_key = '_attachments'
         self._database = None
         self._db_server = couchdb.Server(settings['couchdb.uri'])
         self._db_server.resource.credentials = (
             settings['couchdb.username'],
             settings['couchdb.password']
         )
-        self._attachments_key = '_attachments'
 
     @property
     def database(self):
@@ -173,7 +183,8 @@ class CouchDBManager(BaseDBManager):
         }
         return [dict(document) for document in self.database.find(mango)]
 
-    def put_attachment(self, id, filename, content):
+    def put_attachment(self, id, file_id, content, content_type,
+                       content_size):
         """
         Para criar anexos no CouchDB, é necessário informar o documento com
         revisão atual. Por isso, é obtido o documento pelo id
@@ -185,7 +196,8 @@ class CouchDBManager(BaseDBManager):
         self.database.put_attachment(
             doc=doc,
             content=content,
-            filename=filename
+            filename=file_id,
+            content_type=content_type
         )
 
     def attachment_exists(self, id, filename):
@@ -193,8 +205,8 @@ class CouchDBManager(BaseDBManager):
         if not doc:
             raise DocumentNotFound
         return (
-            doc.get(self._attachments_key) and
-            doc[self._attachments_key].get(filename)
+            doc.get(self.attachments_key) and
+            doc[self.attachments_key].get(filename)
         )
 
 
@@ -259,7 +271,22 @@ class DatabaseService:
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
         """
-        return self.db_manager.read(document_id)
+        document = self.db_manager.read(document_id)
+        document_record = {
+            'document_id': document['document_id'],
+            'document_type': document['document_type'],
+            'content': document['content'],
+            'created_date': document['created_date']
+        }
+        if document.get('updated_date'):
+            document_record['updated_date'] = document['updated_date']
+        attachments = document.get(self.db_manager.attachments_key)
+        if attachments:
+            document_record['attachments'] = [
+                file_id
+                for file_id, attachment in attachments.items()
+            ]
+        return document_record
 
     def update(self, document_id, document_record):
         """
@@ -301,28 +328,39 @@ class DatabaseService:
         """
         return self.db_manager.find()
 
-    def put_attachment(self, document_id, filename, content):
+    def put_attachment(self,
+                       document_id,
+                       file_id,
+                       content,
+                       content_type,
+                       content_size):
         """
         Anexa arquivo no registro de um documento pelo ID do documento e
         registra mudança na base de dados.
 
         Params:
         document_id: ID do documento ao qual deve ser anexado o arquivo
-        filename: identificação do arquivo a ser anexado
+        file_id: identificação do arquivo a ser anexado
         content: conteúdo do arquivo a ser anexado
+        content_type: tipo do arquivo/conteúdo (MIME TYPE)
+        content_size: tamanho do content em bytes
 
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         read_record = self.db_manager.read(document_id)
-        if self.db_manager.attachment_exists(document_id, filename):
+        if self.db_manager.attachment_exists(document_id, file_id):
             change_type = ChangeType.UPDATE
         else:
             change_type = ChangeType.CREATE
-        self.db_manager.put_attachment(document_id, filename, content)
+        self.db_manager.put_attachment(document_id,
+                                       file_id,
+                                       content,
+                                       content_type,
+                                       content_size)
         document_record = {
             'document_id': read_record['document_id'],
             'document_type': read_record['document_type'],
             'created_date': read_record['created_date'],
         }
-        self._register_change(document_record, change_type, filename)
+        self._register_change(document_record, change_type, file_id)
