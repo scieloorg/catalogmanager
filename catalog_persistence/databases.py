@@ -43,8 +43,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
-    def put_attachment(self, id, file_id, content, content_type,
-                       content_size) -> None:
+    def put_attachment(self, id, file_id, content, content_properties) -> None:
         return NotImplemented
 
     @abc.abstractmethod
@@ -90,8 +89,7 @@ class InMemoryDBManager(BaseDBManager):
     def find(self):
         return [document for id, document in self.database.items()]
 
-    def put_attachment(self, id, file_id, content, content_type,
-                       content_size):
+    def put_attachment(self, id, file_id, content, content_properties):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
@@ -106,8 +104,10 @@ class InMemoryDBManager(BaseDBManager):
             doc[self.attachments_key][file_id]['revision'] = 1
 
         doc[self.attachments_key][file_id]['content'] = content
-        doc[self.attachments_key][file_id]['content_type'] = content_type
-        doc[self.attachments_key][file_id]['content_size'] = content_size
+        doc[self.attachments_key][file_id]['content_type'] = \
+            content_properties['content_type']
+        doc[self.attachments_key][file_id]['content_size'] = \
+            content_properties['content_size']
         self.database.update({id: doc})
 
     def attachment_exists(self, id, filename):
@@ -183,8 +183,7 @@ class CouchDBManager(BaseDBManager):
         }
         return [dict(document) for document in self.database.find(mango)]
 
-    def put_attachment(self, id, file_id, content, content_type,
-                       content_size):
+    def put_attachment(self, id, file_id, content, content_properties):
         """
         Para criar anexos no CouchDB, é necessário informar o documento com
         revisão atual. Por isso, é obtido o documento pelo id
@@ -197,7 +196,7 @@ class CouchDBManager(BaseDBManager):
             doc=doc,
             content=content,
             filename=file_id,
-            content_type=content_type
+            content_type=content_properties['content_type']
         )
 
     def attachment_exists(self, id, filename):
@@ -328,12 +327,7 @@ class DatabaseService:
         """
         return self.db_manager.find()
 
-    def put_attachment(self,
-                       document_id,
-                       file_id,
-                       content,
-                       content_type,
-                       content_size):
+    def put_attachment(self, document_id, file_id, content, file_properties):
         """
         Anexa arquivo no registro de um documento pelo ID do documento e
         registra mudança na base de dados.
@@ -342,8 +336,7 @@ class DatabaseService:
         document_id: ID do documento ao qual deve ser anexado o arquivo
         file_id: identificação do arquivo a ser anexado
         content: conteúdo do arquivo a ser anexado
-        content_type: tipo do arquivo/conteúdo (MIME TYPE)
-        content_size: tamanho do content em bytes
+        file_properties: propriedades do arquivo (MIME type, tamanho etc.)
 
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
@@ -356,8 +349,7 @@ class DatabaseService:
         self.db_manager.put_attachment(document_id,
                                        file_id,
                                        content,
-                                       content_type,
-                                       content_size)
+                                       file_properties)
         document_record = {
             'document_id': read_record['document_id'],
             'document_type': read_record['document_type'],

@@ -185,8 +185,10 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
         document_id=article_record['document_id'],
         file_id="href_file",
         content=io.StringIO(xml_test),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
     record_check = dict(
@@ -220,8 +222,10 @@ def test_put_attachment_to_document_register_change(mocked_register_change,
         document_id=article_record['document_id'],
         file_id=attachment_id,
         content=io.StringIO(xml_test),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
     mocked_register_change.assert_called_with(document_record,
@@ -239,8 +243,10 @@ def test_put_attachment_to_document_not_found(setup,
         article_record['document_id'],
         "filename",
         io.StringIO(xml_test),
-        "text/xml",
-        len(xml_test)
+        {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
 
@@ -259,8 +265,10 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
         document_id=article_record['document_id'],
         file_id=attachment_id,
         content=io.StringIO(xml_test),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
     record = database_service.read(article_record['document_id'])
     document_record = {
@@ -272,8 +280,10 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
         document_id=article_record['document_id'],
         file_id=attachment_id,
         content=io.StringIO(xml_test),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
     record_check = dict(
@@ -306,8 +316,10 @@ def test_read_document_with_attachments(setup, database_service, xml_test):
         document_id=article_record['document_id'],
         file_id=file_id,
         content=content,
-        content_type=content_type,
-        content_size=content_size
+        file_properties={
+            'content_type': content_type,
+            'content_size': content_size
+        }
     )
 
     record_check = database_service.read(article_record['document_id'])
