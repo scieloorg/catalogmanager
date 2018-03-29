@@ -1,4 +1,5 @@
 import abc
+import io
 from datetime import datetime
 from enum import Enum
 from uuid import uuid4
@@ -45,6 +46,10 @@ class BaseDBManager(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def put_attachment(self, id, file_id, content, content_type,
                        content_size) -> None:
+        return NotImplemented
+
+    @abc.abstractmethod
+    def get_attachment(self, id, file_id) -> io.IOBase:
         return NotImplemented
 
     @abc.abstractmethod
@@ -105,10 +110,19 @@ class InMemoryDBManager(BaseDBManager):
             doc[self.attachments_key][file_id] = {}
             doc[self.attachments_key][file_id]['revision'] = 1
 
-        doc[self.attachments_key][file_id]['content'] = content
+        byte_content = io.BytesIO(content.read().encode())
+        doc[self.attachments_key][file_id]['content'] = byte_content
         doc[self.attachments_key][file_id]['content_type'] = content_type
         doc[self.attachments_key][file_id]['content_size'] = content_size
         self.database.update({id: doc})
+
+    def get_attachment(self, id, file_id):
+        doc = self.database.get(id)
+        if not doc:
+            raise DocumentNotFound
+        if (doc.get(self.attachments_key) and
+                doc[self.attachments_key].get(file_id)):
+            return doc[self.attachments_key][file_id]['content']
 
     def attachment_exists(self, id, filename):
         doc = self.database.get(id)
@@ -199,6 +213,12 @@ class CouchDBManager(BaseDBManager):
             filename=file_id,
             content_type=content_type
         )
+
+    def get_attachment(self, id, file_id):
+        doc = self.database.get(id)
+        if not doc:
+            raise DocumentNotFound
+        return self.database.get_attachment(doc, file_id)
 
     def attachment_exists(self, id, filename):
         doc = self.database.get(id)
@@ -364,3 +384,17 @@ class DatabaseService:
             'created_date': read_record['created_date'],
         }
         self._register_change(document_record, change_type, file_id)
+
+    def get_attachment(self, document_id, file_id):
+        """
+        Recupera arquivo anexos ao registro de um documento pelo ID do
+        documento e ID do anexo.
+
+        Params:
+        document_id: ID do documento ao qual o arquivo está anexado
+        file_id: identificação do arquivo anexado a ser recuperado
+
+        Erro:
+        DocumentNotFound: documento não encontrado na base de dados.
+        """
+        return self.db_manager.get_attachment(document_id, file_id)
