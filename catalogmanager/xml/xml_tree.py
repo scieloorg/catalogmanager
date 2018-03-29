@@ -3,7 +3,7 @@
 import os
 
 from lxml import etree
-from io import StringIO
+from io import BytesIO
 
 
 namespaces = {}
@@ -46,7 +46,7 @@ class XMLTree:
         if '<' not in xml:
             self.filename = xml
             xml = open(self.filename).read()
-        return StringIO(xml)
+        return BytesIO(bytes(xml, encoding='utf-8'))
 
     def parse(self, content):
         message = None

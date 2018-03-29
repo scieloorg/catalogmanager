@@ -110,7 +110,7 @@ class InMemoryDBManager(BaseDBManager):
             doc[self.attachments_key][file_id] = {}
             doc[self.attachments_key][file_id]['revision'] = 1
 
-        byte_content = io.BytesIO(content.read().encode())
+        byte_content = io.BytesIO(content)
         doc[self.attachments_key][file_id]['content'] = byte_content
         doc[self.attachments_key][file_id]['content_type'] = content_type
         doc[self.attachments_key][file_id]['content_size'] = content_size

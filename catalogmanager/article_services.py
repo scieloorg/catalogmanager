@@ -33,17 +33,30 @@ class ArticleServices:
         self.article_db_service.register(
             article.id, article_record)
 
-        self.article_db_service.register_attachment(
+        self.article_db_service.put_attachment(
                 document_id=article.id,
-                attach_name=article.xml_tree.basename,
-                content=article.xml_tree.filename
+                file_id=article.xml_tree.basename,
+                content=article.xml_tree.bytes_content,
+                content_type='text/xml',
+                content_size=0
             )
 
         if files is not None:
             for f in files:
-                self.article_db_service.register_attachment(
+                with open(f, 'rb') as fb:
+                    self.article_db_service.put_attachment(
                         document_id=article.id,
-                        attach_name=os.path.basename(f),
-                        content=f
+                        file_id=os.path.basename(f),
+                        content=fb.read(),
+                        content_type='image/png',
+                        content_size=0
                     )
         return self.article_data_services.location(article.id)
+
+    def get_article(self, article_url):
+        article_id = self.article_data_services.get_article_id(article_url)
+        article_record = self.article_db_service.read(article_id)
+        return self.article_db_service.get_attachment(
+            document_id=article_id,
+            file_id=article_record['content']['xml_name']
+        )

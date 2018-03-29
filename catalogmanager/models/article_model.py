@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+from uuid import uuid4
 
 from ..xml.article_xml_tree import ArticleXMLTree
 
@@ -32,7 +33,7 @@ class Asset:
 class Article:
 
     def __init__(self, xml=None, files=None):
-        self.id = None
+        self.id = self._get_id()
         self.xml_tree = xml
         self.files = files
 
@@ -43,6 +44,9 @@ class Article:
     @xml_tree.setter
     def xml_tree(self, xml):
         self._xml_tree = ArticleXMLTree(xml)
+
+    def _get_id(self):
+        return uuid4().hex
 
     def get_record_content(self):
         record_content = {}

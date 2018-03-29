@@ -4,7 +4,11 @@ from webtest import TestApp
 
 from catalogmanager.article_services import ArticleServices
 from catalog_persistence import main
-from catalog_persistence.databases import InMemoryDBManager, DatabaseService
+from catalog_persistence.databases import (
+    InMemoryDBManager,
+    CouchDBManager,
+    DatabaseService
+)
 
 
 @pytest.yield_fixture
@@ -42,25 +46,47 @@ def xml_test():
 
 
 @pytest.fixture
-def article_location(change_service,
-                     tmpdir,
-                     xml_test):
+def article_files(tmpdir, xml_test):
     article_tmp_dir = tmpdir.mkdir("articles")
     xml_file = article_tmp_dir.join("article.xml")
     xml_file.write(xml_test)
-    files = [
-        article_tmp_dir.join(image).strpath
-        for image in ["img1.png", "img2.png", "img3.png"]
-    ]
+    files = []
+    for image in ["img1.png", "img2.png", "img3.png"]:
+        img = article_tmp_dir.join(image)
+        img.write(bytes(image, encoding='utf-8'))
+        files.append(img.strpath)
+    return xml_file.strpath, files
+
+
+@pytest.fixture
+def inmemory_article_location(change_service, article_files):
     article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_article(xml_file.strpath, files)
+    return article_services.receive_article(article_files[0], article_files[1])
 
 
 @pytest.fixture
 def database_config():
     return {
         'db_host': 'http://localhost',
-        'db_port': '1234',
+        'db_port': '5984',
         'username': 'admin',
-        'password': 'admin'
+        'password': 'password'
     }
+
+
+@pytest.fixture
+def dbserver_service(functional_config, database_config):
+    articles_database_config = database_config.copy()
+    articles_database_config['database_name'] = "articles"
+    changes_database_config = database_config.copy()
+    changes_database_config['database_name'] = "changes"
+    return (
+        CouchDBManager(articles_database_config),
+        CouchDBManager(changes_database_config)
+    )
+
+
+@pytest.fixture
+def couchdb_article_location(dbserver_service, article_files):
+    article_services = ArticleServices(dbserver_service[0], dbserver_service[1])
+    return article_services.receive_article(article_files[0], article_files[1])
