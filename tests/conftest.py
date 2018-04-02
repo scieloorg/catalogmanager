@@ -76,9 +76,18 @@ def database_config():
 
 @pytest.fixture
 def dbserver_service(functional_config, database_config):
-    articles_database_config = database_config.copy()
+    couchdb_config = {
+        'couchdb.uri': '{}:{}'.format(
+            database_config['db_host'],
+            database_config['db_port']
+        ),
+        'couchdb.username': database_config['username'],
+        'couchdb.password': database_config['password'],
+    }
+
+    articles_database_config = couchdb_config.copy()
     articles_database_config['database_name'] = "articles"
-    changes_database_config = database_config.copy()
+    changes_database_config = couchdb_config.copy()
     changes_database_config['database_name'] = "changes"
     return (
         CouchDBManager(articles_database_config),
@@ -88,5 +97,8 @@ def dbserver_service(functional_config, database_config):
 
 @pytest.fixture
 def couchdb_article_location(dbserver_service, article_files):
-    article_services = ArticleServices(dbserver_service[0], dbserver_service[1])
+    article_services = ArticleServices(
+        dbserver_service[0],
+        dbserver_service[1]
+    )
     return article_services.receive_article(article_files[0], article_files[1])

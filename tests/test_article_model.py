@@ -17,7 +17,8 @@ def test_article():
     assert article.xml_tree.basename == os.path.basename(xml_filename)
     assert article.xml_tree.filename == xml_filename
     assert article.xml_tree.xml_error is None
-    # assert isinstance(article.xml_content, '')
+    assert isinstance(article.xml_tree.content, str)
+    assert isinstance(article.xml_tree.bytes_content, bytes)
 
 
 # def test_link_files_to_assets():
