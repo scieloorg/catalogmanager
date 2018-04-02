@@ -51,7 +51,7 @@ class Article:
     def get_record_content(self):
         record_content = {}
         record_content['xml_name'] = self.xml_tree.basename
-        record_content['assets_names'] = self.xml_tree.asset_nodes.keys()
+        record_content['assets_names'] = list(self.xml_tree.asset_nodes.keys())
         return record_content
 
     @property

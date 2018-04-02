@@ -67,7 +67,7 @@ def inmemory_article_location(change_service, article_files):
 @pytest.fixture
 def database_config():
     return {
-        'db_host': 'http://localhost',
+        'db_host': 'http://127.0.0.1',
         'db_port': '5984',
         'username': 'admin',
         'password': 'password'

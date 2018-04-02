@@ -1,7 +1,9 @@
 import os
+from unittest.mock import patch
 
 from catalog_persistence.databases import (
     InMemoryDBManager,
+    DatabaseService
 )
 from catalog_persistence.models import (
     RecordType,
@@ -54,6 +56,22 @@ def get_files():
 #         articles_db_manager, changes_db_manager)
 #     gotten = article_services.receive(xml_filename, files)
 #     assert expected == gotten
+
+
+@patch.object(DatabaseService, 'read')
+def test_get_article_in_database(mocked_dataservices_read,
+                                 change_service,
+                                 inmemory_article_location):
+    _, _, article_id = inmemory_article_location.split('/')
+    mocked_dataservices_read.return_value = {'document_id': article_id}
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    article_check = article_services.get_article_data(article_id)
+    assert article_check is not None
+    assert isinstance(article_check, dict)
+    mocked_dataservices_read.assert_called_with(article_id)
 
 
 def test_get_article_file(change_service, inmemory_article_location, xml_test):

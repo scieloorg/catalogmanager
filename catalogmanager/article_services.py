@@ -53,6 +53,10 @@ class ArticleServices:
                     )
         return self.article_data_services.location(article.id)
 
+    def get_article_data(self, article_id):
+        article_record = self.article_db_service.read(article_id)
+        return article_record
+
     def get_article(self, article_url):
         article_id = self.article_data_services.get_article_id(article_url)
         article_record = self.article_db_service.read(article_id)
