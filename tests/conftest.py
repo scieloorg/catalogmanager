@@ -45,8 +45,27 @@ def xml_test():
     """
 
 
+@pytest.fixture(params=[
+    CouchDBManager,
+    InMemoryDBManager
+])
+def database_service(request, article_db_settings, change_db_settings):
+    return DatabaseService(
+        request.param(article_db_settings),
+        request.param(change_db_settings)
+    )
+
+
 @pytest.fixture
-def article_files(tmpdir, xml_test):
+def setup(request, functional_config, database_service):
+    def fin():
+        database_service.db_manager.drop_database()
+        database_service.changes_db_manager.drop_database()
+    request.addfinalizer(fin)
+
+
+@pytest.fixture
+def article_files(setup, tmpdir, xml_test):
     article_tmp_dir = tmpdir.mkdir("articles")
     xml_file = article_tmp_dir.join("article.xml")
     xml_file.write(xml_test)

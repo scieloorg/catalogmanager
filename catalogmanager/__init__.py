@@ -24,7 +24,6 @@ def get_article_data(article_id, db_host, db_port, username, password):
                                             db_port,
                                             username,
                                             password)
-    import pdb; pdb.set_trace()
     return article_services.get_article_data(article_id)
 
 
