@@ -22,9 +22,9 @@ def fake_change_list():
 @pytest.fixture
 def article_db_settings():
     return {
-        'couchdb.uri': 'http://localhost:5984',
-        'couchdb.username': 'admin',
-        'couchdb.password': 'password',
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
         'database_name': 'articles',
     }
 
@@ -32,9 +32,9 @@ def article_db_settings():
 @pytest.fixture
 def change_db_settings():
     return {
-        'couchdb.uri': 'http://localhost:5984',
-        'couchdb.username': 'admin',
-        'couchdb.password': 'password',
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
         'database_name': 'changes',
     }
 
@@ -45,8 +45,8 @@ def change_db_settings():
 ])
 def database_service(request, article_db_settings, change_db_settings):
     return DatabaseService(
-        request.param(article_db_settings),
-        request.param(change_db_settings)
+        request.param(**article_db_settings),
+        request.param(**change_db_settings)
     )
 
 
