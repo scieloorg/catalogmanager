@@ -86,7 +86,7 @@ class InMemoryDBManager(BaseDBManager):
             raise DocumentNotFound
         del self.database[id]
 
-    def find(self):
+    def find(self, selection):
         return [document for id, document in self.database.items()]
 
     def put_attachment(self, id, filename, content):
@@ -167,10 +167,7 @@ class CouchDBManager(BaseDBManager):
             raise DocumentNotFound
         self.database.delete(doc)
 
-    def find(self):
-        mango = {
-            'selector': {'document_type': 'ART'}
-        }
+    def find(self, mango):
         return [dict(document) for document in self.database.find(mango)]
 
     def put_attachment(self, id, filename, content):
@@ -292,9 +289,18 @@ class DatabaseService:
         self.db_manager.delete(document_id)
         self._register_change(document_record, ChangeType.DELETE)
 
-    def find(self):
+    def find(self, selection):
         """
         Busca registros de documento pelo ID do documento na base de dados.
+
+        Retorno:
+        Lista de registros de documento registrado na base de dados
+        """
+        return self.db_manager.find(selection)
+
+    def list(self):
+        """
+        Lista registros de documento pelo ID do documento na base de dados.
 
         Retorno:
         Lista de registros de documento registrado na base de dados
