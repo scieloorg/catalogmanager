@@ -47,23 +47,27 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
+    def list_attachments(self, id) -> list:
+        return NotImplemented
+
+    @abc.abstractmethod
     def attachment_exists(self, id, file_id) -> bool:
         return NotImplemented
 
 
 class InMemoryDBManager(BaseDBManager):
 
-    def __init__(self, config):
-        self.database_name = config['database_name']
-        self.attachments_key = 'attachments'
+    def __init__(self, **kwargs):
+        self._database_name = kwargs['database_name']
+        self._attachments_key = 'attachments'
         self._database = {}
 
     @property
     def database(self):
-        table = self._database.get(self.database_name)
+        table = self._database.get(self._database_name)
         if not table:
-            self._database[self.database_name] = {}
-        return self._database[self.database_name]
+            self._database[self._database_name] = {}
+        return self._database[self._database_name]
 
     def drop_database(self):
         self._database = {}
@@ -81,69 +85,67 @@ class InMemoryDBManager(BaseDBManager):
         self.database.update({id: document})
 
     def delete(self, id):
-        doc = self.database.get(id)
-        if not doc:
-            raise DocumentNotFound
+        self.read(id)
         del self.database[id]
 
     def find(self):
         return [document for id, document in self.database.items()]
 
     def put_attachment(self, id, file_id, content, content_properties):
-        doc = self.database.get(id)
-        if not doc:
-            raise DocumentNotFound
+        doc = self.read(id)
+        if not doc.get(self._attachments_key):
+            doc[self._attachments_key] = {}
 
-        if not doc.get(self.attachments_key):
-            doc[self.attachments_key] = {}
-
-        if doc[self.attachments_key].get(file_id):
-            doc[self.attachments_key][file_id]['revision'] += 1
+        if doc[self._attachments_key].get(file_id):
+            doc[self._attachments_key][file_id]['revision'] += 1
         else:
-            doc[self.attachments_key][file_id] = {}
-            doc[self.attachments_key][file_id]['revision'] = 1
+            doc[self._attachments_key][file_id] = {}
+            doc[self._attachments_key][file_id]['revision'] = 1
 
-        doc[self.attachments_key][file_id]['content'] = content
-        doc[self.attachments_key][file_id]['content_type'] = \
+        doc[self._attachments_key][file_id]['content'] = content
+        doc[self._attachments_key][file_id]['content_type'] = \
             content_properties['content_type']
-        doc[self.attachments_key][file_id]['content_size'] = \
+        doc[self._attachments_key][file_id]['content_size'] = \
             content_properties['content_size']
         self.database.update({id: doc})
 
-    def attachment_exists(self, id, filename):
-        doc = self.database.get(id)
-        if not doc:
-            raise DocumentNotFound
+    def list_attachments(self, id):
+        doc = self.read(id)
+        if doc.get(self._attachments_key):
+            return list(doc[self._attachments_key].keys())
+
+    def attachment_exists(self, id, file_id):
+        doc = self.read(id)
         return (
-            doc.get(self.attachments_key) and
-            doc[self.attachments_key].get(filename)
+            doc.get(self._attachments_key) and
+            doc[self._attachments_key].get(file_id)
         )
 
 
 class CouchDBManager(BaseDBManager):
 
-    def __init__(self, settings):
-        self.database_name = settings['database_name']
-        self.attachments_key = '_attachments'
+    def __init__(self, **kwargs):
+        self._database_name = kwargs['database_name']
+        self._attachments_key = '_attachments'
         self._database = None
-        self._db_server = couchdb.Server(settings['couchdb.uri'])
+        self._db_server = couchdb.Server(kwargs['database_uri'])
         self._db_server.resource.credentials = (
-            settings['couchdb.username'],
-            settings['couchdb.password']
+            kwargs['database_username'],
+            kwargs['database_password']
         )
 
     @property
     def database(self):
         try:
-            self._database = self._db_server[self.database_name]
+            self._database = self._db_server[self._database_name]
         except couchdb.http.ResourceNotFound:
-            self._database = self._db_server.create(self.database_name)
+            self._database = self._db_server.create(self._database_name)
         return self._database
 
     def drop_database(self):
-        if self.database_name:
+        if self._database_name:
             try:
-                self._db_server.delete(self.database_name)
+                self._db_server.delete(self._database_name)
             except couchdb.http.ResourceNotFound:
                 pass
 
@@ -158,23 +160,17 @@ class CouchDBManager(BaseDBManager):
         return doc
 
     def update(self, id, document):
-        try:
-            """
-            Para atualizar documento no CouchDB, é necessário informar a
-            revisão do documento atual. Por isso, é obtido o documento atual
-            para que os dados dele sejam atualizados com o registro informado.
-            """
-            doc = dict(self.database[id])
-            doc.update(document)
-            self.database[id] = doc
-        except couchdb.http.ResourceNotFound:
-            raise DocumentNotFound
+        """
+        Para atualizar documento no CouchDB, é necessário informar a
+        revisão do documento atual. Por isso, é obtido o documento atual
+        para que os dados dele sejam atualizados com o registro informado.
+        """
+        doc = self.read(id)
+        doc.update(document)
+        self.database[id] = doc
 
     def delete(self, id):
-        try:
-            doc = self.database[id]
-        except couchdb.http.ResourceNotFound:
-            raise DocumentNotFound
+        doc = self.read(id)
         self.database.delete(doc)
 
     def find(self):
@@ -189,9 +185,7 @@ class CouchDBManager(BaseDBManager):
         revisão atual. Por isso, é obtido o documento pelo id
         para que os dados dele sejam informados para anexar o arquivo.
         """
-        doc = self.database.get(id)
-        if not doc:
-            raise DocumentNotFound
+        doc = self.read(id)
         self.database.put_attachment(
             doc=doc,
             content=content,
@@ -199,13 +193,16 @@ class CouchDBManager(BaseDBManager):
             content_type=content_properties['content_type']
         )
 
-    def attachment_exists(self, id, filename):
-        doc = self.database.get(id)
-        if not doc:
-            raise DocumentNotFound
+    def list_attachments(self, id):
+        doc = self.read(id)
+        if doc.get(self._attachments_key):
+            return list(doc[self._attachments_key].keys())
+
+    def attachment_exists(self, id, file_id):
+        doc = self.read(id)
         return (
-            doc.get(self.attachments_key) and
-            doc[self.attachments_key].get(filename)
+            doc.get(self._attachments_key) and
+            doc[self._attachments_key].get(file_id)
         )
 
 
@@ -279,12 +276,8 @@ class DatabaseService:
         }
         if document.get('updated_date'):
             document_record['updated_date'] = document['updated_date']
-        attachments = document.get(self.db_manager.attachments_key)
-        if attachments:
-            document_record['attachments'] = [
-                file_id
-                for file_id, attachment in attachments.items()
-            ]
+        document_record['attachments'] = \
+            self.db_manager.list_attachments(document_id)
         return document_record
 
     def update(self, document_id, document_record):
