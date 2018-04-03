@@ -107,13 +107,3 @@ def test_get_article_record(change_service,
     assert article_check.get('created_date') is not None
     assert article_check.get('attachments') is not None
     assert isinstance(article_check['attachments'], list)
-
-
-def test_get_article_file(change_service, inmemory_article_location, xml_test):
-    article_services = ArticleServices(
-        change_service[0],
-        change_service[1]
-    )
-    article_check = article_services.get_article(inmemory_article_location)
-    assert article_check is not None
-    assert article_check.read().decode() == xml_test.strip()

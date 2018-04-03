@@ -4,9 +4,9 @@ from catalog_persistence.databases import CouchDBManager
 
 def _get_article_service(db_host, db_port, username, password):
     database_config = {
-        'couchdb.uri': '{}:{}'.format(db_host, db_port),
-        'couchdb.username': username,
-        'couchdb.password': password,
+        'database_uri': '{}:{}'.format(db_host, db_port),
+        'database_username': username,
+        'database_password': password,
     }
     articles_database_config = database_config.copy()
     articles_database_config['database_name'] = "articles"
@@ -14,8 +14,8 @@ def _get_article_service(db_host, db_port, username, password):
     changes_database_config['database_name'] = "changes"
 
     return ArticleServices(
-        CouchDBManager(articles_database_config),
-        CouchDBManager(changes_database_config)
+        CouchDBManager(**articles_database_config),
+        CouchDBManager(**changes_database_config)
     )
 
 

@@ -1,3 +1,4 @@
+import io
 from unittest.mock import patch
 
 import pytest
@@ -183,9 +184,11 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id="href_file",
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        content=io.StringIO(xml_test),
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
     record_check = dict(
@@ -218,9 +221,11 @@ def test_put_attachment_to_document_register_change(mocked_register_change,
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id=attachment_id,
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        content=io.StringIO(xml_test),
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
     mocked_register_change.assert_called_with(document_record,
@@ -237,9 +242,11 @@ def test_put_attachment_to_document_not_found(setup,
         database_service.put_attachment,
         article_record['document_id'],
         "filename",
-        bytes(xml_test, encoding='utf-8'),
-        "text/xml",
-        len(xml_test)
+        io.StringIO(xml_test),
+        {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
 
@@ -257,9 +264,11 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id=attachment_id,
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        content=io.StringIO(xml_test),
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
     record = database_service.read(article_record['document_id'])
     document_record = {
@@ -270,9 +279,11 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id=attachment_id,
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        content=io.StringIO(xml_test),
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
 
     record_check = dict(
@@ -304,71 +315,13 @@ def test_read_document_with_attachments(setup, database_service, xml_test):
             document_id=article_record['document_id'],
             file_id=file_id,
             content=bytes(xml_test, encoding='utf-8'),
-            content_type="text/xml",
-            content_size=len(xml_test)
+            file_properties={
+                'content_type': "text/xml",
+                'content_size': len(xml_test)
+            }
         )
 
     record_check = database_service.read(article_record['document_id'])
     assert record_check is not None
     for attachment in attachment_list:
         assert attachment in record_check['attachments']
-
-
-def test_get_attachment_from_document(setup, database_service, xml_test):
-    article_record = get_article_record({'Test': 'Test11'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-    database_service.put_attachment(
-        document_id=article_record['document_id'],
-        file_id="href_file",
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
-    )
-
-    attachment = database_service.get_attachment(
-        document_id=article_record['document_id'],
-        file_id="href_file"
-    )
-    assert attachment.read(-1).decode('UTF-8') == xml_test
-
-
-def test_get_attachment_from_document_not_found(setup,
-                                                database_service,
-                                                xml_test):
-    article_record = get_article_record({'Test': 'Test12'})
-    pytest.raises(
-        DocumentNotFound,
-        database_service.get_attachment,
-        article_record['document_id'],
-        "filename"
-    )
-
-
-def test_get_attachment_not_found(setup, database_service, xml_test):
-    article_record = get_article_record({'Test': 'Test13'})
-    file_id = "href_file"
-    attachment_list = [
-        file_id + str(cont)
-        for cont in range(3)
-    ]
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-    for file_id in attachment_list:
-        database_service.put_attachment(
-            document_id=article_record['document_id'],
-            file_id=file_id,
-            content=bytes(xml_test, encoding='utf-8'),
-            content_type="text/xml",
-            content_size=len(xml_test)
-        )
-
-    attachment = database_service.get_attachment(
-        article_record['document_id'],
-        "filename"
-    )
-    assert attachment is None

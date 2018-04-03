@@ -20,18 +20,18 @@ def functional_config(request):
 @pytest.fixture
 def change_service(functional_config):
     return (
-        InMemoryDBManager({'database_name': 'articles'}),
-        InMemoryDBManager({'database_name': 'changes'})
+        InMemoryDBManager(database_name='test1'),
+        InMemoryDBManager(database_name='test2')
     )
 
 
 @pytest.fixture
 def testapp(functional_config):
     settings = {
-        'couchdb.uri': 'http://localhost:5984',
+        'database_uri': 'http://localhost:5984',
         'couchdb.db_name': 'catalog_manager',
-        'couchdb.username': 'admin',
-        'couchdb.password': 'password',
+        'database_username': 'admin',
+        'database_password': 'password',
     }
     test_app = main(settings)
     return TestApp(test_app)
@@ -45,19 +45,30 @@ def xml_test():
     """
 
 
-@pytest.fixture(params=[
-    CouchDBManager,
-    InMemoryDBManager
-])
-def database_service(request, article_db_settings, change_db_settings):
-    return DatabaseService(
-        request.param(article_db_settings),
-        request.param(change_db_settings)
-    )
+@pytest.fixture
+def article_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'articles',
+    }
 
 
 @pytest.fixture
-def setup(request, functional_config, database_service):
+def change_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'changes',
+    }
+
+
+@pytest.fixture
+def setup(request, functional_config, change_service):
+    database_service = DatabaseService(change_service[0], change_service[1])
+
     def fin():
         database_service.db_manager.drop_database()
         database_service.changes_db_manager.drop_database()
@@ -96,12 +107,12 @@ def database_config():
 @pytest.fixture
 def dbserver_service(functional_config, database_config):
     couchdb_config = {
-        'couchdb.uri': '{}:{}'.format(
+        'database_uri': '{}:{}'.format(
             database_config['db_host'],
             database_config['db_port']
         ),
-        'couchdb.username': database_config['username'],
-        'couchdb.password': database_config['password'],
+        'database_username': database_config['username'],
+        'database_password': database_config['password'],
     }
 
     articles_database_config = couchdb_config.copy()
@@ -109,8 +120,8 @@ def dbserver_service(functional_config, database_config):
     changes_database_config = couchdb_config.copy()
     changes_database_config['database_name'] = "changes"
     return (
-        CouchDBManager(articles_database_config),
-        CouchDBManager(changes_database_config)
+        CouchDBManager(**articles_database_config),
+        CouchDBManager(**changes_database_config)
     )
 
 

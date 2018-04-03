@@ -1,3 +1,4 @@
+import io
 from datetime import datetime
 from uuid import uuid4
 
@@ -68,9 +69,11 @@ def test_add_attachment_create_change(setup, database_service, xml_test):
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id=attachment_id,
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        content=io.StringIO(xml_test),
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
     change_id = database_service._register_change(
         article_record,
@@ -97,9 +100,11 @@ def test_update_attachment_create_change(setup, database_service, xml_test):
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id=attachment_id,
-        content=bytes(xml_test, encoding='utf-8'),
-        content_type="text/xml",
-        content_size=len(xml_test)
+        content=io.StringIO(xml_test),
+        file_properties={
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
     change_id = database_service._register_change(
         article_record,
