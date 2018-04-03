@@ -21,7 +21,7 @@ def get_article(filename):
 
 def test_receive_article():
 
-    xml_filename = '/Users/roberta.takenaka/github.com/scieloorg/catalogmanager/packages/0034-8910-rsp-S01518-87872016050006741/0034-8910-rsp-S01518-87872016050006741.xml'
+    xml_filename = './packages/0034-8910-rsp-S01518-87872016050006741/0034-8910-rsp-S01518-87872016050006741.xml'
     xml_filename, files = get_article(xml_filename)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
