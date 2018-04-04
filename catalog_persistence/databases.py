@@ -117,9 +117,7 @@ class InMemoryDBManager(BaseDBManager):
         self.database.update({id: doc})
 
     def get_attachment(self, id, file_id):
-        doc = self.database.get(id)
-        if not doc:
-            raise DocumentNotFound
+        doc = self.read(id)
         if (doc.get(self.attachments_key) and
                 doc[self.attachments_key].get(file_id)):
             return doc[self.attachments_key][file_id]['content']
@@ -393,6 +391,9 @@ class DatabaseService:
         Params:
         document_id: ID do documento ao qual o arquivo está anexado
         file_id: identificação do arquivo anexado a ser recuperado
+
+        Retorno:
+        Arquivo anexo
 
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
