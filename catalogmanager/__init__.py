@@ -25,7 +25,3 @@ def get_article_data(article_id, db_host, db_port, username, password):
                                             username,
                                             password)
     return article_services.get_article_data(article_id)
-
-
-def get_article_file(article_url, db_host, db_port, username, password):
-    return article_services.get_article(article_url)

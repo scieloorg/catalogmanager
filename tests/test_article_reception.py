@@ -2,7 +2,6 @@ import os
 from unittest.mock import patch
 
 from catalog_persistence.databases import (
-    InMemoryDBManager,
     DatabaseService,
     DocumentNotFound
 )
@@ -104,6 +103,7 @@ def test_get_article_record(change_service,
     assert article_check.get('document_type') == RecordType.ARTICLE.value
     assert article_check.get('content') is not None
     assert isinstance(article_check['content'], dict)
+    assert article_check['content'].get('xml_name') is not None
     assert article_check.get('created_date') is not None
     assert article_check.get('attachments') is not None
     assert isinstance(article_check['attachments'], list)
