@@ -19,19 +19,19 @@ def functional_config(request):
 
 @pytest.fixture
 def change_service(functional_config):
-    return (
-        InMemoryDBManager({'database_name': 'articles'}),
-        InMemoryDBManager({'database_name': 'changes'})
+    return DatabaseService(
+        InMemoryDBManager(database_name='test1'),
+        InMemoryDBManager(database_name='test2')
     )
 
 
 @pytest.fixture
 def testapp(functional_config):
     settings = {
-        'couchdb.uri': 'http://localhost:5984',
+        'database_uri': 'http://localhost:5984',
         'couchdb.db_name': 'catalog_manager',
-        'couchdb.username': 'admin',
-        'couchdb.password': 'password',
+        'database_username': 'admin',
+        'database_password': 'password',
     }
     test_app = main(settings)
     return TestApp(test_app)

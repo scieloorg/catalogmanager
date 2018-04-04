@@ -1,41 +1,58 @@
 # coding=utf-8
 import os
-from uuid import uuid4
+import mimetypes
 
 from ..xml.article_xml_tree import ArticleXMLTree
 
 
+class File:
+
+    def __init__(self, file_fullpath):
+        self.file_fullpath = file_fullpath
+        self.name = None
+        self.path = None
+        self.size = None
+        self.content_type = None
+        self.content = None
+        if file_fullpath is not None and os.path.isfile(file_fullpath):
+            self.name = os.path.basename(file_fullpath)
+            self.path = os.path.dirname(file_fullpath)
+            self.size = os.stat(file_fullpath).st_size
+            self.content_type = mimetypes.guess_type(file_fullpath)
+            self.content = open(file_fullpath)
+
+
 class Asset:
 
-    def __init__(self, filename):
-        self.name = os.path.basename(filename)
-        self.filename = filename
-        self.article_id = None
+    def __init__(self, asset_node, asset_file=None):
+        self.file = asset_file
+        self.node = asset_node
+        self.name = asset_node.href
+        self.document_id = None
 
     def get_record_content(self):
-        record_content = {}
-        record_content['article_id'] = self.article_id
-        record_content['name'] = self.name
-        record_content['filename'] = self.filename
-        return record_content
+        return {'file_href': self.name, 'file_id': self.file.name}
 
     @property
     def href(self):
-        if self.asset_node is not None:
-            return self.asset_node.href
-        return self.name
+        if self.node is not None:
+            return self.node.href
 
-    def update_href(self, href):
-        if self.asset_node is not None:
-            self.asset_node.update_href(href)
+    @href.setter
+    def href(self, value):
+        if self.node is not None:
+            self.node.href = value
 
 
 class Article:
 
-    def __init__(self, xml=None, files=None):
-        self.id = self._get_id()
+    def __init__(self, xml=None, asset_files=None):
+        self.id = None
         self.xml_tree = xml
-        self.files = files
+        self.asset_files = asset_files
+        if asset_files is not None:
+            self.asset_files = {os.path.basename(f): f for f in asset_files if os.path.isfile(f)}
+        self.assets = {name: Asset(node, File(self.asset_files.get(name))) for name, node in self.xml_tree.asset_nodes.items()}
 
     @property
     def xml_tree(self):
@@ -45,34 +62,26 @@ class Article:
     def xml_tree(self, xml):
         self._xml_tree = ArticleXMLTree(xml)
 
-    def _get_id(self):
-        return uuid4().hex
-
     def get_record_content(self):
         record_content = {}
-        record_content['xml_name'] = self.xml_tree.basename
-        record_content['assets_names'] = self.xml_tree.asset_nodes.keys()
+        record_content['xml'] = self.xml_tree.file_name
+        record_content['assets'] = []
+        for asset in self.assets.values():
+            asset.document_id = self.id
+            record_content['assets'].append(asset.get_record_content())
+        print('record', record_content)
         return record_content
 
     @property
-    def required_files(self):
-        _required_files = []
-        if self.xml_tree.asset_nodes is not None:
-            _required_files = self.xml_tree.asset_nodes.keys()
-            if self.files is not None:
-                for f in self.files:
-                    name = os.path.basename(f)
-                    if name in _required_files:
-                        _required_files.remove(name)
-        return _required_files
+    def missing_files_list(self):
+        _missing_files_list = []
+        if self.assets is not None:
+            _missing_files_list = [item for item in self.assets.keys() if item not in self.asset_files.keys()]
+        return _missing_files_list
 
     @property
-    def unexpected_files(self):
-        _unexpected_files = []
-        if self.files is not None:
-            _unexpected_files = [os.path.basename(f) for f in self.files]
-            if self.xml_tree.asset_nodes is not None:
-                for name in self.xml_tree.asset_nodes.keys():
-                    if name in _unexpected_files:
-                        _unexpected_files.remove(name)
-        return _unexpected_files
+    def unexpected_files_list(self):
+        _unexpected_files_list = []
+        if self.asset_files is not None:
+            _unexpected_files_list = [item for item in self.asset_files.keys() if item not in self.assets.keys()]
+        return _unexpected_files_list

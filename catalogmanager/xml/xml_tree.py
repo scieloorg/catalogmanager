@@ -3,7 +3,7 @@
 import os
 
 from lxml import etree
-from io import BytesIO
+from io import StringIO
 
 
 namespaces = {}
@@ -26,9 +26,9 @@ class XMLTree:
         return etree.tostring(self.tree.getroot(), encoding='utf-8')
 
     @property
-    def basename(self):
-        if os.path.isfile(self.filename):
-            return os.path.basename(self.filename)
+    def file_name(self):
+        if os.path.isfile(self.file_fullpath):
+            return os.path.basename(self.file_fullpath)
 
     @property
     def content(self):
@@ -42,11 +42,11 @@ class XMLTree:
         self.tree, self.xml_error = self.parse(self.read(xml))
 
     def read(self, xml):
-        self.filename = None
+        self.file_fullpath = None
         if '<' not in xml:
-            self.filename = xml
-            xml = open(self.filename).read()
-        return BytesIO(bytes(xml, encoding='utf-8'))
+            self.file_fullpath = xml
+            xml = open(self.file_fullpath).read()
+        return StringIO(xml)
 
     def parse(self, content):
         message = None

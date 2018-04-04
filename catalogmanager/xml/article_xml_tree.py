@@ -6,19 +6,20 @@ from .xml_tree import (
 )
 
 
-class AssetXMLNode:
+class HRefNode:
 
     _xpath = '{http://www.w3.org/1999/xlink}href'
 
     def __init__(self, node):
         self.node = node
 
-    def update_href(self, value):
-        self.node.set(self._xpath, value)
-
     @property
     def href(self):
         return self.node.get(self._xpath)
+
+    @href.setter
+    def href(self, value):
+        self.node.set(self._xpath, value)
 
     @property
     def local_href(self):
@@ -26,19 +27,13 @@ class AssetXMLNode:
             return self.href
 
     @property
-    def xml(self):
-        return etree.tostring(self.node)
+    def external_href(self):
+        if self.href is not None and '/' in self.href:
+            return self.href
 
     @property
-    def id(self):
-        _id = self.get(
-                'id',
-                self.getparent().get(
-                    'id',
-                    self.original_href
-                    )
-                )
-        return _id
+    def xml(self):
+        return etree.tostring(self.node)
 
 
 class ArticleXMLTree(XMLTree):
@@ -51,9 +46,9 @@ class ArticleXMLTree(XMLTree):
         if self.tree is not None:
             items = {}
             for node in self.nodes_which_has_xlink_href:
-                asset_xml_node = AssetXMLNode(node)
-                if asset_xml_node.local_href is not None:
-                    items[asset_xml_node.local_href] = asset_xml_node
+                href_node = HRefNode(node)
+                if href_node.local_href is not None:
+                    items[href_node.local_href] = href_node
             return items
 
     @property
