@@ -19,7 +19,7 @@ class File:
             self.path = os.path.dirname(file_fullpath)
             self.size = os.stat(file_fullpath).st_size
             self.content_type = mimetypes.guess_type(file_fullpath)
-            self.content = open(file_fullpath)
+            self.content = open(file_fullpath, 'rb')
 
 
 class Asset:

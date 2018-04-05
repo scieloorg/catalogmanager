@@ -116,9 +116,9 @@ class InMemoryDBManager(BaseDBManager):
 
     def get_attachment(self, id, file_id):
         doc = self.read(id)
-        if (doc.get(self.attachments_key) and
-                doc[self.attachments_key].get(file_id)):
-            return doc[self.attachments_key][file_id]['content']
+        if (doc.get(self._attachments_key) and
+                doc[self._attachments_key].get(file_id)):
+            return doc[self._attachments_key][file_id]['content']
 
     def list_attachments(self, id):
         doc = self.read(id)
@@ -206,7 +206,9 @@ class CouchDBManager(BaseDBManager):
 
     def get_attachment(self, id, file_id):
         doc = self.read(id)
-        return self.database.get_attachment(doc, file_id)
+        attachment = self.database.get_attachment(doc, file_id)
+        if attachment:
+            return attachment.getbuffer()
 
     def list_attachments(self, id):
         doc = self.read(id)

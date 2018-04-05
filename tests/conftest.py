@@ -19,7 +19,7 @@ def functional_config(request):
 
 @pytest.fixture
 def change_service(functional_config):
-    return DatabaseService(
+    return (
         InMemoryDBManager(database_name='test1'),
         InMemoryDBManager(database_name='test2')
     )
@@ -61,7 +61,11 @@ def article_files(tmpdir, xml_test):
 @pytest.fixture
 def inmemory_article_location(change_service, article_files):
     article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_article(article_files[0], article_files[1])
+    return article_services.receive_article(
+        'ID',
+        article_files[0],
+        article_files[1]
+    )
 
 
 @pytest.fixture
@@ -101,4 +105,4 @@ def couchdb_article_location(dbserver_service, article_files):
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_article(article_files[0], article_files[1])
+    return article_services.receive_article('ID', article_files[0], article_files[1])

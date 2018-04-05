@@ -5,6 +5,7 @@ from catalog_persistence.models import (
     )
 from catalog_persistence.databases import (
         DatabaseService,
+        DocumentNotFound
     )
 from .data_services import DataServices
 from .models.article_model import (
@@ -62,10 +63,12 @@ class ArticleServices:
                     )
         return self.article_db_service.read(article.id)
 
-    def get_article_file(self, article_url):
-        article_id = self.article_data_services.get_article_id(article_url)
+    def get_article_file(self, article_id):
         article_record = self.article_db_service.read(article_id)
-        return self.article_db_service.get_attachment(
-            document_id=article_id,
-            file_id=article_record['content']['xml_name']
-        )
+        try:
+            return self.article_db_service.get_attachment(
+                document_id=article_id,
+                file_id=article_record['content']['xml']
+            )
+        except DocumentNotFound:
+            return None
