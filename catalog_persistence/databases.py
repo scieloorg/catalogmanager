@@ -88,8 +88,33 @@ class InMemoryDBManager(BaseDBManager):
         self.read(id)
         del self.database[id]
 
-    def find(self):
-        return [document for id, document in self.database.items()]
+    def find(self, selector, fields, sort):
+        """
+        Busca registros de documento por criterios de selecao na base de dados.
+
+        Params:
+        selector: criterio para selecionar campo com determinados valores
+            Ex.: {'type': 'ART'}
+        fields: lista de campos para retornar. Ex.: ['name']
+        sort: lista de dict com nome de campo e sua ordenacao. [{'name': 'asc'}]
+
+        Retorno:
+        Lista de registros de documento registrados na base de dados
+        """
+        if len(selector) == 0:
+            return [doc for i, doc in self.database.items()]
+        results = []
+        for id, doc in self.database.items():
+            match = True
+            for k, v in selector.items():
+                if not doc.get(k) == v:
+                    match = False
+                    break
+            if match is True:
+                d = {f: doc.get(f) for f in fields}
+                d['_id'] = id
+                results.append(d)
+        return sort_results(results, sort)
 
     def put_attachment(self, id, file_id, content, content_properties):
         doc = self.read(id)
@@ -173,11 +198,25 @@ class CouchDBManager(BaseDBManager):
         doc = self.read(id)
         self.database.delete(doc)
 
-    def find(self):
-        mango = {
-            'selector': {'document_type': 'ART'}
+    def find(self, selector, fields, sort):
+        """
+        Busca registros de documento por criterios de selecao na base de dados.
+
+        Params:
+        selector: criterio para selecionar campo com determinados valores
+            Ex.: {'type': 'ART'}
+        fields: lista de campos para retornar. Ex.: ['name']
+        sort: lista de dict com nome de campo e sua ordenacao. [{'name': 'asc'}]
+
+        Retorno:
+        Lista de registros de documento registrados na base de dados
+        """
+        selection_criteria = {
+            'selector': selector,
+            'fields': fields,
+            'sort': sort,
         }
-        return [dict(document) for document in self.database.find(mango)]
+        return [dict(document) for document in self.database.find(selection_criteria)]
 
     def put_attachment(self, id, file_id, content, content_properties):
         """
@@ -311,14 +350,20 @@ class DatabaseService:
         self.db_manager.delete(document_id)
         self._register_change(document_record, ChangeType.DELETE)
 
-    def find(self):
+    def find(self, selector, fields, sort):
         """
-        Busca registros de documento pelo ID do documento na base de dados.
+        Busca registros de documento por criterios de selecao na base de dados.
+
+        Params:
+        selector: criterio para selecionar campo com determinados valores
+            Ex.: {'type': 'ART'}
+        fields: lista de campos para retornar. Ex.: ['name']
+        sort: lista de dict com nome de campo e sua ordenacao. [{'name': 'asc'}]
 
         Retorno:
-        Lista de registros de documento registrado na base de dados
+        Lista de registros de documento registrados na base de dados
         """
-        return self.db_manager.find()
+        return self.db_manager.find(selector, fields, sort)
 
     def put_attachment(self, document_id, file_id, content, file_properties):
         """
@@ -349,3 +394,19 @@ class DatabaseService:
             'created_date': read_record['created_date'],
         }
         self._register_change(document_record, change_type, file_id)
+
+
+def sort_results(results, sort):
+    scores = [list() for i in results]
+    for _ord in sort:
+        field, order = list(_ord.items())[0]
+
+        values = sorted(
+            list(
+                {doc.get(field) for doc in results}), reverse=(order != 'asc'))
+        values = {value: i for i, value in enumerate(values)}
+        for i, doc in enumerate(results):
+            scores[i].append(values.get(doc.get(field)))
+    items = sorted([(tuple(score), i) for i, score in enumerate(scores)])
+    r = [results[item[1]] for item in items]
+    return r
