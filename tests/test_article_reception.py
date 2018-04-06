@@ -1,6 +1,8 @@
 import os
 from unittest.mock import patch
 
+import pytest
+
 from catalog_persistence.databases import (
     DatabaseService,
     DocumentNotFound
@@ -8,9 +10,9 @@ from catalog_persistence.databases import (
 from catalog_persistence.models import (
     RecordType,
 )
-
-from catalogmanager.article_services import(
+from catalogmanager.article_services import (
     ArticleServices,
+    ArticleServicesException
 )
 
 
@@ -46,8 +48,11 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
         change_service[0],
         change_service[1]
     )
-    article_check = article_services.get_article_data(article_id)
-    assert article_check is None
+    pytest.raises(
+        ArticleServicesException,
+        article_services.get_article_data,
+        article_id
+    )
 
 
 def test_get_article_record(change_service,

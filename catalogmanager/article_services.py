@@ -17,6 +17,10 @@ from .models.article_model import Article
 Record = get_record
 
 
+class ArticleServicesException(Exception):
+    pass
+
+
 class ArticleServices:
 
     def __init__(self, articles_db_manager, changes_db_manager):
@@ -63,4 +67,4 @@ class ArticleServices:
             article_record = self.article_db_service.read(article_id)
             return article_record
         except DocumentNotFound:
-            return None
+            raise ArticleServicesException
