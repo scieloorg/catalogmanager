@@ -11,6 +11,7 @@ requires = [
 ]
 
 test_requires = ['webtest', 'pytest', 'pytest-cov']
+setup_requires = ['pytest-runner']
 
 setup(
     name="catalogmanager",
@@ -35,7 +36,7 @@ setup(
     extras_require={
         'testing': test_requires,
     },
-    setup_requires=[],
+    setup_requires=setup_requires,
     tests_require=test_requires,
     install_requires=requires,
     entry_points={
