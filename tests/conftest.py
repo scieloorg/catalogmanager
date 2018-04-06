@@ -76,22 +76,31 @@ def setup(request, functional_config, change_service):
 
 
 @pytest.fixture
-def article_files(setup, tmpdir, xml_test):
-    article_tmp_dir = tmpdir.mkdir("articles")
-    xml_file = article_tmp_dir.join("article.xml")
-    xml_file.write(xml_test)
-    files = []
-    for image in ["img1.png", "img2.png", "img3.png"]:
-        img = article_tmp_dir.join(image)
-        img.write(bytes(image, encoding='utf-8'))
-        files.append(img.strpath)
-    return xml_file.strpath, files
+def article_tmp_dir(tmpdir):
+    return tmpdir.mkdir("articles")
 
 
 @pytest.fixture
-def inmemory_article_location(change_service, article_files):
+def assets_files(setup, article_tmp_dir, xml_test):
+    files = []
+    for image in ["img1.png", "img2.png", "img3.png"]:
+        img = article_tmp_dir.join(image)
+        img.write(image.encode('utf-8'))
+        files.append(img.strpath)
+    return files
+
+
+@pytest.fixture
+def article_file(setup, article_tmp_dir, xml_test):
+    xml_file = article_tmp_dir.join("article.xml")
+    xml_file.write(xml_test)
+    return xml_file.strpath
+
+
+@pytest.fixture
+def inmemory_article_location(change_service, article_file, assets_files):
     article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_article(article_files[0], article_files[1])
+    return article_services.receive_article(article_file, assets_files)
 
 
 @pytest.fixture
@@ -126,9 +135,9 @@ def dbserver_service(functional_config, database_config):
 
 
 @pytest.fixture
-def couchdb_article_location(dbserver_service, article_files):
+def couchdb_article_location(dbserver_service, article_file, assets_files):
     article_services = ArticleServices(
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_article(article_files[0], article_files[1])
+    return article_services.receive_article(article_file, assets_files)
