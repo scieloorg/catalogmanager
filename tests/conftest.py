@@ -1,3 +1,4 @@
+import os
 import pytest
 from pyramid import testing
 from webtest import TestApp
@@ -9,6 +10,80 @@ from catalog_persistence.databases import (
     CouchDBManager,
     DatabaseService
 )
+
+
+FIXTURE_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    'test_files',
+    )
+
+
+PKG_A = [
+    os.path.join(
+        FIXTURE_DIR,
+        '741a',
+        '0034-8910-rsp-S01518-87872016050006741.xml'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741a',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741a',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+    ),
+]
+
+PKG_B = [
+    os.path.join(
+        FIXTURE_DIR,
+        '741b',
+        '0034-8910-rsp-S01518-87872016050006741.xml'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741b',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741b',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+    ),
+]
+
+
+PKG_C = [
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        '0034-8910-rsp-S01518-87872016050006741.xml'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        'fig.jpg'
+    ),
+]
+
+
+def package_files(datafiles):
+    pkg_files = list([str(item) for item in datafiles.listdir()])
+    xml_file_path = pkg_files[0]
+    files = pkg_files[1:]
+    return xml_file_path, files
 
 
 @pytest.yield_fixture
@@ -100,7 +175,7 @@ def article_file(setup, article_tmp_dir, xml_test):
 @pytest.fixture
 def inmemory_article_location(change_service, article_file, assets_files):
     article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_article(article_file, assets_files)
+    return article_services.receive_package('ID', article_file, assets_files)
 
 
 @pytest.fixture
@@ -140,4 +215,4 @@ def couchdb_article_location(dbserver_service, article_file, assets_files):
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_article(article_file, assets_files)
+    return article_services.receive_package('ID', article_file, assets_files)

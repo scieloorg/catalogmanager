@@ -1,7 +1,5 @@
 # coding=utf-8
 
-import os
-
 from lxml import etree
 from io import BytesIO
 
@@ -17,43 +15,25 @@ for namespace_id, namespace_link in namespaces.items():
 
 class XMLTree:
 
-    def __init__(self, xml):
+    def __init__(self):
         self.tree = None
         self.xml_error = None
-        self.load(xml)
-
-    def _tostring(self):
-        return etree.tostring(self.tree.getroot(), encoding='utf-8')
-
-    @property
-    def basename(self):
-        if os.path.isfile(self.filename):
-            return os.path.basename(self.filename)
 
     @property
     def content(self):
-        return str(self.bytes_content)
+        if self.tree is not None:
+            return etree.tostring(self.tree.getroot(), encoding='utf-8')
 
-    @property
-    def bytes_content(self):
-        return self._tostring()
+    @content.setter
+    def content(self, xml_content):
+        bytes_io = BytesIO(xml_content)
+        self.tree, self.xml_error = self.parse(bytes_io)
 
-    def load(self, xml):
-        self.tree, self.xml_error = self.parse(self.read(xml))
-
-    def read(self, xml):
-        self.filename = None
-        if '<' not in xml:
-            self.filename = xml
-            xml = open(self.filename).read()
-        return BytesIO(bytes(xml, encoding='utf-8'))
-
-    def parse(self, content):
+    def parse(self, bytes_io):
         message = None
         try:
-            r = etree.parse(content)
+            r = etree.parse(bytes_io)
         except Exception as e:
             message = 'XML is not well formed\n'
-            raise e
             r = None
         return (r, message)

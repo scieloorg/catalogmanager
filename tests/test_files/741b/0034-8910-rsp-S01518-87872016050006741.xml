@@ -1,0 +1,2721 @@
+<article article-type="research-article" dtd-version="1.0" specific-use="sps-1.2" xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<front>
+		<journal-meta>
+			<journal-id journal-id-type="nlm-ta">Rev Saude Publica</journal-id>
+			<journal-id journal-id-type="publisher-id">rsp</journal-id>
+			<journal-title-group>
+				<journal-title>Revista de Saúde Pública</journal-title>
+				<abbrev-journal-title abbrev-type="publisher">Rev. Saúde Pública</abbrev-journal-title>
+			</journal-title-group>
+			<issn pub-type="ppub">0034-8910</issn>
+			<issn pub-type="epub">1518-8787</issn>
+			<publisher>
+				<publisher-name>Faculdade de Saúde Pública da Universidade de São Paulo</publisher-name>
+			</publisher>
+		</journal-meta>
+		<article-meta>
+			<article-id pub-id-type="other">00313</article-id>
+			<article-id pub-id-type="doi">10.1590/S01518-8787.2016050006741</article-id>
+			<article-categories>
+				<subj-group subj-group-type="heading">
+					<subject>Original Articles</subject>
+				</subj-group>
+			</article-categories>
+			<title-group>
+				<article-title>ERICA: smoking prevalence in Brazilian adolescents</article-title>
+			</title-group>
+			<contrib-group>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Figueiredo</surname>
+						<given-names>Valeska Carvalho</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff1"><sup>I</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Szklo</surname>
+						<given-names>André Salem</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff2"><sup>II</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Costa</surname>
+						<given-names>Letícia Casado</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff3"><sup>III</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Kuschnir</surname>
+						<given-names>Maria Cristina C</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff4"><sup>IV</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Silva</surname>
+						<given-names>Thiago Luiz Nogueira da</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5"><sup>V</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Bloch</surname>
+						<given-names>Katia Vergetti</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5"><sup>V</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Szklo</surname>
+						<given-names>Moyses</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5"><sup>V</sup></xref>
+				</contrib>
+			</contrib-group>
+			<aff id="aff1">
+				<label>I</label>
+				<institution content-type="normalized">Fundação Oswaldo Cruz</institution>
+				<institution content-type="orgdiv2">Centro de Estudos sobre Tabaco e Saúde</institution>
+				<institution content-type="orgdiv1">Escola Nacional de Saúde Pública Sergio Arouca</institution>
+				<institution content-type="orgname">Fundação Oswaldo Cruz</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country country="BR">Brasil</country>
+				<institution content-type="original">Centro de Estudos sobre Tabaco e Saúde. Escola Nacional de Saúde Pública Sergio Arouca. Fundação Oswaldo Cruz. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff2">
+				<label>II</label>
+				<institution content-type="normalized">Instituto Nacional do Câncer</institution>
+				<institution content-type="orgdiv1">Divisão de Epidemiologia</institution>
+				<institution content-type="orgname">Instituto Nacional de Câncer José Alencar Gomes da Silva</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country country="BR">Brasil</country>
+				<institution content-type="original">Divisão de Epidemiologia. Coordenação Geral de Ensino e Pesquisa. Instituto Nacional de Câncer José Alencar Gomes da Silva. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff3">
+				<label>III</label>
+				<institution content-type="normalized">Instituto Nacional do Câncer</institution>
+				<institution content-type="orgname">Instituto Nacional de Câncer José Alencar Gomes da Silva</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country country="BR">Brasil</country>
+				<institution content-type="original"> Serviço de Edição e Informação Técnico Científica. Coordenação de Prevenção e Vigilância. Instituto Nacional de Câncer José Alencar Gomes da Silva. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff4">
+				<label>IV</label>
+				<institution content-type="normalized">Universidade do Estado do Rio de Janeiro</institution>
+				<institution content-type="orgdiv1">Faculdade de Ciência Médicas</institution>
+				<institution content-type="orgdiv2">Núcleo de Estudos da Saúde do Adolescente</institution>
+				<institution content-type="orgname">Universidade do Estado do Rio de Janeiro</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country country="BR">Brasil</country>
+				<institution content-type="original">Faculdade de Ciência Médicas. Núcleo de Estudos da Saúde do Adolescente. Universidade do Estado do Rio de Janeiro. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff5">
+				<label>V</label>
+				<institution content-type="normalized">Universidade Federal do Rio de Janeiro</institution>
+				<institution content-type="orgdiv1">Instituto de Estudos em Saúde Coletiva</institution>
+				<institution content-type="orgname">Universidade Federal do Rio de Janeiro</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country country="BR">Brasil</country>
+				<institution content-type="original">Instituto de Estudos em Saúde Coletiva. Universidade Federal do Rio de Janeiro. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<author-notes>
+				<corresp>
+					<label>Correspondence</label>: Valeska Carvalho Figueiredo Avenida Brasil 4036 Sala 909 Manguinhos 21040-361 Rio de Janeiro, RJ, Brasil E-mail: <email>valeskacf@ensp.fiocruz.br</email>
+				</corresp>
+				<fn fn-type="con">
+					<p><bold>Authors’ Contribution:</bold> Creation and planning of the study: VCF, KVB, ASS, MCCK, and MS. Analysis and interpretation of the data: VCF and KVB. Preparation and approval of the final draft of the manuscript: VCF, KVB, ASS, MCCK, MS, LCC, and TLNS. Interpretation of data: ASS, MCCK, MS, and LCC. Analysis of data: TLNS.</p>
+				</fn>
+				<fn fn-type="conflict">
+					<p><bold>Conflict of interest:</bold> The authors declare no conflict of interest.</p>
+				</fn>
+			</author-notes>
+			<pub-date pub-type="epub">
+				<day>23</day>
+				<month>02</month>
+				<year>2016</year>
+			</pub-date>
+			<volume>50</volume>
+			<issue>suppl 1</issue>
+			<elocation-id>12s</elocation-id>
+			<history>
+				<date date-type="received">
+					<day>3</day>
+					<month>10</month>
+					<year>2015</year>
+				</date>
+				<date date-type="accepted">
+					<day>16</day>
+					<month>11</month>
+					<year>2015</year>
+				</date>
+			</history>
+			<permissions>
+				<license license-type="open-access" xlink:href="http://creativecommons.org/licenses/by/4.0/">
+					<license-p>This is an Open Access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p>
+				</license>
+			</permissions>
+			<abstract>
+				<title>ABSTRACT</title>
+				<sec>
+					<title>OBJECTIVE</title>
+					<p> To estimate the prevalences of tobacco use, tobacco experimentation, and frequent smoking among Brazilian adolescents.</p>
+				</sec>
+				<sec>
+					<title>METHODS</title>
+					<p> We evaluated participants of the cross-sectional, nation-wide, school-based Study of Cardiovascular Risks in Adolescents (ERICA), which included 12- to 17-year-old adolescents from municipalities of over 100 thousand inhabitants. The study sample had a clustered, stratified design and was representative of the whole country, its geographical regions, and all 27 state capitals. The information was obtained with self-administered questionnaires. Tobacco experimentation was defined as having tried cigarettes at least once in life. Adolescents who had smoked on at least one day over the previous 30 days were considered current cigarette smokers. Having smoked cigarettes for at least seven consecutive days was an indicator for regular consumption of tobacco. Considering the complex sampling design, prevalences and 95% confidence intervals were estimated according to sociodemographic and socio-environmental characteristics.</p>
+				</sec>
+				<sec>
+					<title>RESULTS</title>
+					<p> We evaluated 74,589 adolescents. Among these, 18.5% (95%CI 17.7-19.4) had smoked at least once in life, 5.7% (95%CI 5.3-6.2) smoked at the time of the research, and 2.5% (95%CI 2.2-2.8) smoked often. Adolescents aged 15 to 17 years had higher prevalences for all indicators than those aged 12 to 14 years. The prevalences did not differ significantly between sexes. The highest prevalences were found in the South region and the lowest ones, in the Northeast region. Regardless of sex, the prevalences were found to be higher for adolescents who had had paid jobs, who lived with only one parent, and who reported having been in contact with smokers either inside or outside their homes. Female public school adolescents were found to smoke more than the ones from private schools.</p>
+				</sec>
+				<sec>
+					<title>CONCLUSIONS</title>
+					<p> Tobacco use among adolescents is still a challenge. Intending to reduce the prevalence of tobacco use among young people, especially the ones under socioeconomic vulnerability conditions, Brazil must consolidate and increase effective public health care measures.</p>
+				</sec>
+			</abstract>
+			<kwd-group xml:lang="en">
+				<kwd>Adolescent</kwd>
+				<kwd>Tobacco use, epidemiology</kwd>
+				<kwd>Prevalence</kwd>
+				<kwd>Survey</kwd>
+			</kwd-group>
+			<funding-group>
+				<award-group>
+					<funding-source>FINEP</funding-source>
+					<award-id>01090421</award-id>
+				</award-group>
+				<award-group>
+					<funding-source>CNPq</funding-source>
+					<award-id>565037/2010-2</award-id>
+				</award-group>
+				<funding-statement>Funding: Science and Technology Department of the Science, Technology and Strategic Inputs Secretariat (SCTIE) of the Ministry of Health (Decit/SCTIE/MS), Sectoral Health Fund (CT-Saúde) of the Ministry of Science, Technology and Innovation (MCTI). Protocols: FINEP (01090421), CNPq (565037/2010-2).</funding-statement>
+			</funding-group>
+			<counts>
+				<fig-count count="2"/>
+				<table-count count="4"/>
+				<equation-count count="0"/>
+				<ref-count count="22"/>
+				<page-count count="1"/>
+			</counts>
+		</article-meta>
+	</front>
+	<body>
+		<sec sec-type="intro">
+			<title>INTRODUCTION</title>
+			<p>Smoking is one of the main preventable causes of early development of diseases and death in the world. Smoking increases morbidity and mortality due to cardiovascular diseases, several types of cancer, and pulmonary diseases<xref ref-type="bibr" rid="B16"><sup>16</sup></xref>. Children who live with smoking parents or who are exposed to the environmental smoke of tobacco have increased risk of asthma, acute respiratory diseases, respiratory symptoms such as coughing and wheezing, and middle ear infections compared with children in smoke-free environments<xref ref-type="bibr" rid="B17"><sup>17</sup></xref>.</p>
+			<p>Smoking is usually started during adolescence. In the United States, most youngsters start smoking before the age of 18<xref ref-type="bibr" rid="B22"><sup>22</sup></xref>. In Brazil, according to National School Health Survey (PeNSE), a study conducted with ninth graders, over 30.0% of 13- to 15-year-olds try smoking before the age of 12<xref ref-type="bibr" rid="B1"><sup>1</sup></xref>. Nicotine addiction is rapidly established and young tobacco users are highly likely to keep smoking during their adult life. Early tobacco use is an independent predictor of the onset of nicotine addiction<xref ref-type="bibr" rid="B15"><sup>15</sup></xref>.</p>
+			<p>Smoking is also one of the main causes of health inequality worldwide. Socioeconomically underprivileged children are more likely to engage in hazardous behaviors and to consequently have smoke-related illnesses<xref ref-type="bibr" rid="B12"><sup>12</sup></xref>.</p>
+			<p>In order to deal with the increasing tobacco epidemic, member countries of the World Health Organization (WHO) developed the Framework Convention on Tobacco Control (FCTC), the first and only international public health treaty in the world, which has been in effect since February 2005<xref ref-type="bibr" rid="B21"><sup>21</sup></xref>. Brazil ratified FCTC in November 2005, but had already implemented a series of comprehensive and effective measures for controlling tobacco use with the creation of its <italic>Programa Nacional de Controle do Tabagismo</italic> (PNCT – National Tobacco Control Program). These measures included advertising bans on all type of media; bans on misleading descriptions such as light, ultra light, and regular; a ban on smoking in public indoor places; mandatory warnings in cigarette packs; and, more recently, a consistent policy for increasing taxes and prices of tobacco products<xref ref-type="fn" rid="fna"><sup>a</sup></xref>.</p>
+			<p>As a consequence of such policy, the prevalence of tobacco use decreased considerably, going from 34.8% in 1989 to 14.7% in 2013 in the population of 18 years of age or older (including young adults – 18 to 24 years, going from 29.0% to 10.6%). However, Brazil still faces many challenges in that field, such as the need to prevent people from engaging in smoking and to avoid the problems caused by the higher prevalence of tobacco use among low-income youngsters and adults<xref ref-type="bibr" rid="B14"><sup>14</sup></xref>.</p>
+			<p>This study aimed to estimate the prevalences of tobacco use, tobacco experimentation, and frequent smoking among Brazilian adolescents.</p>
+		</sec>
+		<sec sec-type="methods">
+			<title>METHODS</title>
+			<p>The Study of Cardiovascular Risks in Adolescents (ERICA) is a school based cross-sectional study that evaluated 12- to 17-year-old adolescents living in municipalities with over 100 thousand inhabitants in 2013/2014.</p>
+			<p>The sampling strategy of ERICA consisted in dividing the five regions into strata, which corresponded to state capital municipality and the set of municipalities with 100 thousand inhabitants or more in every region, totaling 32 strata. Following that, probabilistic sampling of schools was conducted in two stages. In the first one, the larger a school was, the higher its chances of being selected were. In turn, the farther away from a state capital a school was, the fewer chances it had of being picked. In the second one, three groups were selected from each unit that had been selected in the first stage. By using class years as variables for calculating ages, the only groups considered eligible were the ones in the seventh, eighth, and ninth grades of secondary school and the ones in the first, second, and third grades of high school. A detailed description of the sampling design can be found in a previous publication<xref ref-type="bibr" rid="B18"><sup>18</sup></xref>. We selected 1,251 schools in 124 Brazilian municipalities. All students in the selected groups were invited to take part in the study. Adolescents of ages outside the eligible range, pregnant students, or physically-challenged ones were excluded from the analysis.</p>
+			<p>The information was obtained from self-administered questionnaires with eleven theme sections. They were applied in the classrooms under the supervision of the study team. Details on the study protocol may be seen in Bloch et al.<xref ref-type="bibr" rid="B2"><sup>2</sup></xref> All adolescents answered questions about smoking, including consumption intensity and characteristics and environmental exposure to tobacco fumes. An LG<sup></sup> GM750Q handheld computer was used to collect the data.</p>
+			<p>In this study, tobacco experimentation was defined as having tried or smoked cigarettes at least once in life, even if one has only inhaled the smoke once or twice. The youngsters who had smoked cigarettes at least a day over the previous 30 days were considered current cigarette smokers. Both variables complied with the definitions by the World Health Organization (WHO) and by the Center for Disease Control and Prevention (CDC) in the Global Youth Tobacco Surveillance (GYTS)<xref ref-type="bibr" rid="B20"><sup>20</sup></xref>. In order to investigate frequent tobacco use, information that is hard to obtain for this age range, having smoked cigarettes for at least seven consecutive days was used as an indicator.</p>
+			<p>For the number of smokers, we used population estimates obtained by processing microdata from the Demographic Sensuses 2000 and 2010 performed by the Brazilian Institute of Geography and Statistics (IBGE), which were used to define sampling fractions<xref ref-type="fn" rid="fnb"><sup>b</sup></xref>. Estimates for the number of smokers and prevalence of variables regarding tobacco use were estimated with their respective 95% confidence intervals (95%CI) for the aggregate population, according to Brazilian region, sex, and age range (12-14 years; 15-17 years). We also estimated the percentages of current smokers according to categories of sociodemographic variables, as follows: ethnicity (black or <italic>parda</italic><xref ref-type="fn" rid="fnc"><sup>c</sup></xref><italic>versus</italic> white or other), having had a paid job over the previous year (yes; no), type of family (living with both parents <italic>versus</italic> living only with the father, only with the mother, with no parents), father’s education level (up to seven years of schooling; eight years or longer), mother’s education level (up to seven years of schooling; eight years or longer). In regards to the socioenvironmental variables, the percentage of current tobacco use was estimated among adolescents who had been in contact with smokers at home (yes; no), and who had been in contact with smokers outside home (yes; no), and by type of school (public or private).</p>
+			<p>The data were analyzed by the routines for analysis of complex samples of Stata version 13.0<xref ref-type="fn" rid="fnd"><sup>d</sup></xref>.</p>
+			<p>The study was approved by the Research Ethics Committee (REC) of the Instituto de Estudos em Saúde Coletiva of the Universidade Federal do Rio de Janeiro (IESC<italic>/</italic>UFRJ) and by a REC from each Brazilian state. Adolescents who signed assent forms took part in the study. Depending on state requirements, the adolescents had their parents sign informed consent forms.</p>
+		</sec>
+		<sec sec-type="results">
+			<title>RESULTS</title>
+			<p>Among the 74,589 adolescents who took part in the study, 18.5% had smoked at least once in life; 5.7% smoked at the time of the research; and 2.5% had smoked for seven consecutive days (<xref ref-type="table" rid="t1">Table 1</xref>). The prevalences did not differ significantly between sexes. Regardless of sex, the percentage of use at least once in life was twice as high in the 15- to 17-year age range than in the 12- to 14-year one, almost twice as high for current tobacco use, and three times as high for use on over seven days in a row.</p>
+			<p>
+				<table-wrap id="t1">
+					<label>Table 1</label>
+					<caption>
+						<title>Estimated number of smokers and prevalences of tobacco use among students according to consumption level, sex, age range, and macro-region. ERICA, Brazil, 2013-2014.</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="7%">
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" rowspan="3">Variable</th>
+								<th rowspan="3">n<sub>est</sub><sup>a</sup></th>
+								<th colspan="2">Brazil</th>
+								<th colspan="2">North</th>
+								<th colspan="2">Northeast</th>
+								<th colspan="2">Midwest</th>
+								<th colspan="2">Southeast</th>
+								<th colspan="2">Sout</th>
+							</tr>
+							<tr>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+							</tr>
+							<tr>
+								<th>%</th>
+								<th>95%CI</th>
+								<th>%</th>
+								<th>95%CI</th>
+								<th>%</th>
+								<th>95%CI</th>
+								<th>%</th>
+								<th>95%CI</th>
+								<th>%</th>
+								<th>95%CI</th>
+								<th>%</th>
+								<th>95%CI</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Tobacco experimentation<sup>b</sup></td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Male</td>
+								<td align="center">956,348</td>
+								<td align="center">18.8</td>
+								<td align="center">17.7-19.9</td>
+								<td align="center">20.2</td>
+								<td align="center">18.9-21.4</td>
+								<td align="center">15.7</td>
+								<td align="center">13.7-18.0</td>
+								<td align="center">21.8</td>
+								<td align="center">18.9-25.2</td>
+								<td align="center">18.5</td>
+								<td align="center">16.8-20.3</td>
+								<td align="center">22.4</td>
+								<td align="center">20.0-25.1</td>
+							</tr>
+							<tr>
+								<td>12-14</td>
+								<td align="center">284,045</td>
+								<td align="center">10.5</td>
+								<td align="center">9.4-11.7</td>
+								<td align="center">11.6</td>
+								<td align="center">10.2-13.1</td>
+								<td align="center">8.9</td>
+								<td align="center">6.6-12.0</td>
+								<td align="center">12.0</td>
+								<td align="center">10.1-14.2</td>
+								<td align="center">9.1</td>
+								<td align="center">7.6-11.0</td>
+								<td align="center">17.8</td>
+								<td align="center">14.6-21.5</td>
+							</tr>
+							<tr>
+								<td>15-17</td>
+								<td align="center">672,303</td>
+								<td align="center">28.0</td>
+								<td align="center">26.4-29.8</td>
+								<td align="center">29.7</td>
+								<td align="center">27.7-31.7</td>
+								<td align="center">23.3</td>
+								<td align="center">20.3-26.5</td>
+								<td align="center">32.8</td>
+								<td align="center">27.2-38.9</td>
+								<td align="center">29.1</td>
+								<td align="center">26.4-32.0</td>
+								<td align="center">27.8</td>
+								<td align="center">24.9-30.9</td>
+							</tr>
+							<tr>
+								<td>Female</td>
+								<td align="center">924,018</td>
+								<td align="center">18.3</td>
+								<td align="center">17.2-19.4</td>
+								<td align="center">18.2</td>
+								<td align="center">16.8-19.8</td>
+								<td align="center">14.6</td>
+								<td align="center">13.3-16.0</td>
+								<td align="center">21.1</td>
+								<td align="center">19.3-23.1</td>
+								<td align="center">18.1</td>
+								<td align="center">16.1-20.1</td>
+								<td align="center">24.3</td>
+								<td align="center">21.3-27.4</td>
+							</tr>
+							<tr>
+								<td>12-14</td>
+								<td align="center">294,112</td>
+								<td align="center">11.1</td>
+								<td align="center">9.9-12.3</td>
+								<td align="center">12.3</td>
+								<td align="center">10.8-14.1</td>
+								<td align="center">9.4</td>
+								<td align="center">7.6-11.4</td>
+								<td align="center">13.0</td>
+								<td align="center">11.0-15.2</td>
+								<td align="center">9.7</td>
+								<td align="center">7.9-11.8</td>
+								<td align="center">18.3</td>
+								<td align="center">14.6-22.7</td>
+							</tr>
+							<tr>
+								<td>15-17</td>
+								<td align="center">629,906</td>
+								<td align="center">26.2</td>
+								<td align="center">24.4-28.2</td>
+								<td align="center">24.8</td>
+								<td align="center">22.8-26.9</td>
+								<td align="center">20.3</td>
+								<td align="center">18.5-22.1</td>
+								<td align="center">27.4</td>
+								<td align="center">24.0-31.0</td>
+								<td align="center">31.0</td>
+								<td align="center">27.6-34.7</td>
+								<td align="center">30.0</td>
+								<td align="center">26.3-33.9</td>
+							</tr>
+							<tr>
+								<td colspan="14">
+									<hr/>
+								</td>
+							</tr>
+							<tr>
+								<td>Total</td>
+								<td align="center">1,880,367</td>
+								<td align="center">18.5</td>
+								<td align="center">17.7-19.4</td>
+								<td align="center">19.2</td>
+								<td align="center">18.1-20.4</td>
+								<td align="center">15.2</td>
+								<td align="center">13.9-16.5</td>
+								<td align="center">21.5</td>
+								<td align="center">19.9-23.1</td>
+								<td align="center">18.3</td>
+								<td align="center">16.9-19.8</td>
+								<td align="center">23.3</td>
+								<td align="center">21.5-25.3</td>
+							</tr>
+							<tr>
+								<td colspan="14">
+									<hr/>
+								</td>
+							</tr>
+							<tr>
+								<td>Current tobacco use<sup>c</sup></td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Male</td>
+								<td align="center">310,039</td>
+								<td align="center">6.0</td>
+								<td align="center">5.5-6.7</td>
+								<td align="center">6.6</td>
+								<td align="center">5.6-7.6</td>
+								<td align="center">5.1</td>
+								<td align="center">4.0-6.2</td>
+								<td align="center">6.9</td>
+								<td align="center">5.3-8.5</td>
+								<td align="center">6.1</td>
+								<td align="center">5.1-7.1</td>
+								<td align="center">7.0</td>
+								<td align="center">5.1-8.9</td>
+							</tr>
+							<tr>
+								<td>12-14</td>
+								<td align="center">105,006</td>
+								<td align="center">3.9</td>
+								<td align="center">3.2-4.6</td>
+								<td align="center">4.0</td>
+								<td align="center">3.1-5.0</td>
+								<td align="center">2.4</td>
+								<td align="center">1.5-3.3</td>
+								<td align="center">4.0</td>
+								<td align="center">2.4-5.7</td>
+								<td align="center">4.1</td>
+								<td align="center">2.8-5.3</td>
+								<td align="center">5.6</td>
+								<td align="center">3.7-7.5</td>
+							</tr>
+							<tr>
+								<td>15-17</td>
+								<td align="center">205,033</td>
+								<td align="center">8.5</td>
+								<td align="center">7.5-9.6</td>
+								<td align="center">9.4</td>
+								<td align="center">7.6-11.2</td>
+								<td align="center">8.1</td>
+								<td align="center">6.2-10.0</td>
+								<td align="center">10.2</td>
+								<td align="center">7.3 - 13.0</td>
+								<td align="center">8.3</td>
+								<td align="center">6.7-10.0</td>
+								<td align="center">8.7</td>
+								<td align="center">5.6-11.7</td>
+							</tr>
+							<tr>
+								<td>Female</td>
+								<td align="center">269,024</td>
+								<td align="center">5.3</td>
+								<td align="center">4.8-5.8</td>
+								<td align="center">5.1</td>
+								<td align="center">4.3-6.1</td>
+								<td align="center">4.2</td>
+								<td align="center">3.4-5.1</td>
+								<td align="center">5.7</td>
+								<td align="center">4.6-6.8</td>
+								<td align="center">5.2</td>
+								<td align="center">4.5-6.0</td>
+								<td align="center">7.6</td>
+								<td align="center">5.7-9.5</td>
+							</tr>
+							<tr>
+								<td>12-14</td>
+								<td align="center">98,965</td>
+								<td align="center">3.7</td>
+								<td align="center">3.1-4.3</td>
+								<td align="center">3.8</td>
+								<td align="center">2.9-4.8</td>
+								<td align="center">3.4</td>
+								<td align="center">2.2-4.5</td>
+								<td align="center">4.2</td>
+								<td align="center">2.8-5.6</td>
+								<td align="center">3.2</td>
+								<td align="center">2.3-4.2</td>
+								<td align="center">6.1</td>
+								<td align="center">3.9-8.3</td>
+							</tr>
+							<tr>
+								<td>15-17</td>
+								<td align="center">170,059</td>
+								<td align="center">7.1</td>
+								<td align="center">6.3-7.9</td>
+								<td align="center">6.7</td>
+								<td align="center">5.4-8.0</td>
+								<td align="center">5.2</td>
+								<td align="center">4.4-6.1</td>
+								<td align="center">7.3</td>
+								<td align="center">5.9-8.8</td>
+								<td align="center">7.4</td>
+								<td align="center">6.0-8.8</td>
+								<td align="center">9.3</td>
+								<td align="center">6.3-12.2</td>
+							</tr>
+							<tr>
+								<td colspan="14">
+									<hr/>
+								</td>
+							</tr>
+							<tr>
+								<td>Total</td>
+								<td align="center">579,063</td>
+								<td align="center">5.7</td>
+								<td align="center">5.3-6.2</td>
+								<td align="center">5.9</td>
+								<td align="center">5.2-6.7</td>
+								<td align="center">4.7</td>
+								<td align="center">4.0-5.6</td>
+								<td align="center">6.3</td>
+								<td align="center">5.2-7.6</td>
+								<td align="center">5.7</td>
+								<td align="center">5.0-6.4</td>
+								<td align="center">7.3</td>
+								<td align="center">6.2-8.7</td>
+							</tr>
+							<tr>
+								<td colspan="14">
+									<hr/>
+								</td>
+							</tr>
+							<tr>
+								<td>Smoked for seven consecutive days<sup>d</sup></td>
+								<td>
+								</td>
+								<td colspan="2">
+								</td>
+								<td colspan="5">
+								</td>
+								<td colspan="2">
+								</td>
+								<td colspan="2">
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Male</td>
+								<td align="center">136066</td>
+								<td align="center">2.7</td>
+								<td align="center">2.3-3.1</td>
+								<td align="center">2.3</td>
+								<td align="center">1.9-2.9</td>
+								<td align="center">1.7</td>
+								<td align="center">1.1-2.4</td>
+								<td align="center">4.5</td>
+								<td align="center">3.0-6.9</td>
+								<td align="center">2.7</td>
+								<td align="center">2.1-3.5</td>
+								<td align="center">3.3</td>
+								<td align="center">2.6-4.4</td>
+							</tr>
+							<tr>
+								<td>12-14</td>
+								<td align="center">29,515</td>
+								<td align="center">1.1</td>
+								<td align="center">0.8-1.4</td>
+								<td align="center">0.8</td>
+								<td align="center">0.5-1.3</td>
+								<td align="center">1.1</td>
+								<td align="center">0.5-2.2</td>
+								<td align="center">1.6</td>
+								<td align="center">1.0-2.6</td>
+								<td align="center">0.8</td>
+								<td align="center">0.5-1.4</td>
+								<td align="center">2.1</td>
+								<td align="center">1.2-3.8</td>
+							</tr>
+							<tr>
+								<td>15-17</td>
+								<td align="center">106,551</td>
+								<td align="center">4.4</td>
+								<td align="center">3.7-5.3</td>
+								<td align="center">4.0</td>
+								<td align="center">3.1-5.1</td>
+								<td align="center">2.3</td>
+								<td align="center">1.7-3.2</td>
+								<td align="center">7.8</td>
+								<td align="center">4.7-12.7</td>
+								<td align="center">4.8</td>
+								<td align="center">3.7-6.3</td>
+								<td align="center">4.8</td>
+								<td align="center">3.7-6.1</td>
+							</tr>
+							<tr>
+								<td>Female</td>
+								<td align="center">113,968</td>
+								<td align="center">2.3</td>
+								<td align="center">1.9-2.7</td>
+								<td align="center">2.0</td>
+								<td align="center">1.4-2.9</td>
+								<td align="center">1.2</td>
+								<td align="center">0.8-1.8</td>
+								<td align="center">3.0</td>
+								<td align="center">2.4-3.7</td>
+								<td align="center">2.3</td>
+								<td align="center">1.7-3.0</td>
+								<td align="center">3.7</td>
+								<td align="center">2.7-5.1</td>
+							</tr>
+							<tr>
+								<td>12-14</td>
+								<td align="center">29,758</td>
+								<td align="center">1.1</td>
+								<td align="center">0.9-1.4</td>
+								<td align="center">1.6</td>
+								<td align="center">1.0-2.7</td>
+								<td align="center">0.8</td>
+								<td align="center">0.4-1.6</td>
+								<td align="center">1.6</td>
+								<td align="center">0.9-2.9</td>
+								<td align="center">1.0</td>
+								<td align="center">0.7-1.5</td>
+								<td align="center">1.5</td>
+								<td align="center">0.9-2.3</td>
+							</tr>
+							<tr>
+								<td>15-17</td>
+								<td align="center">84,210</td>
+								<td align="center">3.5</td>
+								<td align="center">2.8-4.2</td>
+								<td align="center">2.5</td>
+								<td align="center">1.7-3.5</td>
+								<td align="center">1.7</td>
+								<td align="center">1.7-2.4</td>
+								<td align="center">4.5</td>
+								<td align="center">3.5-5.8</td>
+								<td align="center">3.7</td>
+								<td align="center">2.6-5.1</td>
+								<td align="center">6.3</td>
+								<td align="center">4.3-8.9</td>
+							</tr>
+							<tr>
+								<td colspan="14">
+									<hr/>
+								</td>
+							</tr>
+							<tr>
+								<td>Total</td>
+								<td align="center">250,034</td>
+								<td align="center">2.5</td>
+								<td align="center">2.2-2.8</td>
+								<td align="center">2.2</td>
+								<td align="center">1.7-2.7</td>
+								<td align="center">1.5</td>
+								<td align="center">1.1-1.9</td>
+								<td align="center">2.5</td>
+								<td align="center">1.9-3.1</td>
+								<td align="center">3.5</td>
+								<td align="center">2.9-4.3</td>
+								<td align="center">3.8</td>
+								<td align="center">2.8-5.1</td>
+							</tr>
+						</tbody>
+					</table>
+					<table-wrap-foot>
+						<fn id="TFN1">
+							<p><sup>a</sup> n<sub>est</sub>: estimated number of smokers using population estimates based on processing of microdata from IBGE’s 2000 and 2010 Demographic Sensuses<sup>b</sup>.</p>
+						</fn>
+						<fn id="TFN2">
+							<p><sup>b</sup> Tobacco experimentation – tried smoking cigarettes at least once in life.</p>
+						</fn>
+						<fn id="TFN3">
+							<p><sup>c</sup> Current tobacco use – smoked at least one day over the previous 30 days.</p>
+						</fn>
+						<fn id="TFN4">
+							<p><sup>d</sup> Smoked for seven consecutive days – smoked for at least seven consecutive days in life.</p>
+						</fn>
+					</table-wrap-foot>
+				</table-wrap>
+			</p>
+			<p>Analysis of the regional pattern showed that higher prevalences for tobacco experimentation, current tobacco use, and tobacco use for seven days in a row were observed in the South region, especially when compared with the ones in the North and Northeast regions, which had the lowest prevalences. A similar profile was observed in both sexes for the three indicators.</p>
+			<p>Although the predominance of the male sex was only statistically significant for prevalences of tobacco experimentation among 15- to 17-year-old adolescents in the North region and for current tobacco use in the Northeast region, that was a trend observed in the specific estimates for the three indicators, in the total population and in the oldest age ranges. Exceptions to this pattern were observed in the South region, where women showed the highest percentages in all subgroups, and also in the Southeast region, where the female sex was also predominant in tobacco experimentation – but only in the oldest age range. However, we observed these differences only in specific estimates, without any statistical significance found. The youngest age group had very similar percentages for the male and female sexes.</p>
+			<p>Analyzing the sample by its strata (<xref ref-type="fig" rid="f01">Figure</xref>), the prevalence of current tobacco use among men ranged from 2.8% in Boa Vista to 10.3% in Campo Grande. Vitoria, Cuiaba, Porto Alegre, and Florianopolis showed the highest percentages (≅ 7.5%) after Campo Grande. Following Boa Vista, the state capital municipalities with the lowest prevalences belong in the Northeast region, namely Salvador, Natal, Teresina, and Aracaju.</p>
+			<p>
+				<fig id="f01">
+					<label>Figure</label>
+					<caption>
+						<title>Prevalences (%) and 95%CI of tobacco use in male (A) and female (B) adolescents according to state capitals and strata of municipalities with over 100 thousand inhabitants in the countryside cities of the regions. ERICA, Brazil, 2013-2014.</title>
+					</caption>
+					<graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf01.jpg"/>
+				</fig>
+			</p>
+			<p>
+				<fig id="f31">
+					<label>Figure</label>
+					<caption>
+						<title>Prevalences (%) and 95%CI of tobacco use in male (A) and female (B) adolescents according to state capitals and strata of municipalities with over 100 thousand inhabitants in the countryside cities of the regions. ERICA, Brazil, 2013-2014.</title>
+					</caption>
+					<graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf31.jpg"/>
+				</fig>
+			</p>
+			<p>Among the female adolescents, the prevalence of current tobacco use per geographical strata ranged from 2.0% to 9.1%. Higher percentages were observed in Porto Alegre, followed by Florianopolis, Sao Paulo, and Rio Branco, which showed averages from 8.0% on. Although the differences are not statistically significant, these cities consistently showed slightly higher percentages in the female sex than in the male one. Such as in the male sex, lower prevalences were also found in municipalities in the Northeast region (Aracaju and Natal) and in the North region (Porto Velho) (<xref ref-type="fig" rid="f01">Figure</xref>).</p>
+			<p>The analysis of socioeconomic indicators (<xref ref-type="table" rid="t2">Table 2</xref>) shows there were no statistically significant differences in the prevalences of tobacco use according to reported ethnicity, education level, mother’s education level, and father’s education level for both sexes. Regardless of sex, the prevalence was higher for adolescents who had had paid jobs in the year prior to the study. Regarding the socioenvironmental indicators, higher prevalences were observed for youngsters who: did not live with both their parents, compared with the ones who did; reported having been in contact with smokers at home, compared with the ones who did not; had been in contact with smokers outside home, compared with the ones who did not. Female public school adolescents reported smoking more than the ones from private schools. Among males, that difference was only observed for specific estimates.</p>
+			<p>
+				<table-wrap id="t2">
+					<label>Table 2</label>
+					<caption>
+						<title>Prevalence of tobacco use (% of students who smoked at least one day over the previous 30 days), according to socioeconomic variables, exposure to smokers, and sex. ERICA, Brazil, 2013-2014.</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="20%">
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" rowspan="3">Variable</th>
+								<th colspan="2">Male</th>
+								<th colspan="2">Female</th>
+							</tr>
+							<tr>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+								<th colspan="2" style="font-weight:normal">
+									<hr/>
+								</th>
+							</tr>
+							<tr>
+								<th>%</th>
+								<th>95%CI</th>
+								<th>%</th>
+								<th>95%CI</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Ethnicity</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Black or <italic>parda</italic><sup>a</sup></td>
+								<td align="center">5.4</td>
+								<td align="center">4.5-6.2</td>
+								<td align="center">5.0</td>
+								<td align="center">4.2-5.8</td>
+							</tr>
+							<tr>
+								<td>White or others</td>
+								<td align="center">6.4</td>
+								<td align="center">5.6-7.2</td>
+								<td align="center">5.5</td>
+								<td align="center">4.9-6.1</td>
+							</tr>
+							<tr>
+								<td>Mother’s education level (years of schooling)<sup>b</sup></td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>&lt; 8</td>
+								<td align="center">5.6</td>
+								<td align="center">4.9-6.2</td>
+								<td align="center">4.6</td>
+								<td align="center">4.0-5.3</td>
+							</tr>
+							<tr>
+								<td>≥ 8</td>
+								<td align="center">5.7</td>
+								<td align="center">4.3-7.1</td>
+								<td align="center">5.4</td>
+								<td align="center">4.4-6.4</td>
+							</tr>
+							<tr>
+								<td>Father’s education level (years of schooling)<sup>c</sup></td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>&lt; 8</td>
+								<td align="center">4.9</td>
+								<td align="center">3.9-5.8</td>
+								<td align="center">3.1</td>
+								<td align="center">2.4-4.1</td>
+							</tr>
+							<tr>
+								<td>≥ 8</td>
+								<td align="center">4.9</td>
+								<td align="center">3.3-6.4</td>
+								<td align="center">4.3</td>
+								<td align="center">2.7-5.9</td>
+							</tr>
+							<tr>
+								<td>Has had a paid job</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Yes</td>
+								<td align="center">9.3</td>
+								<td align="center">8.1-10.5</td>
+								<td align="center">8.8</td>
+								<td align="center">7.5-10.1</td>
+							</tr>
+							<tr>
+								<td>No</td>
+								<td align="center">5.0</td>
+								<td align="center">4.3-5.6</td>
+								<td align="center">4.6</td>
+								<td align="center">4.0-5.1</td>
+							</tr>
+							<tr>
+								<td>Type of family</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Living with both parents</td>
+								<td align="center">4.8</td>
+								<td align="center">4.0-5.5</td>
+								<td align="center">4.4</td>
+								<td align="center">3.8-5.1</td>
+							</tr>
+							<tr>
+								<td>Other</td>
+								<td align="center">8.0</td>
+								<td align="center">6.8-9.2</td>
+								<td align="center">6.4</td>
+								<td align="center">5.7-7.1</td>
+							</tr>
+							<tr>
+								<td>Has been in contact with smokers at home</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Yes</td>
+								<td align="center">8.1</td>
+								<td align="center">6.7-9.6</td>
+								<td align="center">7.1</td>
+								<td align="center">6.2-8.0</td>
+							</tr>
+							<tr>
+								<td>No</td>
+								<td align="center">5.4</td>
+								<td align="center">4.7-6.1</td>
+								<td align="center">4.5</td>
+								<td align="center">4.0-5.1</td>
+							</tr>
+							<tr>
+								<td>Has been in contact with smokers outside home</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Yes</td>
+								<td align="center">9.9</td>
+								<td align="center">8.6-11.1</td>
+								<td align="center">7.6</td>
+								<td align="center">6.8-8.4</td>
+							</tr>
+							<tr>
+								<td>No</td>
+								<td align="center">3.6</td>
+								<td align="center">3.0-4.3</td>
+								<td align="center">2.7</td>
+								<td align="center">2.2-3.3</td>
+							</tr>
+							<tr>
+								<td>Type of school</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>Public</td>
+								<td align="center">6.1</td>
+								<td align="center">5.6-6.9</td>
+								<td align="center">5.7</td>
+								<td align="center">5.1-6.2</td>
+							</tr>
+							<tr>
+								<td>Private</td>
+								<td align="center">5.2</td>
+								<td align="center">3.5-7.0</td>
+								<td align="center">3.7</td>
+								<td align="center">2.3-5.1</td>
+							</tr>
+						</tbody>
+					</table>
+					<table-wrap-foot>
+						<fn id="TFN5">
+							<p><sup>a</sup> Mixed race involving African ancestry.</p>
+						</fn>
+						<fn id="TFN6">
+							<p><sup>b</sup> 23.8% without information.</p>
+						</fn>
+						<fn id="TFN7">
+							<p><sup>c</sup> 24.4% without information.</p>
+						</fn>
+					</table-wrap-foot>
+				</table-wrap>
+			</p>
+		</sec>
+		<sec sec-type="discussion">
+			<title>DISCUSSION</title>
+			<p>As ERICA is a large-scale study with a sample representative of a population of adolescent students of a wide age range (12 to 17 years) from municipalities with over 100 thousand inhabitants, its results provide a unique opportunity to evaluate the extent of tobacco use in this population. The study shows that 1.88 million adolescents of the target ages of the study reported having tried smoking, 579 thousand of them currently smoke, and 250 thousand have already smoked somewhat regularly, and that is a considerable number of youngsters with high chances of becoming regular smokers and addicted to nicotine<xref ref-type="bibr" rid="B9"><sup>9</sup></xref>.</p>
+			<p>By comparing the results from ERICA with the ones from the PeNSE conducted in 2012, the prevalences of tobacco experimentation (18.5% <italic>versus</italic> 19.6%, respectively) and current tobacco use (5.7% <italic>versus</italic> 5.1%, respectively) were similar, despite the target population of PeNSE being younger (86,0% between 13 and 15 years)<xref ref-type="bibr" rid="B6"><sup>6</sup></xref>.</p>
+			<p>In American countries that conducted the Global Youth Tobacco Survey, in different years between 2000 and 2010, the percentage of current cigarette smokers in the age range between 13 and 15 years varied considerably<xref ref-type="fn" rid="fne"><sup>e</sup></xref>. In the set of Latin American surveys, the average found was 16.3%. The lowest average – 4.3% – was found in Panama, and the highest one – 34.2% – in Chile, both in 2008. With the exception of Venezuela and Paraguay, all South American countries showed percentages above 15.0%. Therefore, prevalences found in Brazil are low when compared with its neighbor countries, and that is possibly the result from the country’s pioneer conduction of comprehensive, high-impact policies to reduce tobacco consumption among youngsters. Among these are the legislation that banned smoking in public indoor environments, the ban on advertising in all media, with the exception of points of sale, and the ban on misleading descriptions such as light or ultra light in cigarette packs<xref ref-type="bibr" rid="B8"><sup>8</sup></xref>.</p>
+			<p>The prevalences for consumption of cigarettes from the <italic>Pesquisa Nacional de Saúde</italic> (PNS – Brazilian National Health Survey), conducted in 2013 with 18- to 24-year-old subjects, found higher shares than the ones observed in ERICA’s 15- to 17-year-olds (mainly among boys). That suggests ERICA has not reflected the whole initiation as it is a process that, in Brazil, is also observed among young adults. One may point out as positive the fact that this population group also quits smoking more, which has been decreasing the share of 18- to 24-year-old smokers with time<xref ref-type="bibr" rid="B10"><sup>10</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B14"><sup>14</sup></xref>.</p>
+			<p>Among youngsters, the prevalence of tobacco use almost always increases with age, but the results found show a rapid evolution of tobacco use already at early ages. That information reinforces the importance of maintaining and expanding effective policies for this age group, aiming to reduce tobacco experimentation and its transition into regular use of cigarettes with consequent establishment of nicotine addiction. Besides the increase with age, world and Brazilian literature consistently show higher prevalences of tobacco use among men than among women<xref ref-type="bibr" rid="B16"><sup>16</sup></xref>. The pattern observed among adolescents is variable. Higher percentages are more common in the male sex; however, in regions and countries with high economic development, such as most countries in Europe and the United States, young female shows higher prevalence<xref ref-type="bibr" rid="B19"><sup>19</sup></xref>. The causes of differences between sexes are complex and multi-factorial.</p>
+			<p>The regional profile of tobacco use in ERICA is very similar to the one in PeNSE, with higher percentages of tobacco experimentation and current smoking in the South and Midwest regions, intermediate values in the Southeast region, and smaller values in the Northeast region. That profile of high prevalence in the South region has been observed both in household surveys targeting adults and among students<xref ref-type="bibr" rid="B10"><sup>10</sup></xref><sup>,</sup><xref ref-type="fn" rid="fnf"><sup>f</sup></xref>. As in ERICA, in these studies the women from the South region stand out even further when compared with the ones from other regions.</p>
+			<p>Factors associated with this higher prevalence of initiation in the South region, especially Porto Alegre, in relation to the remaining regions, must be investigated. Among the hypothesis proposed, we mention the concentration of tobacco crops in this region. The tobacco industry performs activities of different natures to convince authorities and the population of its economic importance, such as sponsoring community events and institutions, promoting a positive self-image, which could be seen as indirect advertising<xref ref-type="fn" rid="fng"><sup>g</sup></xref>. An alternative explanation could be the higher influence from European immigrants, who traditionally have high prevalences and transfer such influence throughout generations. The finding of a lower prevalence for the Northeast region, regardless of sex, has not been clarified either. The regional pattern reflects that observed in the state capitals, in which higher percentages were observed in the cities of the South region, with highlights to the female sex and to Campo Grande.</p>
+			<p>Strong scientific evidence indicates that, in the world and in Brazil, active and passive tobacco use is concentrated in low-income populations, which show more frequent tobacco initiation than population groups with higher purchasing power<xref ref-type="bibr" rid="B5"><sup>5</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B7"><sup>7</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B11"><sup>11</sup></xref>. Social, environmental, and individual conditions are pointed out in order to explain the higher vulnerability of poorer people. Among those, David et al.<xref ref-type="bibr" rid="B4"><sup>4</sup></xref> mention underprivileged adolescents’ poorer skills to resist the pressure from their parents and friends and from tobacco advertising, as a consequence of their weaker social skills, self-confidence, and self-esteem; higher prevalence among parents and friends, which fosters initiation among the poor; higher social stress; higher prevalence of psychiatric and alcohol-related comorbidities; and less social support.</p>
+			<p>In ERICA, the only indicators of socioeconomic conditions found to have strong ties with tobacco use were the type of family and having worked over the previous year. The relationship with the type of family was observed in previous studies<xref ref-type="bibr" rid="B1"><sup>1</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B11"><sup>11</sup></xref>. It is suggested that children who live with both their parents have better emotional structure and supervision from their parents in order to reinforce abstinence at this age. The importance of parental supervision was also observed in PeNSE, in which indicators such as “parents would care if their child smoked” were associated with the lower frequency of risk behaviors<xref ref-type="bibr" rid="B6"><sup>6</sup></xref>.</p>
+			<p>The association with work can be explained by two factors. Youngsters of that age generally work because they need to, and, therefore, they have low socioeconomic statuses; furthermore, these adolescents have enough income to buy cigarettes. This combination represents an important factor that drives consumption, and that shows the importance of measures to increase prices and taxes to reduce the use of tobacco in the general population, especially among young people<xref ref-type="bibr" rid="B3"><sup>3</sup></xref>. The potential of those measures was suggested by Szklo et al.<xref ref-type="bibr" rid="B14"><sup>14</sup></xref>, which link the reduction in the number of 18- to 24-year-old smokers – observed in PNS – to the raise in cigarette prices in recent years.<xref ref-type="fn" rid="fna"><sup>a</sup></xref>
+			</p>
+			<p>Unlike other studies conducted in Brazil, ERICA did not show tobacco use and parents’ education level were inversely associated<xref ref-type="bibr" rid="B1"><sup>1</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B6"><sup>6</sup></xref>. Classification errors could be used as a hypothesis to back such finding, based on the fact that some adolescents do not know what their parents’ education levels are. Almost 1/5 of the adolescents in ERICA reported not knowing or remembering their parents’ education levels.</p>
+			<p>Attending public schools is expected to be a proxy for low socioeconomic status and a social environment that, for all previously mentioned aspects related to poverty, could be associated with smoking. Such expected pattern was observed among female adolescents. However, in the male sex, the existing difference was not significant. Deeper analyses, which account for possible confounding factors and effect modification, may better clarify such relationships.</p>
+			<p>The association with having been in the presence of smokers at home or outside home corroborates the literature<xref ref-type="bibr" rid="B15"><sup>15</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B17"><sup>17</sup></xref>. For young people, the policies for promoting smoke-free environments are justified by the importance of “denormalization” and consequently by a community’s lower acceptance of the smoking behavior<xref ref-type="bibr" rid="B13"><sup>13</sup></xref>. In 2012, Brazil regulated its law of smoke-free environments, fully banning the habit of smoking from closed public environments<xref ref-type="fn" rid="fnh"><sup>h</sup></xref>. The potential of this law was pointed out in a recent study, in which a significant reduction in the exposure to passive smoking at home and at work was observed among the Brazilians, including the younger ones<xref ref-type="bibr" rid="B14"><sup>14</sup></xref>.</p>
+			<p>The absolute number and the prevalence of smokers observed in this study show that tobacco use among adolescents is still a challenge that requires effective public health care measures. Aiming to reduce the prevalence of tobacco use among young people, especially the ones under socioeconomic vulnerability conditions, Brazil must consolidate and increase the measures provided in the Framework Convention on Tobacco Control, which have great impacts in this population subgroup. Among these, we highlight the need to maintain and strengthen policies for raising taxes and prices and for fully banning advertising in places that sell tobacco products.</p>
+		</sec>
+	</body>
+	<back>
+		<ref-list>
+			<title>REFERENCES</title>
+			<ref id="B1">
+				<label>1</label>
+				<mixed-citation>1. Barreto SM, Giatti L, Oliveira-Campos M, Andreazzi MA, Malta DC. Experimentation and use of cigarette and other tobacco products among adolescents in the Brazilian state capitals (PeNSE 2012). <italic>Rev Bras Epidemiol</italic>. 2014;17 Suppl 1:62-76. DOI:10.1590/1809-4503201400050006</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Barreto</surname>
+							<given-names>SM</given-names>
+						</name>
+						<name>
+							<surname>Giatti</surname>
+							<given-names>L</given-names>
+						</name>
+						<name>
+							<surname>Oliveira-Campos</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Andreazzi</surname>
+							<given-names>MA</given-names>
+						</name>
+						<name>
+							<surname>Malta</surname>
+							<given-names>DC</given-names>
+						</name>
+					</person-group>
+					<article-title>Experimentation and use of cigarette and other tobacco products among adolescents in the Brazilian state capitals (PeNSE 2012)</article-title>
+					<source>Rev Bras Epidemiol</source>
+					<year>2014</year>
+					<volume>17</volume>
+					<supplement>Suppl 1</supplement>
+					<fpage>62</fpage>
+					<lpage>76</lpage>
+					<issue-id pub-id-type="doi">10.1590/1809-4503201400050006</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B2">
+				<label>2</label>
+				<mixed-citation>2. Bloch KV, Szklo M, Kuschnir MC, Abreu GA, Barufaldi LA, Klein CH et al. The Study of Cardiovascular Risk in Adolescents - ERICA: rationale, design and sample characteristics of a national survey examining cardiovascular risk factor profile in Brazilian adolescents. <italic>BMC Public Health</italic>. 2015;15:94. DOI:10.1186/s12889-015-1442-x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Bloch</surname>
+							<given-names>KV</given-names>
+						</name>
+						<name>
+							<surname>Szklo</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Kuschnir</surname>
+							<given-names>MC</given-names>
+						</name>
+						<name>
+							<surname>Abreu</surname>
+							<given-names>GA</given-names>
+						</name>
+						<name>
+							<surname>Barufaldi</surname>
+							<given-names>LA</given-names>
+						</name>
+						<name>
+							<surname>Klein</surname>
+							<given-names>CH</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title>The Study of Cardiovascular Risk in Adolescents - ERICA: rationale, design and sample characteristics of a national survey examining cardiovascular risk factor profile in Brazilian adolescents</article-title>
+					<source>BMC Public Health</source>
+					<year>2015</year>
+					<volume>15</volume>
+					<elocation-id>94</elocation-id>
+					<issue-id pub-id-type="doi">10.1186/s12889-015-1442-x</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B3">
+				<label>3</label>
+				<mixed-citation>3. Chaloupka FJ, Yurekli A, Fong GT. Tobacco taxes as a tobacco control strategy. <italic>Tob Control</italic>. 2012;21(2):172-180. DOI:10.1136/tobaccocontrol-2011-050417</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Chaloupka</surname>
+							<given-names>FJ</given-names>
+						</name>
+						<name>
+							<surname>Yurekli</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Fong</surname>
+							<given-names>GT</given-names>
+						</name>
+					</person-group>
+					<article-title>Tobacco taxes as a tobacco control strategy</article-title>
+					<source>Tob Control</source>
+					<year>2012</year>
+					<volume>21</volume>
+					<issue>2</issue>
+					<fpage>172</fpage>
+					<lpage>180</lpage>
+					<issue-id pub-id-type="doi">10.1136/tobaccocontrol-2011-050417</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B4">
+				<label>4</label>
+				<mixed-citation>4. David A, Esson K, Perucic AM, Fitzpatrick C. Tobacco use: equity and social determinants. In: Blas E, Kurup AS. Equity, social determinants and public health programmes. Geneve: World Health Organization; 2010. p.199-217.</mixed-citation>
+				<element-citation publication-type="book">
+					<person-group person-group-type="author">
+						<name>
+							<surname>David</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Esson</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Perucic</surname>
+							<given-names>AM</given-names>
+						</name>
+						<name>
+							<surname>Fitzpatrick</surname>
+							<given-names>C</given-names>
+						</name>
+					</person-group>
+					<chapter-title xml:lang="en">Tobacco use: equity and social determinants</chapter-title>
+					<person-group person-group-type="author">
+						<name>
+							<surname>Blas</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Kurup</surname>
+							<given-names>AS</given-names>
+						</name>
+					</person-group>
+					<source>Equity, social determinants and public health programmes</source>
+					<publisher-loc>Geneve</publisher-loc>
+					<publisher-name>World Health Organization</publisher-name>
+					<year>2010</year>
+					<fpage>199</fpage>
+					<lpage>217</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B5">
+				<label>5</label>
+				<mixed-citation>5. Fagan P, Moolchan ET, Lawrence D, Fernander A, Ponder PK. Identifying health disparities across the tobacco continuum. <italic>Addiction</italic>. 2007;102(Suppl 2):5-29. DOI:10.1111/j.1360-0443.2007.01952.x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Fagan</surname>
+							<given-names>P</given-names>
+						</name>
+						<name>
+							<surname>Moolchan</surname>
+							<given-names>ET</given-names>
+						</name>
+						<name>
+							<surname>Lawrence</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>Fernander</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Ponder</surname>
+							<given-names>PK</given-names>
+						</name>
+					</person-group>
+					<article-title>Identifying health disparities across the tobacco continuum</article-title>
+					<source>Addiction</source>
+					<year>2007</year>
+					<volume>102</volume>
+					<supplement>Suppl 2</supplement>
+					<fpage>5</fpage>
+					<lpage>29</lpage>
+					<issue-id pub-id-type="doi">10.1111/j.1360-0443.2007.01952.x</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B6">
+				<label>6</label>
+				<mixed-citation>6. Instituto Brasileiro de Geografia e Estatística. Pesquisa Nacional de Saúde do Escolar (PeNSE): 2012. Rio de Janeiro: Instituto Brasileiro de Geografia e Estatística; 2013.</mixed-citation>
+				<element-citation publication-type="report">
+					<person-group person-group-type="author">
+						<collab>Instituto Brasileiro de Geografia e Estatística</collab>
+					</person-group>
+					<source>Pesquisa Nacional de Saúde do Escolar (PeNSE): 2012</source>
+					<publisher-loc>Rio de Janeiro</publisher-loc>
+					<publisher-name>Instituto Brasileiro de Geografia e Estatística</publisher-name>
+					<year>2013</year>
+				</element-citation>
+			</ref>
+			<ref id="B7">
+				<label>7</label>
+				<mixed-citation>7. Kuipers MA, Monshouwer K, Laar M, Kunst AE. Tobacco control and socioeconomic inequalities in adolescent smoking in Europe. <italic>Am J Prev Med</italic>. 2015;49(5):e64-72.DOI:10.1016/j.amepre.2015.04.032</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Kuipers</surname>
+							<given-names>MA</given-names>
+						</name>
+						<name>
+							<surname>Monshouwer</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Laar</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Kunst</surname>
+							<given-names>AE</given-names>
+						</name>
+					</person-group>
+					<article-title>Tobacco control and socioeconomic inequalities in adolescent smoking in Europe</article-title>
+					<source>Am J Prev Med</source>
+					<year>2015</year>
+					<volume>49</volume>
+					<issue>5</issue>
+					<fpage>e64</fpage>
+					<lpage>e72</lpage>
+					<pub-id pub-id-type="doi">10.1016/j.amepre.2015.04.032</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B8">
+				<label>8</label>
+				<mixed-citation>8. Levy D, de Almeida LM, Szklo A. The Brazil SimSmoke policy simulation model: the effect of strong tobacco control policies on smoking prevalence and smoking-attributable deaths in a middle income nation. <italic>PLoS Med.</italic> 2012; 9(11):e1001336. DOI:10.1371/journal.pmed.1001336.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Levy</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>de Almeida</surname>
+							<given-names>LM</given-names>
+						</name>
+						<name>
+							<surname>Szklo</surname>
+							<given-names>A</given-names>
+						</name>
+					</person-group>
+					<article-title>The Brazil SimSmoke policy simulation model: the effect of strong tobacco control policies on smoking prevalence and smoking-attributable deaths in a middle income nation</article-title>
+					<source>PLoS Med</source>
+					<year>2012</year>
+					<volume>9</volume>
+					<issue>11</issue>
+					<elocation-id>e1001336</elocation-id>
+					<issue-id pub-id-type="doi">10.1371/journal.pmed.1001336.</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B9">
+				<label>9</label>
+				<mixed-citation>9. Mathers M, Toumbourou JW, Catalano RF, Williams J, Patton GC. Consequences of youth tobacco use: a review of prospective behavioural studies. <italic>Addiction.</italic>2006;101(7):948-58. DOI:10.1111/j.1360-0443.2006.01438.x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Mathers</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Toumbourou</surname>
+							<given-names>JW</given-names>
+						</name>
+						<name>
+							<surname>Catalano</surname>
+							<given-names>RF</given-names>
+						</name>
+						<name>
+							<surname>Williams</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Patton</surname>
+							<given-names>GC</given-names>
+						</name>
+					</person-group>
+					<article-title>Consequences of youth tobacco use: a review of prospective behavioural studies</article-title>
+					<source>Addiction.</source>
+					<year>2006</year>
+					<volume>101</volume>
+					<issue>7</issue>
+					<fpage>948</fpage>
+					<lpage>958</lpage>
+					<issue-id pub-id-type="doi">10.1111/j.1360-0443.2006.01438.x</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B10">
+				<label>10</label>
+				<mixed-citation>10. Ministério do Planejamento, Orçamento e Gestão. Instituto Brasileiro de Geografia e Estatística – IBGE. Diretoria de Pesquisas Coordenação de Trabalho e Rendimento. Pesquisa Nacional de Saúde 2013. Percepção do estado de saúde, estilos de vida e <italic>doenças crônicas.</italic> Brasil, Grandes Regiões e Unidades da Federação. Rio de Janeiro: Instituto Brasileiro de Geografia e Estatística; 2014.</mixed-citation>
+				<element-citation publication-type="report">
+					<person-group person-group-type="author">
+						<collab>Ministério do Planejamento, Orçamento e Gestão. Instituto Brasileiro de Geografia e Estatística – IBGE. Diretoria de Pesquisas Coordenação de Trabalho e Rendimento. Pesquisa Nacional de Saúde</collab>
+					</person-group>
+					<year>2013</year>
+					<source>Percepção do estado de saúde, estilos de vida e doenças crônicas. Brasil, Grandes Regiões e Unidades da Federação</source>
+					<publisher-loc>Rio de Janeiro</publisher-loc>
+					<publisher-name>Instituto Brasileiro de Geografia e Estatística</publisher-name>
+					<year>2014</year>
+				</element-citation>
+			</ref>
+			<ref id="B11">
+				<label>11</label>
+				<mixed-citation>11. Moor I, Rathmann K, Lenzi M, Pförtner TK, Nagelhout GE, de Looze M et al. Socioeconomic inequalities in adolescent smoking across 35 countries: a multilevel analysis of the role of family, school and peers. <italic>Eur J Public Health.</italic> 2015 Jun;25(3):457-63. DOI: 10.1093/eurpub/cku244.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Moor</surname>
+							<given-names>I</given-names>
+						</name>
+						<name>
+							<surname>Rathmann</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Lenzi</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Pförtner</surname>
+							<given-names>TK</given-names>
+						</name>
+						<name>
+							<surname>Nagelhout</surname>
+							<given-names>GE</given-names>
+						</name>
+						<name>
+							<surname>de Looze</surname>
+							<given-names>M</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title>Socioeconomic inequalities in adolescent smoking across 35 countries: a multilevel analysis of the role of family, school and peers</article-title>
+					<source>Eur J Public Health</source>
+					<year>2015</year>
+					<month>06</month>
+					<year>25</year>
+					<issue>3</issue>
+					<fpage>457</fpage>
+					<lpage>463</lpage>
+					<issue-id pub-id-type="doi">10.1093/eurpub/cku244.</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B12">
+				<label>12</label>
+				<mixed-citation>12. Pampel FC, Krueger PM, Denney JT. Socioeconomic Disparities in Health Behaviors. <italic>Annu Rev Sociol</italic>. 2010;36:349-370. DOI:10.1146/annurev.soc.012809.102529</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Pampel</surname>
+							<given-names>FC</given-names>
+						</name>
+						<name>
+							<surname>Krueger</surname>
+							<given-names>PM</given-names>
+						</name>
+						<name>
+							<surname>Denney</surname>
+							<given-names>JT</given-names>
+						</name>
+					</person-group>
+					<article-title>Socioeconomic Disparities in Health Behaviors</article-title>
+					<source>Annu Rev Sociol</source>
+					<year>2010</year>
+					<volume>36</volume>
+					<fpage>349</fpage>
+					<lpage>370</lpage>
+					<issue-id pub-id-type="doi">10.1146/annurev.soc.012809.102529</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B13">
+				<label>13</label>
+				<mixed-citation>13. Song AV, Dutra LM, Neilands TB, Glantz SA. Association of Smoke-Free Laws with Lower Percentages of New and Current Smokers Among Adolescents and Young Adults: an 11-year longitudinal study. <italic>JAMA Pediatr</italic>. 2015;169(9):e152285. DOI:10.1001/jamapediatrics.2015.228</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Song</surname>
+							<given-names>AV</given-names>
+						</name>
+						<name>
+							<surname>Dutra</surname>
+							<given-names>LM</given-names>
+						</name>
+						<name>
+							<surname>Neilands</surname>
+							<given-names>TB</given-names>
+						</name>
+						<name>
+							<surname>Glantz</surname>
+							<given-names>SA</given-names>
+						</name>
+					</person-group>
+					<article-title>Association of Smoke-Free Laws with Lower Percentages of New and Current Smokers Among Adolescents and Young Adults: an 11-year longitudinal study</article-title>
+					<source>JAMA Pediatr</source>
+					<year>2015</year>
+					<volume>169</volume>
+					<issue>9</issue>
+					<elocation-id>e152285</elocation-id>
+					<issue-id pub-id-type="doi">10.1001/jamapediatrics.2015.228</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B14">
+				<label>14</label>
+				<mixed-citation>14. Szklo A, Souza MC, Szklo M, et al. Smokers in Brazil: who are they? <italic>Tob</italic> Control Published Online First: [20 Aug 2015]. DOI:10.1136/tobaccocontrol-2015-052324</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Szklo</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Souza</surname>
+							<given-names>MC</given-names>
+						</name>
+						<name>
+							<surname>Szklo</surname>
+							<given-names>M</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title>Smokers in Brazil: who are they?</article-title>
+					<source>Tob Control</source>
+					<comment>Published Online First</comment>
+					<date-in-citation content-type="access-date">20 Aug 2015</date-in-citation>
+					<issue-id pub-id-type="doi">10.1136/tobaccocontrol-2015-052324</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B15">
+				<label>15</label>
+				<mixed-citation>15. U.S. Department of Health and Human Services. <italic>Preventing Tobacco Use Among Young People: A Report of the Surgeon General.</italic> Atlanta, GA: U.S. Department of Health and Human Services, Public Health Service, Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Office on Smoking and Health; 1994.</mixed-citation>
+				<element-citation publication-type="report">
+					<person-group person-group-type="author">
+						<collab>U.S. Department of Health and Human Services</collab>
+					</person-group>
+					<source>Preventing Tobacco Use Among Young People: A Report of the Surgeon General.</source>
+					<publisher-loc>Atlanta, GA</publisher-loc>
+					<publisher-name>U.S. Department of Health and Human Services, Public Health Service, Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Office on Smoking and Health</publisher-name>
+					<year>1994</year>
+				</element-citation>
+			</ref>
+			<ref id="B16">
+				<label>16</label>
+				<mixed-citation>16. U.S. Department of Health and Human Services. <italic>The Health Consequences of Smoking: 50 Years of Progress. A Report of the Surgeon General.</italic> Atlanta, GA: U.S. Department of Health and Human Services, Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Office on Smoking and Health, 2014. Printed with corrections, January 2014.</mixed-citation>
+				<element-citation publication-type="report">
+					<person-group person-group-type="author">
+						<collab>U.S. Department of Health and Human Services</collab>
+					</person-group>
+					<source>The Health Consequences of Smoking: 50 Years of Progress. A Report of the Surgeon General.</source>
+					<publisher-loc>Atlanta, GA</publisher-loc>
+					<publisher-name>U.S. Department of Health and Human Services, Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Office on Smoking and Health</publisher-name>
+					<year>2014</year>
+					<comment>Printed with corrections, January 2014</comment>
+				</element-citation>
+			</ref>
+			<ref id="B17">
+				<label>17</label>
+				<mixed-citation>17. U.S. Department of Health and Human Services. <italic>The Health Consequences of Involuntary Exposure to Tobacco Smoke: A Report of the Surgeon General</italic>. Washington, DC: Dept. of Health and Human Sevices, Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion (US), Office on Smoking and Health; 2006.</mixed-citation>
+				<element-citation publication-type="report">
+					<person-group person-group-type="author">
+						<name>
+							<surname>U.S.</surname>
+							<given-names>Department of Health</given-names>
+						</name>
+						<name>
+							<surname>Services</surname>
+							<given-names>Human</given-names>
+						</name>
+					</person-group>
+					<source>The Health Consequences of Involuntary Exposure to Tobacco Smoke: A Report of the Surgeon General</source>
+					<publisher-loc>Washington, DC</publisher-loc>
+					<publisher-name>Dept. of Health and Human Sevices, Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion (US), Office on Smoking and Health</publisher-name>
+					<year>2006</year>
+				</element-citation>
+			</ref>
+			<ref id="B18">
+				<label>18</label>
+				<mixed-citation>18. Vasconcellos MTL, Silva PLN, Szklo M, Kuschnir MCC, Klein CH, Abreu GA et al. Desenho da amostra do Estudo do Risco Cardiovascular em Adolescentes (ERICA). <italic>Cad Saude Publica</italic>. 2015;31(5):921-30. DOI:10.1590/0102-311X00043214</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Vasconcellos</surname>
+							<given-names>MTL</given-names>
+						</name>
+						<name>
+							<surname>Silva</surname>
+							<given-names>PLN</given-names>
+						</name>
+						<name>
+							<surname>Szklo</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Kuschnir</surname>
+							<given-names>MCC</given-names>
+						</name>
+						<name>
+							<surname>Klein</surname>
+							<given-names>CH</given-names>
+						</name>
+						<name>
+							<surname>Abreu</surname>
+							<given-names>GA</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title>Desenho da amostra do Estudo do Risco Cardiovascular em Adolescentes (ERICA)</article-title>
+					<source>Cad Saude Publica</source>
+					<year>2015</year>
+					<volume>31</volume>
+					<issue>5</issue>
+					<fpage>921</fpage>
+					<lpage>930</lpage>
+					<issue-id pub-id-type="doi">10.1590/0102-311X00043214</issue-id>
+				</element-citation>
+			</ref>
+			<ref id="B19">
+				<label>19</label>
+				<mixed-citation>19. Warren CW, Jones NR, Eriksen MP, Asma S; Global Tobacco Surveillance System (GTSS) collaborative group. Patterns of global tobacco use in young people and implications for future chronic disease burden in adults. <italic>Lancet.</italic> 2006;367(9512):749-53.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Warren</surname>
+							<given-names>CW</given-names>
+						</name>
+						<name>
+							<surname>Jones</surname>
+							<given-names>NR</given-names>
+						</name>
+						<name>
+							<surname>Eriksen</surname>
+							<given-names>MP</given-names>
+						</name>
+						<name>
+							<surname>Asma</surname>
+							<given-names>S</given-names>
+						</name>
+						<collab>Global Tobacco Surveillance System (GTSS) collaborative group</collab>
+					</person-group>
+					<article-title>Patterns of global tobacco use in young people and implications for future chronic disease burden in adults</article-title>
+					<source>Lancet</source>
+					<year>2006</year>
+					<volume>367</volume>
+					<issue>9512</issue>
+					<fpage>749</fpage>
+					<lpage>753</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B20">
+				<label>20</label>
+				<mixed-citation>20. Warren CW, Jones NR, Peruga A, Chauvin J, Baptiste JP, Costa de Silva V et al. Centers for Disease Control and Prevention (CDC). Global youth tobacco surveillance, 2000-2007. <italic>MMWR Surveill Summ</italic>. 2008;57(1):1-28.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Warren</surname>
+							<given-names>CW</given-names>
+						</name>
+						<name>
+							<surname>Jones</surname>
+							<given-names>NR</given-names>
+						</name>
+						<name>
+							<surname>Peruga</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Chauvin</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Baptiste</surname>
+							<given-names>JP</given-names>
+						</name>
+						<name>
+							<surname>Costa de Silva</surname>
+							<given-names>V</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title>Centers for Disease Control and Prevention (CDC). Global youth tobacco surveillance, 2000-2007</article-title>
+					<source>MMWR Surveill Summ</source>
+					<year>2008</year>
+					<volume>57</volume>
+					<issue>1</issue>
+					<fpage>1</fpage>
+					<lpage>28</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B21">
+				<label>21</label>
+				<mixed-citation>21. World Health Organization. WHO Framework Convention on Tobacco Control. Geneva, Switzerland: World Health Organization; 2003, updated reprint 2004, 2005.</mixed-citation>
+				<element-citation publication-type="report">
+					<person-group person-group-type="author">
+						<collab>World Health Organization</collab>
+					</person-group>
+					<source>WHO Framework Convention on Tobacco Control</source>
+					<publisher-loc>Geneva, Switzerland</publisher-loc>
+					<publisher-name>World Health Organization</publisher-name>
+					<year>2003</year>
+					<comment>updated reprint 2004</comment>
+					<year>2005</year>
+				</element-citation>
+			</ref>
+			<ref id="B22">
+				<label>22</label>
+				<mixed-citation>22. Wilkinson AV, Schabath MB, Prokhorov AV, Spitz MR. Age-related differences in factors associated with smoking initiation. <italic>Cancer Causes Control</italic>. 2007;18(6):635-44. DOI:10.1007/s10552-007-9008-6</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Wilkinson</surname>
+							<given-names>AV</given-names>
+						</name>
+						<name>
+							<surname>Schabath</surname>
+							<given-names>MB</given-names>
+						</name>
+						<name>
+							<surname>Prokhorov</surname>
+							<given-names>AV</given-names>
+						</name>
+						<name>
+							<surname>Spitz</surname>
+							<given-names>MR</given-names>
+						</name>
+					</person-group>
+					<article-title>Age-related differences in factors associated with smoking initiation</article-title>
+					<source>Cancer Causes Control</source>
+					<year>2007</year>
+					<volume>18</volume>
+					<issue>6</issue>
+					<fpage>635</fpage>
+					<lpage>644</lpage>
+					<issue-id pub-id-type="doi">10.1007/s10552-007-9008-6</issue-id>
+				</element-citation>
+			</ref>
+		</ref-list>
+		<fn-group>
+			<fn fn-type="supplementary-material" id="fna">
+				<label>a</label>
+				<p>Instituto Nacional de Câncer (INCA). Observatório da Política Nacional de Controle do Tabaco. Rio de Janeiro: Instituto Nacional do Câncer; 2015 [cited 2015 Sept 30]. Available from: <ext-link ext-link-type="uri" xlink:href="http://www2.inca.gov.br/wps/wcm/connect/observatorio_controle_tabaco/site/home">http://www2.inca.gov.br/wps/wcm/connect/observatorio_controle_tabaco/site/home</ext-link>
+				</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fnb">
+				<label>b</label>
+				<p> Instituto Brasileiro de Geografia e Estatística. Projeção da população no Brasil por sexo e idade: 2000-2060. Rio de Janeiro; 2013 [cited 2015 Sept]. Available from: <ext-link ext-link-type="uri" xlink:href="http://www.ibge.gov.br/home/estatistica/populacao/projecao_da_populacao/2013/default.shtm">http://www.ibge.gov.br/home/estatistica/populacao/projecao_da_populacao/2013/default.shtm</ext-link>
+				</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fnc">
+				<label>c</label>
+				<p> Mixed race involving African ancestry.</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fnd">
+				<label>d</label>
+				<p> StataCorp. Stata Statistical Software: Release 14. College Station, TX: StataCorp LP; 2015.</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fne">
+				<label>e</label>
+				<p>Panamerican Health Organization. Youth and tobacco in the Americas: results from the Global Youth Tobacco Survey 2000-2010. Washington (DC); Panamerican Health Organization [cited 2015 Sept 18]. Available from: <ext-link ext-link-type="uri" xlink:href="http://www.paho.org/hq./index.php?option=com_docman&amp;task=doc_view&amp;gid=17483&amp;Itemid=3482&amp;lang=pt">http://www.paho.org/hq./index.php?option=com_docman&amp;task=doc_view&amp;gid=17483&amp;Itemid=3482&amp;lang=pt</ext-link>
+				</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fnf">
+				<label>f</label>
+				<p>Instituto Nacional de Câncer – INCA. Vigescola. Vigilância de Tabagismo em Escolares. Dados e fatos de 17 cidades brasileiras. Instituto Nacional de Câncer, Rio de Janeiro, 2009. Available from: <ext-link ext-link-type="uri" xlink:href="http://www.inca.gov.br/vigescola/">http://www.inca.gov.br/vigescola/</ext-link>
+				</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fng">
+				<label>g</label>
+				<p>Instituto Nacional de Câncer (INCA). O programa de controle do tabagismo no Brasil: avanços e desafios. Rio de Janeiro: Instituto Nacional do Câncer; 2006.</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fnh">
+				<label>h</label>
+				<p>Brasil. Decreto nº 8.262, de 31 de maio de 2014. Altera o Decreto nº 2.018, de 1º de outubro de 1996, que regulamenta a Lei nº 9.294, de 15 de julho de 1996. <italic>Diario Oficial Uniao</italic>, Brasília (DF), 2 junho, 2014. Seção 1, p. 108</p>
+			</fn>
+			<fn fn-type="supplementary-material" id="fn2">
+				<p><bold>Funding:</bold> Science and Technology Department of the Science, Technology and Strategic Inputs Secretariat (SCTIE) of the Ministry of Health (Decit/SCTIE/MS), Sectoral Health Fund (CT-Saúde) of the Ministry of Science, Technology and Innovation (MCTI). Protocols: FINEP (01090421), CNPq (565037/2010-2).</p>
+			</fn>
+		</fn-group>
+	</back>
+	<sub-article article-type="translation" id="TRpt" xml:lang="pt">
+		<front-stub>
+			<article-categories>
+				<subj-group subj-group-type="heading">
+					<subject>Artigo Original</subject>
+				</subj-group>
+			</article-categories>
+			<title-group>
+				<article-title>ERICA: prevalência de tabagismo em adolescentes brasileiros</article-title>
+			</title-group>
+			<contrib-group>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Figueiredo</surname>
+						<given-names>Valeska Carvalho</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff1002"><sup>I</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Szklo</surname>
+						<given-names>André Salem</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff2002"><sup>II</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Costa</surname>
+						<given-names>Letícia Casado</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff3002"><sup>III</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Kuschnir</surname>
+						<given-names>Maria Cristina C</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff4002"><sup>IV</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Silva</surname>
+						<given-names>Thiago Luiz Nogueira da</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5002"><sup>V</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Bloch</surname>
+						<given-names>Katia Vergetti</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5002"><sup>V</sup></xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Szklo</surname>
+						<given-names>Moyses</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5002"><sup>V</sup></xref>
+				</contrib>
+			</contrib-group>
+			<aff id="aff1002">
+				<label>I</label>
+				<institution content-type="original">Centro de Estudos sobre Tabaco e Saúde. Escola Nacional de Saúde Pública Sergio Arouca. Fundação Oswaldo Cruz. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff2002">
+				<label>II</label>
+				<institution content-type="original">Divisão de Epidemiologia. Coordenação Geral de Ensino e Pesquisa. Instituto Nacional de Câncer José Alencar Gomes da Silva. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff3002">
+				<label>III</label>
+				<institution content-type="original">Serviço de Edição e Informação Técnico Científica. Coordenação de Prevenção e Vigilância. Instituto Nacional de Câncer José Alencar Gomes da Silva. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff4002">
+				<label>IV</label>
+				<institution content-type="original">Faculdade de Ciências Médicas. Núcleo de Estudos da Saúde do Adolescente. Universidade do Estado do Rio de Janeiro. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff5002">
+				<label>V</label>
+				<institution content-type="original">Instituto de Estudos em Saúde Coletiva. Universidade Federal do Rio de Janeiro. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<author-notes>
+				<corresp>
+					<label>Correspondência</label>: Valeska Carvalho Figueiredo. Avenida Brasil 4036 Sala 909 Manguinhos. 21040-361 Rio de Janeiro, RJ, Brasil. E-mail: valeskacf@ensp.fiocruz.br </corresp>
+				<fn fn-type="con">
+					<p><bold>Contribuição de autores:</bold> Concepção e planejamento do estudo: VCF, KVB, ASS, MCCK e MS. Análise e interpretação dos dados: VCF e KVB. Elaboração e aprovação da versão final do manuscrito: VCF, KVB, ASS, MCCK, MS, LCC e TLNS. Interpretação dos dados: ASS, MCCK, MS e LCC. Análise dos dados: TLNS.</p>
+				</fn>
+				<fn fn-type="conflict">
+					<p><bold>Conflito de Interesses:</bold> Os autores declaram não haver conflito de interesses.</p>
+				</fn>
+			</author-notes>
+			<abstract>
+				<title>RESUMO</title>
+				<sec>
+					<title>OBJETIVO</title>
+					<p> Estimar as prevalências de tabagismo, experimentação e fumo frequente em adolescentes brasileiros.</p>
+				</sec>
+				<sec>
+					<title>MÉTODOS</title>
+					<p> Foram avaliados os participantes do Estudo de Riscos Cardiovasculares em Adolescentes (ERICA), estudo transversal de base escolar e abrangência nacional. Participaram adolescentes de 12 a 17 anos de municípios com mais de 100 mil habitantes. A amostra foi estratificada e conglomerada e tem representatividade nacional, regional e para as 27 capitais. As informações foram obtidas usando-se questionário autopreenchível. Experimentação foi definida como: ter experimentado cigarros alguma vez na vida. Foram considerados fumantes atuais de cigarros aqueles que fumaram pelo menos um dia nos últimos 30 dias. Utilizou-se como indicador de uso frequente de tabaco ter fumado cigarros por pelo menos sete dias seguidos. Considerando-se o desenho complexo da amostra, prevalências e intervalos de confiança de 95% foram estimados segundo características sociodemográficas e socioambientais.</p>
+				</sec>
+				<sec>
+					<title>RESULTADOS</title>
+					<p> Foram avaliados 74.589 adolescentes; dentre esses, 18,5% (IC95% 17,7-19,4) fumaram pelo menos uma vez na vida, 5,7% (IC95% 5,3-6,2) fumavam no momento da pesquisa e 2,5% (IC95% 2,2-2,8) fumavam com frequência. Adolescentes de 15 a 17 anos tiveram prevalências mais elevadas de todos os indicadores comparados aos de 12 a 14 anos. As prevalências não apresentaram diferenças significativas entre sexos. Maiores prevalências foram observadas na região Sul e menores na região Nordeste. Independentemente de sexo, as prevalências foram maiores para adolescentes que tinham tido trabalho remunerado, nos que não moravam com os dois pais e que referiram ter tido contato com fumante em casa ou fora. Adolescentes do sexo feminino de escolas públicas fumavam mais do que as de escolas privadas.</p>
+				</sec>
+				<sec>
+					<title>CONCLUSÕES</title>
+					<p> O tabagismo entre adolescentes ainda é um desafio. Visando a redução da prevalência de tabagismo entre jovens, em especial os que se encontram em situação de vulnerabilidade socioeconômica, o Brasil deve consolidar e ampliar medidas de saúde pública efetivas.</p>
+				</sec>
+			</abstract>
+			<kwd-group xml:lang="pt">
+				<kwd>Adolescente</kwd>
+				<kwd>Tabagismo, Epidemiologia</kwd>
+				<kwd>Prevalência</kwd>
+				<kwd>Inquérito</kwd>
+			</kwd-group>
+		</front-stub>
+		<body>
+			<sec sec-type="intro">
+				<title>INTRODUÇÃO</title>
+				<p>O tabagismo é uma das principais causas evitáveis de adoecimento e morte precoces do mundo. Fumar aumenta a morbimortalidade por doenças cardiovasculares, vários tipos de câncer e doenças pulmonares<xref ref-type="bibr" rid="B16"><sup>16</sup></xref>. Crianças que convivem com pais fumantes ou que estão expostas à fumaça ambiental do tabaco apresentam maior risco de episódios de asma, doença respiratória aguda, sintomas respiratórios como tosse e chiado e infecções de ouvido médio, do que crianças não expostas<xref ref-type="bibr" rid="B17"><sup>17</sup></xref>.</p>
+				<p>O início do tabagismo em geral ocorre na adolescência. Nos Estados Unidos, a grande maioria dos jovens começa a fumar antes dos 18 anos de idade<xref ref-type="bibr" rid="B22"><sup>22</sup></xref>. No Brasil, segundo dados da Pesquisa Nacional de Saúde do Escolar (PeNSE), realizada com estudantes do nono ano, mais de 30,0% dos jovens de 13 a 15 anos experimenta fumar antes dos 12 anos de idade<xref ref-type="bibr" rid="B1"><sup>1</sup></xref>. A dependência da nicotina se estabelece rapidamente e a probabilidade de jovens usuários de tabaco continuarem fumando na fase adulta é elevada. O início precoce do tabagismo é um preditor independente da instalação da dependência da nicotina<xref ref-type="bibr" rid="B15"><sup>15</sup></xref>.</p>
+				<p>O tabagismo é também uma das principais causas de desigualdade em saúde no mundo. Crianças em desvantagem socioeconômica têm maior probabilidade de se engajarem em comportamentos de risco e, consequentemente, de desenvolverem agravos associados ao fumo<xref ref-type="bibr" rid="B12"><sup>12</sup></xref>.</p>
+				<p>Para enfrentar a escalada da epidemia do tabaco, países membros da Organização Mundial da Saúde (OMS) desenvolveram a Convenção Quadro Para o Controle do Tabaco (CQCT), primeiro e único tratado internacional de saúde pública do mundo, o qual se encontra em vigor desde fevereiro de 2005<xref ref-type="bibr" rid="B21"><sup>21</sup></xref>. O Brasil ratificou a CQCT em novembro de 2005, mas já em 1989, com a criação do Programa Nacional de Controle do Tabagismo (PNCT), implementou uma série de medidas abrangentes e efetivas de controle do tabaco, tais como: proibição da propaganda em todos os tipos de mídia; proibição de descritores enganosos <italic>light, ultra-light</italic> e regular; proibição de fumar em ambientes públicos fechados; obrigatoriedade na implantação de advertências com imagens nos maços de cigarros; e, mais recentemente, uma política consistente de aumento de impostos e preços dos produtos do tabaco<xref ref-type="fn" rid="fna002"><sup>a</sup></xref>.</p>
+				<p>Como consequência dessa política, a prevalência de tabagismo diminuiu consideravelmente, passando de 34,8% em 1989 a 14,7% em 2013 na população de 18 anos ou mais (inclusive entre os jovens adultos – 18 a 24 anos, passando de 29,0% a 10,6%). Porém o País ainda enfrenta muitos desafios nesse campo, como a necessidade de reduzir a iniciação e as inequidades provocadas pela maior prevalência de tabagismo em jovens e adultos de baixa renda<xref ref-type="bibr" rid="B14"><sup>14</sup></xref>.</p>
+				<p>O objetivo deste estudo foi estimar as prevalências de prevalências de tabagismo, experimentação de cigarros e fumo frequente em adolescentes brasileiros.</p>
+			</sec>
+			<sec sec-type="methods">
+				<title>MÉTODOS</title>
+				<p>O Estudo de Riscos Cardiovasculares em Adolescentes (ERICA) consiste em um estudo transversal, de base escolar, realizado em 2013-2014, em amostra representativa de escolares de 12 a 17 anos de municípios brasileiros com mais de 100 mil habitantes.</p>
+				<p>A estratégia de amostragem do ERICA consistiu em dividir as regiões em estratos correspondentes aos municípios das capitais e ao conjunto de municípios com 100 mil habitantes ou mais pertencentes ao interior de cada região, em um total de 32 estratos. Em seguida, realizou-se uma amostragem probabilística de escolas em dois estágios. No primeiro, foram selecionadas escolas com probabilidade diretamente proporcional ao tamanho das mesmas e inversamente proporcional à distância da capital. No segundo, selecionaram-se três turmas em cada unidade selecionada no primeiro estágio. Usando-se o ano da turma como variável informativa da idade, considerou-se elegíveis para a seleção apenas as classes dos sétimo, oitavo e nono anos do ensino fundamental e primeiro, segundo e terceiro anos do ensino médio. Descrição detalhada do desenho amostral encontra-se em publicação anterior<xref ref-type="bibr" rid="B18"><sup>18</sup></xref>. Foram selecionadas 1.251 escolas em 124 municípios brasileiros. Todos os escolares das turmas selecionadas foram convidados a participar do estudo. Adolescentes fora da faixa etária elegível, grávidas ou com alguma deficiência física foram excluídos da análise.</p>
+				<p>As informações foram obtidas a partir de um questionário autopreenchível, compreendendo onze blocos temáticos, aplicado em salas de aula, sob supervisão da equipe do estudo. Em Bloch et al.<xref ref-type="bibr" rid="B2"><sup>2</sup></xref> podem ser vistos detalhes sobre o protocolo. Todos os jovens responderam a perguntas sobre tabagismo, incluindo questões sobre intensidade e características do consumo e exposição ambiental à fumaça do tabaco. Para a coleta de dados utilizou-se um coletor eletrônico de dados individual portátil, modelo LG<sup>®</sup> GM750Q.</p>
+				<p>Neste estudo, definiu-se como experimentação ter provado ou fumado cigarros alguma vez na vida, mesmo uma ou duas tragadas. Foram considerados fumantes atuais de cigarros os jovens que fumaram cigarros pelo menos um dia nos últimos 30 dias. Ambas as variáveis seguiram as definições adotadas pela OMS e pelo Centro para Prevenção e Controle de Doenças dos Estados Unidos (<italic>Centers for Disease Control and Prevention</italic> – CDC) na Vigilância Mundial de Tabagismo em Jovens (<italic>Global Youth Tobacco Surveillance</italic> – GYTS)<xref ref-type="bibr" rid="B20"><sup>20</sup></xref>. Para investigar o uso frequente de tabaco, informação de difícil apreensão para esse grupo etário, utilizou-se como indicador ter fumado cigarros por pelo menos sete dias seguidos.</p>
+				<p>O número de fumantes foi calculado utilizando-se estimativas de população obtidas por meio de processamento dos microdados dos Censos Demográficos de 2000 e 2010 do IBGE, cujas informações foram usadas para a definição de frações de amostragem<xref ref-type="fn" rid="fnb002"><sup>b</sup></xref>. Estimativas do número de fumantes e a prevalência das variáveis relativas ao tabagismo com seus respectivos intervalos de 95% de confiança (IC95%) foram calculadas para a população agregada, por regiões brasileiras, sexo e faixa etária (12-14 anos e 15-17 anos). Foram ainda calculados os percentuais de fumantes atuais segundo categorias de variáveis sociodemográficas, sendo essas: cor da pele (preta ou parda <italic>versus</italic> branca ou outra), ter tido trabalho remunerado no último ano (sim ou não), tipo de família (mora com pai e mãe <italic>versus</italic> mora somente com pai, somente com mãe, não mora com nenhum dos pais), escolaridade do pai (até sete anos de estudo <italic>versus</italic> oito anos ou mais), escolaridade da mãe (até sete anos de estudo <italic>versus</italic> oito anos ou mais). Quanto às variáveis socioambientais, estimou-se o percentual de tabagismo atual entre os adolescentes que estiveram em contato com fumantes em casa (sim ou não), que estiveram em contato com fumantes fora de casa (sim ou não) e por tipo de escola (pública ou privada).</p>
+				<p>Os dados foram analisados utilizando-se rotinas para análise de amostras complexas do Stata, versão 13.0<xref ref-type="fn" rid="fnc002"><sup>c</sup></xref>.</p>
+				<p>O estudo foi aprovado pelo Comitê de Ética em Pesquisa (CEP) do Instituto de Estudos em Saúde Coletiva da Universidade Federal do Rio de Janeiro (IESC/UFRJ) e por um CEP de cada unidade da federação. Participaram do estudo os adolescentes que assinaram termo de assentimento e, quando exigido pelo CEP local, eles trouxeram termo de consentimento livre e esclarecido assinado pelo responsável.</p>
+			</sec>
+			<sec sec-type="results">
+				<title>RESULTADOS</title>
+				<p>Dos 74.589 adolescentes que participaram do estudo, 18,5% fumaram pelo menos uma vez na vida, 5,7% fumavam no momento da pesquisa e 2,5% havia fumado por sete dias seguidos (<xref ref-type="table" rid="t1002">Tabela 1</xref>). As prevalências não apresentaram diferenças significativas entre sexos. Independentemente do sexo, o percentual de uso pelo menos uma vez na vida foi mais que o dobro na faixa etária de 15 a 17 anos em relação à de 12 a 14 anos, quase o dobro para tabagismo atual e três vezes maior para uso em mais de sete dias seguidos.</p>
+				<p>
+					<table-wrap id="t1002">
+						<label>Tabela 1</label>
+						<caption>
+							<title>Número estimado de escolares fumantes e prevalências de tabagismo por nível de consumo, sexo, grupo etário e macrorregião. ERICA, Brasil, 2013-2014.</title>
+						</caption>
+						<table frame="hsides" rules="groups">
+							<colgroup width="7%">
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+							</colgroup>
+							<thead>
+								<tr>
+									<th align="left" rowspan="3">Variável</th>
+									<th rowspan="3">n<sub>est</sub><sup>a</sup></th>
+									<th colspan="2">Brasil</th>
+									<th colspan="2">Norte</th>
+									<th colspan="2">Nordeste</th>
+									<th colspan="2">Centro-Oeste</th>
+									<th colspan="2">Sudeste</th>
+									<th colspan="2">Sul</th>
+								</tr>
+								<tr>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+								</tr>
+								<tr>
+									<th>%</th>
+									<th>IC95%</th>
+									<th>%</th>
+									<th>IC95%</th>
+									<th>%</th>
+									<th>IC95%</th>
+									<th>%</th>
+									<th>IC95%</th>
+									<th>%</th>
+									<th>IC95%</th>
+									<th>%</th>
+									<th>IC95%</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td colspan="2">Experimentação<sup>b</sup></td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Masculino</td>
+									<td align="center">956.348</td>
+									<td align="center">18,8</td>
+									<td align="center">17,7-19,9</td>
+									<td align="center">20,2</td>
+									<td align="center">18,9-21,4</td>
+									<td align="center">15,7</td>
+									<td align="center">13,7-18,0</td>
+									<td align="center">21,8</td>
+									<td align="center">18,9-25,2</td>
+									<td align="center">18,5</td>
+									<td align="center">16,8-20,3</td>
+									<td align="center">22,4</td>
+									<td align="center">20,0-25,1</td>
+								</tr>
+								<tr>
+									<td>12-14</td>
+									<td align="center">284.045</td>
+									<td align="center">10,5</td>
+									<td align="center">9.4-11.7</td>
+									<td align="center">11,6</td>
+									<td align="center">10.2-13.1</td>
+									<td align="center">8,9</td>
+									<td align="center">6,6-12,0</td>
+									<td align="center">12,0</td>
+									<td align="center">10,1-14,2</td>
+									<td align="center">9,1</td>
+									<td align="center">7,6-11,0</td>
+									<td align="center">17,8</td>
+									<td align="center">14,6-21,5</td>
+								</tr>
+								<tr>
+									<td>15-17</td>
+									<td align="center">672.303</td>
+									<td align="center">28,0</td>
+									<td align="center">26,4-29,8</td>
+									<td align="center">29,7</td>
+									<td align="center">27,7-31,7</td>
+									<td align="center">23,3</td>
+									<td align="center">20,3-26,5</td>
+									<td align="center">32,8</td>
+									<td align="center">27,2-38,9</td>
+									<td align="center">29,1</td>
+									<td align="center">26,4-32,0</td>
+									<td align="center">27,8</td>
+									<td align="center">24,9-30,9</td>
+								</tr>
+								<tr>
+									<td>Feminino</td>
+									<td align="center">924.018</td>
+									<td align="center">18,3</td>
+									<td align="center">17,2-19,4</td>
+									<td align="center">18,2</td>
+									<td align="center">16,8-19,8</td>
+									<td align="center">14,6</td>
+									<td align="center">13,3-16,0</td>
+									<td align="center">21,1</td>
+									<td align="center">19,3-23,1</td>
+									<td align="center">18,1</td>
+									<td align="center">16,1-20,1</td>
+									<td align="center">24,3</td>
+									<td align="center">21,3-27,4</td>
+								</tr>
+								<tr>
+									<td>12-14</td>
+									<td align="center">294.112</td>
+									<td align="center">11,1</td>
+									<td align="center">9,9-12,3</td>
+									<td align="center">12,3</td>
+									<td align="center">10,8-14,1</td>
+									<td align="center">9,4</td>
+									<td align="center">7,6-11,4</td>
+									<td align="center">13,0</td>
+									<td align="center">11,0-15,2</td>
+									<td align="center">9,7</td>
+									<td align="center">7,9-11,8</td>
+									<td align="center">18,3</td>
+									<td align="center">14,6-22,7</td>
+								</tr>
+								<tr>
+									<td>15-17</td>
+									<td align="center">629.906</td>
+									<td align="center">26,2</td>
+									<td align="center">24,4-28,2</td>
+									<td align="center">24,8</td>
+									<td align="center">22,8-26,9</td>
+									<td align="center">20,3</td>
+									<td align="center">18,5-22,1</td>
+									<td align="center">27,4</td>
+									<td align="center">24,0-31,0</td>
+									<td align="center">31,0</td>
+									<td align="center">27,6-34,7</td>
+									<td align="center">30,0</td>
+									<td align="center">26,3-33,9</td>
+								</tr>
+								<tr>
+									<td colspan="14">
+										<hr/>
+									</td>
+								</tr>
+								<tr>
+									<td>Total</td>
+									<td align="center">1.880.367</td>
+									<td align="center">18,5</td>
+									<td align="center">17,7-19,4</td>
+									<td align="center">19,2</td>
+									<td align="center">18,1-20,4</td>
+									<td align="center">15,2</td>
+									<td align="center">13,9-16,5</td>
+									<td align="center">21,5</td>
+									<td align="center">19,9-23,1</td>
+									<td align="center">18,3</td>
+									<td align="center">16,9-19,8</td>
+									<td align="center">23,3</td>
+									<td align="center">21,5-25,3</td>
+								</tr>
+								<tr>
+									<td colspan="14">
+										<hr/>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">Tabagismo atual<sup>c</sup></td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Masculino</td>
+									<td align="center">310.039</td>
+									<td align="center">6,0</td>
+									<td align="center">5,5-6,7</td>
+									<td align="center">6,6</td>
+									<td align="center">5,6-7,6</td>
+									<td align="center">5,1</td>
+									<td align="center">4,0-6,2</td>
+									<td align="center">6,9</td>
+									<td align="center">5,3-8,5</td>
+									<td align="center">6,1</td>
+									<td align="center">5,1-7,1</td>
+									<td align="center">7,0</td>
+									<td align="center">5,1-8,9</td>
+								</tr>
+								<tr>
+									<td>12-14</td>
+									<td align="center">105.006</td>
+									<td align="center">3,9</td>
+									<td align="center">3,2-4,6</td>
+									<td align="center">4,0</td>
+									<td align="center">3,1-5,0</td>
+									<td align="center">2,4</td>
+									<td align="center">1,5-3,3</td>
+									<td align="center">4,0</td>
+									<td align="center">2,4-5,7</td>
+									<td align="center">4,1</td>
+									<td align="center">2,8-5,3</td>
+									<td align="center">5,6</td>
+									<td align="center">3,7-7,5</td>
+								</tr>
+								<tr>
+									<td>15-17</td>
+									<td align="center">205.033</td>
+									<td align="center">8,5</td>
+									<td align="center">7,5-9,6</td>
+									<td align="center">9,4</td>
+									<td align="center">7,6-11,2</td>
+									<td align="center">8,1</td>
+									<td align="center">6,2-10,0</td>
+									<td align="center">10,2</td>
+									<td align="center">7,3-13,0</td>
+									<td align="center">8,3</td>
+									<td align="center">6,7-10,0</td>
+									<td align="center">8,7</td>
+									<td align="center">5,6-11,7</td>
+								</tr>
+								<tr>
+									<td>Feminino</td>
+									<td align="center">269.024</td>
+									<td align="center">5,3</td>
+									<td align="center">4,8-5,8</td>
+									<td align="center">5,1</td>
+									<td align="center">4,3-6,1</td>
+									<td align="center">4,2</td>
+									<td align="center">3,4-5,1</td>
+									<td align="center">5,7</td>
+									<td align="center">4,6-6,8</td>
+									<td align="center">5,2</td>
+									<td align="center">4,5-6,0</td>
+									<td align="center">7,6</td>
+									<td align="center">5,7-9,5</td>
+								</tr>
+								<tr>
+									<td>12-14</td>
+									<td align="center">98.965</td>
+									<td align="center">3,7</td>
+									<td align="center">3,1-4,3</td>
+									<td align="center">3,8</td>
+									<td align="center">2,9-4,8</td>
+									<td align="center">3,4</td>
+									<td align="center">2,2-4,5</td>
+									<td align="center">4,2</td>
+									<td align="center">2,8-5,6</td>
+									<td align="center">3,2</td>
+									<td align="center">2,3-4,2</td>
+									<td align="center">6,1</td>
+									<td align="center">3,9-8,3</td>
+								</tr>
+								<tr>
+									<td>15-17</td>
+									<td align="center">170.059</td>
+									<td align="center">7,1</td>
+									<td align="center">6,3-7,9</td>
+									<td align="center">6,7</td>
+									<td align="center">5,4-8,0</td>
+									<td align="center">5,2</td>
+									<td align="center">4,4-6,1</td>
+									<td align="center">7,3</td>
+									<td align="center">5,9-8,8</td>
+									<td align="center">7,4</td>
+									<td align="center">6,0-8,8</td>
+									<td align="center">9,3</td>
+									<td align="center">6,3-12,2</td>
+								</tr>
+								<tr>
+									<td colspan="14">
+										<hr/>
+									</td>
+								</tr>
+								<tr>
+									<td>Total</td>
+									<td align="center">579.063</td>
+									<td align="center">5,7</td>
+									<td align="center">5,3-6,2</td>
+									<td align="center">5,9</td>
+									<td align="center">5,2-6,7</td>
+									<td align="center">4,7</td>
+									<td align="center">4,0-5,6</td>
+									<td align="center">6,3</td>
+									<td align="center">5,2-7,6</td>
+									<td align="center">5,7</td>
+									<td align="center">5,0-6,4</td>
+									<td align="center">7,3</td>
+									<td align="center">6,2-8,7</td>
+								</tr>
+								<tr>
+									<td colspan="14">
+										<hr/>
+									</td>
+								</tr>
+								<tr>
+									<td>Fumou 7 dias seguidos<sup>d</sup></td>
+									<td>
+									</td>
+									<td colspan="2">
+									</td>
+									<td colspan="5">
+									</td>
+									<td colspan="2">
+									</td>
+									<td colspan="2">
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Masculino</td>
+									<td align="center">136.066</td>
+									<td align="center">2,7</td>
+									<td align="center">2,3-3,1</td>
+									<td align="center">2,3</td>
+									<td align="center">1,9-2,9</td>
+									<td align="center">1,7</td>
+									<td align="center">1,1-2,4</td>
+									<td align="center">4,5</td>
+									<td align="center">3,0-6,9</td>
+									<td align="center">2,7</td>
+									<td align="center">2,1-3,5</td>
+									<td align="center">3,3</td>
+									<td align="center">2,6-4,4</td>
+								</tr>
+								<tr>
+									<td>12-14</td>
+									<td align="center">29.515</td>
+									<td align="center">1,1</td>
+									<td align="center">0,8-1,4</td>
+									<td align="center">0,8</td>
+									<td align="center">0,5-1,3</td>
+									<td align="center">1,1</td>
+									<td align="center">0,5-2,2</td>
+									<td align="center">1,6</td>
+									<td align="center">1,0-2,6</td>
+									<td align="center">0,8</td>
+									<td align="center">0,5-1,4</td>
+									<td align="center">2,1</td>
+									<td align="center">1,2-3,8</td>
+								</tr>
+								<tr>
+									<td>15-17</td>
+									<td align="center">106.551</td>
+									<td align="center">4,4</td>
+									<td align="center">3,7-5,3</td>
+									<td align="center">4,0</td>
+									<td align="center">3,1-5,1</td>
+									<td align="center">2,3</td>
+									<td align="center">1,7-3,2</td>
+									<td align="center">7,8</td>
+									<td align="center">4,7-12,7</td>
+									<td align="center">4,8</td>
+									<td align="center">3,7-6,3</td>
+									<td align="center">4,8</td>
+									<td align="center">3,7-6,1</td>
+								</tr>
+								<tr>
+									<td>Feminino</td>
+									<td align="center">113.968</td>
+									<td align="center">2,3</td>
+									<td align="center">1,9-2,7</td>
+									<td align="center">2,0</td>
+									<td align="center">1,4-2,9</td>
+									<td align="center">1,2</td>
+									<td align="center">0,8-1,8</td>
+									<td align="center">3,0</td>
+									<td align="center">2,4-3,7</td>
+									<td align="center">2,3</td>
+									<td align="center">1,7-3,0</td>
+									<td align="center">3,7</td>
+									<td align="center">2,7-5,1</td>
+								</tr>
+								<tr>
+									<td>12-14</td>
+									<td align="center">29.758</td>
+									<td align="center">1,1</td>
+									<td align="center">0,9-1,4</td>
+									<td align="center">1,6</td>
+									<td align="center">1,0-2,7</td>
+									<td align="center">0,8</td>
+									<td align="center">0,4-1,6</td>
+									<td align="center">1,6</td>
+									<td align="center">0,9-2,9</td>
+									<td align="center">1,0</td>
+									<td align="center">0,7-1,5</td>
+									<td align="center">1,5</td>
+									<td align="center">0,9-2,3</td>
+								</tr>
+								<tr>
+									<td>15-17</td>
+									<td align="center">84.210</td>
+									<td align="center">3,5</td>
+									<td align="center">2,8-4,2</td>
+									<td align="center">2,5</td>
+									<td align="center">1,7-3,5</td>
+									<td align="center">1,7</td>
+									<td align="center">1,7-2,4</td>
+									<td align="center">4,5</td>
+									<td align="center">3,5-5,8</td>
+									<td align="center">3,7</td>
+									<td align="center">2,6-5,1</td>
+									<td align="center">6,3</td>
+									<td align="center">4,3-8,9</td>
+								</tr>
+								<tr>
+									<td colspan="14">
+										<hr/>
+									</td>
+								</tr>
+								<tr>
+									<td>Total</td>
+									<td align="center">250.034</td>
+									<td align="center">2,5</td>
+									<td align="center">2,2-2,8</td>
+									<td align="center">2,2</td>
+									<td align="center">1,7-2,7</td>
+									<td align="center">1,5</td>
+									<td align="center">1,1-1,9</td>
+									<td align="center">2,5</td>
+									<td align="center">1,9-3,1</td>
+									<td align="center">3,5</td>
+									<td align="center">2,9-4,3</td>
+									<td align="center">3,8</td>
+									<td align="center">2,8-5,1</td>
+								</tr>
+							</tbody>
+						</table>
+						<table-wrap-foot>
+							<fn id="TFN1002">
+								<p><sup>a</sup> n<sub>est</sub>: número estimado de fumantes utilizando-se estimativas de população obtidas por meio de processamento dos microdados dos Censos Demográficos de 2000 e 2010 do IBGE<sup>b.</sup></p>
+							</fn>
+							<fn id="TFN2002">
+								<p><sup>b</sup> Experimentação – tentou ou experimentou fumar cigarros alguma vez na vida.</p>
+							</fn>
+							<fn id="TFN3002">
+								<p><sup>c</sup> Tabagismo atual – fumou pelo menos 1 dia nos últimos 30 dias.</p>
+							</fn>
+							<fn id="TFN4002">
+								<p><sup>d</sup> Fumou 7 dias seguidos – fumou pelo menos 7 dias seguidos na vida.</p>
+							</fn>
+						</table-wrap-foot>
+					</table-wrap>
+				</p>
+				<p>A análise do padrão regional mostrou que maiores prevalências de experimentação, tabagismo atual e uso em sete dias seguidos foram observadas na região Sul, sobretudo quando comparadas às das regiões Norte e Nordeste, que apresentaram as prevalências mais baixas. Perfil semelhante foi observado para ambos os sexos para os três indicadores.</p>
+				<p>Embora o predomínio no sexo masculino tenha sido estatisticamente significante apenas para as prevalências de experimentação entre jovens de 15 a 17 anos no Norte e de tabagismo atual no Nordeste, essa foi uma tendência observada para as estimativas pontuais dos três indicadores, na população total e nas faixas etárias mais avançadas. Exceções a esse padrão ocorreram na região Sul, onde mulheres apresentaram maiores percentuais em todos os subgrupos, e na região Sudeste, onde também houve predomínio do sexo feminino para experimentação, mas apenas na faixa etária mais velha. Porém, essas diferenças também foram observadas apenas nas estimativas pontuais, sem que houvesse significância estatística. O grupo etário mais jovem apresentou percentuais muito semelhantes para o sexo masculino e feminino.</p>
+				<p>Analisando-se por estrato da amostra (<xref ref-type="fig" rid="f01002">Figura</xref>), a prevalência de tabagismo atual entre homens variou de 2,8% em Boa Vista a 10,3% em Campo Grande. Vitória, Cuiabá, Porto Alegre e Florianópolis apresentaram os maiores percentuais (≅ 7,5%) depois de Campo Grande. Seguindo-se Boa Vista, os municípios da capital com menores prevalências pertencem à região Nordeste, sendo estes Salvador, Natal, Teresina e Aracaju.</p>
+				<p>
+					<fig id="f01002">
+						<label>Figura</label>
+						<caption>
+							<title>Prevalências (%) e IC95% de tabagismo em adolescentes do sexo masculino (A) e feminino (B) por capitais e estratos de municípios com mais de 100 mil habitantes do interior das regiões. ERICA, Brasil, 2013-2014.</title>
+						</caption>
+						<graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg"/>
+					</fig>
+				</p>
+				<p>Entre adolescentes do sexo feminino, a prevalência de tabagismo corrente segundo estrato geográfico variou de 2,0% a 9,1%. Maiores percentuais foram observados em Porto Alegre, seguido de Florianópolis, São Paulo e Rio Branco, que apresentaram médias a partir de 8,0%. Embora as diferenças não sejam estatisticamente significantes, essas cidades consistentemente apresentaram percentuais discretamente mais elevados no sexo feminino do que no masculino. Assim como no sexo masculino, menores prevalências foram observadas em municípios das regiões Nordeste (Aracaju e Natal) e Norte (Porto Velho) (<xref ref-type="fig" rid="f01002">Figura</xref>).</p>
+				<p>A análise de indicadores socioeconômicos (<xref ref-type="table" rid="t2002">Tabela 2</xref>) mostra que não houve diferença estatisticamente significante nas prevalências de tabagismo de cigarros segundo cor da pele referida, nível de escolaridade da mãe e nível de escolaridade do pai para ambos os sexos. Independentemente de sexo, a prevalência foi maior para adolescentes que tinham tido trabalho remunerado no ano anterior ao estudo. Quanto aos indicadores socioambientais, prevalências mais elevadas foram observadas para jovens que: não moravam com os dois pais, em comparação aos que moravam com os dois pais; referiram ter tido contato com fumante em casa, em relação aos que referiram não ter tido contato com fumantes em casa; e tiveram contato com fumantes fora de casa, em comparação aos que não tiveram contato fora de casa. Adolescentes do sexo feminino de escolas públicas relataram fumar mais do que as de escolas privadas. No sexo masculino, essa diferença só foi observada para as estimativas pontuais.</p>
+				<p>
+					<table-wrap id="t2002">
+						<label>Tabela 2</label>
+						<caption>
+							<title>Prevalência (%) de tabagismo (% de escolares que fumou em pelo menos 1 dia nos últimos 30 dias), segundo variáveis socioeconômicas, exposição a fumantes e sexo. ERICA, Brasil, 2013-2014.</title>
+						</caption>
+						<table frame="hsides" rules="groups">
+							<colgroup width="20%">
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+								<col/>
+							</colgroup>
+							<thead>
+								<tr>
+									<th align="left" rowspan="3">Variável</th>
+									<th colspan="2">Masculino</th>
+									<th colspan="2">Feminino</th>
+								</tr>
+								<tr>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+									<th colspan="2" style="font-weight:normal">
+										<hr/>
+									</th>
+								</tr>
+								<tr>
+									<th>%</th>
+									<th>IC95%</th>
+									<th>%</th>
+									<th>IC95%</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Cor da pele</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Preta ou parda</td>
+									<td align="center">5,4</td>
+									<td align="center">4,5-6,2</td>
+									<td align="center">5,0</td>
+									<td align="center">4,2-5,8</td>
+								</tr>
+								<tr>
+									<td>Branca ou outras</td>
+									<td align="center">6,4</td>
+									<td align="center">5,6-7,2</td>
+									<td align="center">5,5</td>
+									<td align="center">4,9-6,1</td>
+								</tr>
+								<tr>
+									<td>Escolaridade da mãe (anos de estudo)<sup>a</sup></td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>&lt; 8</td>
+									<td align="center">5,6</td>
+									<td align="center">4,9-6,2</td>
+									<td align="center">4,6</td>
+									<td align="center">4,0-5,3</td>
+								</tr>
+								<tr>
+									<td>≥ 8</td>
+									<td align="center">5,7</td>
+									<td align="center">4,3-7,1</td>
+									<td align="center">5,4</td>
+									<td align="center">4,4-6,4</td>
+								</tr>
+								<tr>
+									<td>Escolaridade do pai (anos de estudo)<sup>b</sup></td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>&lt; 8</td>
+									<td align="center">4,9</td>
+									<td align="center">3,9-5,8</td>
+									<td align="center">3,1</td>
+									<td align="center">2,4-4,1</td>
+								</tr>
+								<tr>
+									<td>≥ 8</td>
+									<td align="center">4,9</td>
+									<td align="center">3,3-6,4</td>
+									<td align="center">4,3</td>
+									<td align="center">2,7-5,9</td>
+								</tr>
+								<tr>
+									<td>Trabalhou remuneradamente</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Sim</td>
+									<td align="center">9,3</td>
+									<td align="center">8,1-10,5</td>
+									<td align="center">8,8</td>
+									<td align="center">7,5-10,1</td>
+								</tr>
+								<tr>
+									<td>Não</td>
+									<td align="center">5,0</td>
+									<td align="center">4,3-5,6</td>
+									<td align="center">4,6</td>
+									<td align="center">4,0-5,1</td>
+								</tr>
+								<tr>
+									<td>Tipo de família</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Mora com pai e mãe</td>
+									<td align="center">4,8</td>
+									<td align="center">4,0-5,5</td>
+									<td align="center">4,4</td>
+									<td align="center">3,8-5,1</td>
+								</tr>
+								<tr>
+									<td>Outra</td>
+									<td align="center">8,0</td>
+									<td align="center">6,8-9,2</td>
+									<td align="center">6,4</td>
+									<td align="center">5,7-7,1</td>
+								</tr>
+								<tr>
+									<td>Esteve em contato com fumante em casa</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Sim</td>
+									<td align="center">8,1</td>
+									<td align="center">6,7-9,6</td>
+									<td align="center">7,1</td>
+									<td align="center">6,2-8,0</td>
+								</tr>
+								<tr>
+									<td>Não</td>
+									<td align="center">5,4</td>
+									<td align="center">4,7-6,1</td>
+									<td align="center">4,5</td>
+									<td align="center">4,0-5,1</td>
+								</tr>
+								<tr>
+									<td>Esteve em contato com fumante fora de casa</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Sim</td>
+									<td align="center">9,9</td>
+									<td align="center">8,6-11,1</td>
+									<td align="center">7,6</td>
+									<td align="center">6,8-8,4</td>
+								</tr>
+								<tr>
+									<td>Não</td>
+									<td align="center">3,6</td>
+									<td align="center">3,0-4,3</td>
+									<td align="center">2,7</td>
+									<td align="center">2,2-3,3</td>
+								</tr>
+								<tr>
+									<td>Tipo de escola</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+								<tr>
+									<td>Pública</td>
+									<td align="center">6,1</td>
+									<td align="center">5,6-6,9</td>
+									<td align="center">5,7</td>
+									<td align="center">5,1-6,2</td>
+								</tr>
+								<tr>
+									<td>Privada</td>
+									<td align="center">5,2</td>
+									<td align="center">3,5-7,0</td>
+									<td align="center">3,7</td>
+									<td align="center">2,3-5,1</td>
+								</tr>
+							</tbody>
+						</table>
+						<table-wrap-foot>
+							<fn id="TFN5002">
+								<p><sup>a</sup> 23,8% sem informação.</p>
+							</fn>
+							<fn id="TFN6002">
+								<p><sup>b</sup> 24,4% sem informação.</p>
+							</fn>
+						</table-wrap-foot>
+					</table-wrap>
+				</p>
+			</sec>
+			<sec sec-type="discussion">
+				<title>DISCUSSÃO</title>
+				<p>Sendo o ERICA um estudo de larga escala com amostra representativa de uma população de adolescentes, estudantes, numa faixa ampla de idade (12 a 17 anos) de municípios com mais de 100 mil habitantes, seus resultados oferecem uma oportunidade singular para avaliar a magnitude do tabagismo nesta população. O estudo mostra que mais de 1,88 milhões de adolescentes nas idades alvo do estudo experimentou fumar, 579 mil fuma atualmente e 250 mil já fumou com alguma regularidade, um número considerável de jovens com elevada probabilidade de se tornarem fumantes regulares e de desenvolverem a dependência da nicotina<xref ref-type="bibr" rid="B9"><sup>9</sup></xref>.</p>
+				<p>Confrontando-se os resultados do ERICA com os da PeNSE, realizada em 2012, a prevalência de experimentação (18,5% <italic>versus</italic> 19,6%, respectivamente) e de tabagismo atual (5,7% <italic>versus</italic> 5,1%, respectivamente) foram semelhantes, apesar de a população alvo da PeNSE ser mais jovem (86,0% entre 13-15 anos)<xref ref-type="bibr" rid="B6"><sup>6</sup></xref>.</p>
+				<p>Em países das Américas que realizaram o <italic>Global Youth Tobacco Survey</italic>, em anos distintos compreendidos entre 2000 e 2010, o percentual de fumantes atuais de cigarros na faixa etária de 13 a 15 anos variou consideravelmente<xref ref-type="fn" rid="fnd002"><sup>d</sup></xref>. No conjunto de levantamentos feitos na América Latina, a média encontrada foi de 16,3%, a mais baixa de 4,3% no Panamá e a mais elevada de 34,2% no Chile, ambas em 2008. À exceção da Venezuela e Paraguai, todos os países da América do Sul apresentaram percentuais acima de 15,0%. No Brasil, portanto, encontram-se prevalências baixas quando comparado a países vizinhos, possivelmente um reflexo do pioneirismo do País na condução de políticas abrangentes e de grande impacto na redução do consumo de tabaco entre jovens. Entre essas, estão a legislação que instituiu a proibição de fumar em ambientes públicos fechados, a proibição da propaganda em todas as mídias exceto em pontos de venda e a proibição de descritores enganosos <italic>light</italic> ou <italic>ultra-light</italic> nos maços de cigarros<xref ref-type="bibr" rid="B8"><sup>8</sup></xref>.</p>
+				<p>As prevalências de consumo de cigarro da Pesquisa Nacional de Saúde (PNS) realizada em 2013, com participantes de 18 a 24 anos, apresentam proporções mais altas do que aquelas observadas na população de 15 a 17 anos do ERICA (principalmente entre os meninos). Isso sugere que o ERICA não tenha capturado toda a iniciação por ser um processo que, no Brasil, acontece também entre adultos jovens. Pode-se apontar como um dado positivo o fato de que a cessação neste público jovem também aumentou, fazendo com que a proporção de fumantes entre 18-24 anos venha diminuindo ao longo do tempo<xref ref-type="bibr" rid="B10"><sup>10</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B14"><sup>14</sup></xref>.</p>
+				<p>Entre jovens, a prevalência de tabagismo quase sempre aumenta com a idade; mas os resultados encontrados mostram evolução do tabagismo ainda em idades precoces. Esse dado reforça a importância da manutenção e expansão de políticas efetivas para este grupo etário visando a redução da experimentação e da transição desta para uso frequente de cigarros e consequente estabelecimento da dependência da nicotina. Além do aumento com a idade, a literatura mundial e do Brasil consistentemente mostra em adultos prevalências de tabagismo maiores entre homens do que entre mulheres<xref ref-type="bibr" rid="B16"><sup>16</sup></xref>. O padrão observado entre adolescentes é variável. Percentuais mais elevados no sexo masculino são mais frequentes, porém em regiões e países com elevado nível de desenvolvimento econômico, como a maior parte dos países da Europa e Estados Unidos, a prevalência é mais alta no sexo feminino<xref ref-type="bibr" rid="B19"><sup>19</sup></xref>. As causas das diferenças entre gêneros são complexas e mutifatoriais.</p>
+				<p>O perfil regional do tabagismo no ERICA é muito semelhante ao observado na PeNSE, com maiores percentuais de experimentação e fumo atual no Sul e Centro-Oeste, valores intermediários no Sudeste e Norte e menores valores no Nordeste. Esse padrão de prevalência elevada na região Sul tem sido observado tanto em estudos domiciliares com alvo em adultos, quanto entre escolares<xref ref-type="bibr" rid="B10"><sup>10</sup></xref><sup>,</sup><xref ref-type="fn" rid="fne002"><sup>e</sup></xref>. Assim como no ERICA, nesses estudos, as mulheres da região Sul destacam-se ainda mais quando comparadas a outras regiões.</p>
+				<p>Fatores associados a essa prevalência de iniciação mais elevada na região Sul, em especial Porto Alegre, do que nas demais regiões devem ser investigados. Entre as hipóteses levantadas, menciona-se o fato de esta região concentrar o cultivo e produção de fumo. A indústria do tabaco desenvolve atividades de diversas naturezas para convencer as autoridades e a população de sua importância econômica, tais como patrocínio de eventos e instituições comunitárias, promovendo uma autoimagem positiva, a qual poderia ser uma forma de propaganda indireta<xref ref-type="fn" rid="fnf002"><sup>f</sup></xref>. Uma explicação alternativa seria a maior influência de migração europeia que tradicionalmente apresentou prevalências elevadas e a transferência dessa influência através de gerações. O achado de uma prevalência mais baixa para a região Nordeste, independentemente de gênero, também não está esclarecido. O padrão regional reflete o observado nas capitais, nas quais percentuais mais elevados foram observados nas cidades da região Sul, com destaque para o sexo feminino, e em Campo Grande.</p>
+				<p>Fortes evidências científicas indicam que no mundo e no Brasil o tabagismo ativo e passivo concentra-se em populações de baixa renda que apresenta maior iniciação do que grupos populacionais com maior poder aquisitivo<xref ref-type="bibr" rid="B5"><sup>5</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B7"><sup>7</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B11"><sup>11</sup></xref>. Condições sociais, ambientais e individuais são apontadas para explicar a maior vulnerabilidade de pessoas mais pobres. Entre essas, David et al.<xref ref-type="bibr" rid="B4"><sup>4</sup></xref> mencionam a menor habilidade de adolescentes em situação de desvantagem social para resistir à pressão de pais e amigos e à propaganda do tabaco, como consequência de menor competência social, autoconfiança e autoestima; maior prevalência entre pais e amigos estimulando a iniciação entre pobres; maior estresse social; maior prevalência de comorbidades psiquiátricas e de alcoolismo; e menor suporte social.</p>
+				<p>No ERICA, os únicos indicadores de condições socioeconômicas que apresentaram uma forte relação com o tabagismo foram o tipo de família e ter trabalhado no último ano. A relação com tipo de família foi observada em estudos prévios<xref ref-type="bibr" rid="B1"><sup>1</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B11"><sup>11</sup></xref>. Sugere-se que crianças que vivem com dois pais podem ter maior estruturação emocional e maior acompanhamento por parte dos pais no sentido de reforçar a importância da abstinência nessa idade. A importância do acompanhamento dos responsáveis foi observada também na PeNSE, na qual indicadores como “pais se importariam se filho fumasse” estiveram associados à menor frequência de comportamentos de risco<xref ref-type="bibr" rid="B6"><sup>6</sup></xref>.</p>
+				<p>A associação com trabalho pode ser explicada por dois fatores. Jovens dessa idade que trabalham, em geral, o fazem por necessidade e, portanto, apresentam baixa condição socioeconômica; adicionalmente, esses adolescentes têm renda suficiente para comprar cigarros. Essa combinação representa importante fator propulsor do consumo e mostra a importância de medidas de aumento de preços e impostos para redução do tabagismo na população em geral, sobretudo entre jovens<xref ref-type="bibr" rid="B3"><sup>3</sup></xref>. O potencial dessas medidas foram sugeridas por Szklo et al.<xref ref-type="bibr" rid="B14"><sup>14</sup></xref>, os quais atribuem a redução dos fumantes na faixa etária de 18 a 24 observada na PNS ao aumento de preços dos cigarros em anos recentes<xref ref-type="fn" rid="fna002"><sup>a</sup></xref>.</p>
+				<p>Diferentemente de outros estudos realizados no Brasil, o ERICA não mostrou associação inversa entre tabagismo e escolaridade dos pais<xref ref-type="bibr" rid="B1"><sup>1</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B6"><sup>6</sup></xref>. Uma hipótese para explicar este achado seria a de erros de classificação baseado no fato de que alguns adolescentes desconhecem qual seria o nível de escolaridade dos pais. Quase 1/5 dos adolescentes do ERICA disseram não saber ou não lembrar a escolaridade da mãe ou do pai.</p>
+				<p>Espera-se que estudar em escolas públicas seja um <italic>proxi</italic> de baixa condição socioeconômica e de um ambiente social que, por todas as questões relacionadas à pobreza apontadas anteriormente, poderia estar associado a fumar. Esse padrão esperado foi observado entre adolescentes do sexo feminino, mas no sexo masculino a diferença existente não foi significativa. Análises mais aprofundadas, que considerem possíveis fatores de confundimento e de modificação de efeito, poderão esclarecer melhor essas relações.</p>
+				<p>A associação com ter estado na presença de fumantes em casa e fora de casa está em consonância com a literatura<xref ref-type="bibr" rid="B15"><sup>15</sup></xref><sup>,</sup><xref ref-type="bibr" rid="B17"><sup>17</sup></xref>. Para os jovens, as políticas de promoção de ambientes livres do fumo justificam-se pela importância na “denormalização” e, consequentemente, menor aceitação de uma comunidade do comportamento de fumar<xref ref-type="bibr" rid="B13"><sup>13</sup></xref>. Em 2012, o Brasil regulamentou a lei de ambientes livres do fumo que passou a ser totalmente proibida em ambientes públicos fechados<xref ref-type="fn" rid="fng002"><sup>g</sup></xref>. O potencial dessa lei foi apontado em estudo recente no qual se observou redução significativa de exposição ao tabagismo passivo em casa e no trabalho entre os brasileiros, inclusive entre jovens<xref ref-type="bibr" rid="B14"><sup>14</sup></xref>.</p>
+				<p>O número absoluto e a prevalência de fumantes observados neste estudo mostram que o tabagismo entre adolescentes é ainda um desafio que requer medidas de saúde pública efetivas. Visando a redução da prevalência de tabagismo entre jovens, em especial os que se encontram em situação de vulnerabilidade socioeconômica, o Brasil deve consolidar e ampliar medidas previstas na Convenção Quadro para o Controle do Tabaco de grande impacto neste subgrupo populacional. Entre essas, destaca-se a necessidade de manutenção e fortalecimento das políticas de aumento de impostos e preços e o total banimento da propaganda em pontos de venda de produtos do tabaco.</p>
+			</sec>
+		</body>
+		<back>
+			<fn-group>
+				<fn fn-type="supplementary-material" id="fna002">
+					<label>a</label>
+					<p>Instituto Nacional de Câncer (INCA). Observatório da Política Nacional de Controle do Tabaco. Rio de Janeiro: Instituto Nacional do Câncer; 2015 [citado 2015 set 30]. Disponível em: <ext-link ext-link-type="uri" xlink:href="http://www2.inca.gov.br/wps/wcm/connect/observatorio_controle_tabaco/site/home">http://www2.inca.gov.br/wps/wcm/connect/observatorio_controle_tabaco/site/home</ext-link>
+					</p>
+				</fn>
+				<fn fn-type="supplementary-material" id="fnb002">
+					<label>b</label>
+					<p>Instituto Brasileiro de Geografia e Estatística. Projeção da população no Brasil por sexo e idade: 2000-2060. Rio de Janeiro; 2013 [citado 2015 set]. Disponível em: <ext-link ext-link-type="uri" xlink:href="http://www.ibge.gov.br/home/estatistica/populacao/projecao_da_populacao/2013/default.shtm">http://www.ibge.gov.br/home/estatistica/populacao/projecao_da_populacao/2013/default.shtm</ext-link>
+					</p>
+				</fn>
+				<fn fn-type="supplementary-material" id="fnc002">
+					<label>c</label>
+					<p>StataCorp. Stata Statistical Software: Release 14. College Station, TX: StataCorp LP; 2015.</p>
+				</fn>
+				<fn fn-type="supplementary-material" id="fnd002">
+					<label>d</label>
+					<p>Panamerican Health Organization. Youth and tobacco in the Americas: results from the Global Youth Tobacco Survey 2000-2010. Washington (DC); Panamerican Health Organization [citado 2015 set 18]. Disponível em: <ext-link ext-link-type="uri" xlink:href="http://www.paho.org/hq./index.php?option=com_docman&amp;task=doc_view&amp;gid=17483&amp;Itemid=3482&amp;lang=pt">http://www.paho.org/hq./index.php?option=com_docman&amp;task=doc_view&amp;gid=17483&amp;Itemid=3482&amp;lang=pt</ext-link>
+					</p>
+				</fn>
+				<fn fn-type="supplementary-material" id="fne002">
+					<label>e</label>
+					<p>Instituto Nacional de Câncer – INCA. Vigescola. Vigilância de Tabagismo em Escolares. Dados e fatos de 17 cidades brasileiras. Instituto Nacional de Câncer, Rio de Janeiro, 2009. Disponível em: <ext-link ext-link-type="uri" xlink:href="http://www.inca.gov.br/vigescola/">http://www.inca.gov.br/vigescola/</ext-link>
+					</p>
+				</fn>
+				<fn fn-type="supplementary-material" id="fnf002">
+					<label>f</label>
+					<p>Instituto Nacional de Câncer (INCA). O programa de controle do tabagismo no Brasil: avanços e desafios. Rio de Janeiro: Instituto Nacional do Câncer; 2006.</p>
+				</fn>
+				<fn fn-type="supplementary-material" id="fng002">
+					<label>g</label>
+					<p> Brasil. Decreto nº 8.262, de 31 de maio de 2014. Altera o Decreto nº 2.018, de 1º de outubro de 1996, que regulamenta a Lei nº 9.294, de 15 de julho de 1996. <italic>Diario Oficial Uniao,</italic> Brasília (DF), 2 junho, 2014. Seção 1, p. 108.</p>
+				</fn>
+			</fn-group>
+			<fn-group>
+				<fn fn-type="financial-disclosure" id="fn2002">
+					<p><bold>Financiamento:</bold> Departamento de Ciência e Tecnologia da Secretaria de Ciência e Tecnologia e Insumos Estratégicos do Ministério da Saúde (Decit/SCTIE/MS) e Fundo Setoria de Saúde (CT-Saúde) do Ministério da Ciência, Tecnologia e Inovação (MCTI). Protocolos: FINEP (01090421), CNPq (565037/2010-2).</p>
+				</fn>
+			</fn-group>
+		</back>
+	</sub-article>
+</article>
