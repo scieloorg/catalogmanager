@@ -303,29 +303,29 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
 def test_read_document_with_attachments(setup, database_service, xml_test):
     article_record = get_article_record({'Test': 'Test10'})
     file_id = "href_file"
-    content = io.StringIO(xml_test)
-    content_type = "text/xml"
-    content_size = len(xml_test)
-    expected = article_record.copy()
-    expected['attachments'] = [file_id]
+    attachment_list = [
+        file_id + str(cont)
+        for cont in range(3)
+    ]
     database_service.register(
         article_record['document_id'],
         article_record
     )
-    expected['created_date'] = article_record['created_date']
-    database_service.put_attachment(
-        document_id=article_record['document_id'],
-        file_id=file_id,
-        content=content,
-        file_properties={
-            'content_type': content_type,
-            'content_size': content_size
-        }
-    )
+    for file_id in attachment_list:
+        database_service.put_attachment(
+            document_id=article_record['document_id'],
+            file_id=file_id,
+            content=bytes(xml_test, encoding='utf-8'),
+            file_properties={
+                'content_type': "text/xml",
+                'content_size': len(xml_test)
+            }
+        )
 
     record_check = database_service.read(article_record['document_id'])
     assert record_check is not None
-    assert record_check == expected
+    for attachment in attachment_list:
+        assert attachment in record_check['attachments']
 
 
 def test_sort_result():

@@ -6,6 +6,7 @@ from catalog_persistence.models import (
     )
 from catalog_persistence.databases import (
         DatabaseService,
+        DocumentNotFound
     )
 from .data_services import DataServices
 from .models.article_model import (
@@ -24,6 +25,10 @@ def FileProperties(file):
         'file_name': file.name,
         'file_path': file.path,
     }
+
+
+class ArticleServicesException(Exception):
+    pass
 
 
 class ArticleServices:
@@ -74,3 +79,10 @@ class ArticleServices:
                     content=asset.file.content,
                     file_properties=FileProperties(asset.file)
                 )
+
+    def get_article_data(self, article_id):
+        try:
+            article_record = self.article_db_service.read(article_id)
+            return article_record
+        except DocumentNotFound:
+            raise ArticleServicesException

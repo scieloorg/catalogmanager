@@ -226,9 +226,9 @@ class CouchDBManager(BaseDBManager):
         doc = self.read(id)
         self.database.put_attachment(
             doc=doc,
-            content=content,
             filename=file_id,
-            content_type=content_properties['content_type']
+            content=content,
+            content_type=content_properties.get('content_type')
         )
 
     def list_attachments(self, id):

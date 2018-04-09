@@ -8,6 +8,7 @@ requires = [
     'pyramid-mako>=1.0.2',
     'pyramid_debugtoolbar>=4.4',
     'waitress',
+    'lxml',
 ]
 
 test_requires = ['webtest', 'pytest', 'pytest-cov']

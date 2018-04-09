@@ -1,16 +1,21 @@
 
+from unittest.mock import patch
+
+import pytest
+
 from catalog_persistence.databases import (
     InMemoryDBManager,
+    DatabaseService,
+    DocumentNotFound
 )
-
-from catalogmanager.article_services import(
+from catalog_persistence.models import RecordType
+from catalogmanager.article_services import (
     ArticleServices,
+    ArticleServicesException
 )
-
-from catalogmanager.models.article_model import(
+from catalogmanager.models.article_model import (
     Article,
 )
-
 from .conftest import (
     PKG_A,
 )
@@ -18,7 +23,7 @@ from .conftest import (
 
 def test_receive_xml_file():
 
-    xml_file_path, files = PKG_A[0], PKG_A[1:]
+    xml_file_path, _ = PKG_A[0], PKG_A[1:]
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
@@ -42,7 +47,7 @@ def test_receive_xml_file():
         '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg',
     ]
-    article = article_services.receive_xml_file('ID', xml_file_path)
+    article_services.receive_xml_file('ID', xml_file_path)
     got = article_services.article_db_service.read('ID')
     assert got['content']['xml'] == expected['content']['xml']
     assert sorted(got['content'].get('assets')) == sorted(expected_assets)
@@ -55,7 +60,7 @@ def test_receive_package():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
     article = Article('ID')
     article.xml_file = xml_file_path
-    assets = article.update_asset_files(files)
+    article.update_asset_files(files)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
@@ -66,3 +71,58 @@ def test_receive_package():
         'ID', xml_file_path, files)
     assert unexpected == []
     assert missing == []
+
+
+@patch.object(DatabaseService, 'read')
+def test_get_article_in_database(mocked_dataservices_read,
+                                 change_service,
+                                 inmemory_receive_article):
+    article_id = 'ID'
+    mocked_dataservices_read.return_value = {'document_id': article_id}
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    article_check = article_services.get_article_data(article_id)
+    assert article_check is not None
+    assert isinstance(article_check, dict)
+    mocked_dataservices_read.assert_called_with(article_id)
+
+
+@patch.object(DatabaseService, 'read', side_effect=DocumentNotFound)
+def test_get_article_in_database_not_found(mocked_dataservices_read,
+                                           change_service,
+                                           inmemory_receive_article):
+    article_id = 'ID'
+    mocked_dataservices_read.return_value = {'document_id': article_id}
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    pytest.raises(
+        ArticleServicesException,
+        article_services.get_article_data,
+        article_id
+    )
+
+
+def test_get_article_record(change_service,
+                            inmemory_receive_article,
+                            article_file,
+                            assets_files):
+    article_id = 'ID'
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    article_check = article_services.get_article_data(article_id)
+    assert article_check is not None
+    assert isinstance(article_check, dict)
+    assert article_check.get('document_id') == article_id
+    assert article_check.get('document_type') == RecordType.ARTICLE.value
+    assert article_check.get('content') is not None
+    assert isinstance(article_check['content'], dict)
+    assert article_check['content'].get('xml') is not None
+    assert article_check.get('created_date') is not None
+    assert article_check.get('attachments') is not None
+    assert isinstance(article_check['attachments'], list)

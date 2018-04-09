@@ -42,7 +42,7 @@ def test_missing_files_list():
     article = Article('ID')
     article.xml_file = xml_file_path
 
-    assets = article.update_asset_files(files)
+    article.update_asset_files(files)
 
     assert len(article.assets) == 3
     assert sorted(article.assets.keys()) == sorted(
@@ -63,7 +63,7 @@ def test_unexpected_files_list():
 
     article = Article('ID')
     article.xml_file = xml_file_path
-    assets = article.update_asset_files(files)
+    article.update_asset_files(files)
 
     assert len(article.assets) == 2
     assert sorted(article.assets.keys()) == sorted(
@@ -83,7 +83,7 @@ def test_update_href():
 
     article = Article('ID')
     article.xml_file = xml_file_path
-    assets = article.update_asset_files(files)
+    article.update_asset_files(files)
     content = article.xml_tree.content
     asset = article.assets.get(
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg')
