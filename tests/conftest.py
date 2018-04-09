@@ -173,7 +173,7 @@ def article_file(setup, article_tmp_dir, xml_test):
 
 
 @pytest.fixture
-def inmemory_receive_article(change_service):
+def inmemory_receive_package(change_service):
     article_services = ArticleServices(change_service[0], change_service[1])
     return article_services.receive_package('ID', PKG_A[0], PKG_A[1:])
 
@@ -210,7 +210,7 @@ def dbserver_service(functional_config, database_config):
 
 
 @pytest.fixture
-def couchdb_receive_article(dbserver_service, article_file, assets_files):
+def couchdb_receive_package(dbserver_service, article_file, assets_files):
     article_services = ArticleServices(
         dbserver_service[0],
         dbserver_service[1]

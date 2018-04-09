@@ -80,7 +80,7 @@ def test_receive_package():
 def test_get_article_in_database(mocked_dataservices_read,
                                  setup,
                                  change_service,
-                                 inmemory_receive_article):
+                                 inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_services = ArticleServices(
@@ -97,7 +97,7 @@ def test_get_article_in_database(mocked_dataservices_read,
 def test_get_article_in_database_not_found(mocked_dataservices_read,
                                            setup,
                                            change_service,
-                                           inmemory_receive_article):
+                                           inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_services = ArticleServices(
@@ -113,7 +113,7 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
 
 def test_get_article_record(setup,
                             change_service,
-                            inmemory_receive_article,
+                            inmemory_receive_package,
                             article_file,
                             assets_files):
     article_services = ArticleServices(
@@ -138,7 +138,7 @@ def test_get_article_record(setup,
 def test_get_article_file_in_database(mocked_get_attachment,
                                       setup,
                                       change_service,
-                                      inmemory_receive_article):
+                                      inmemory_receive_package):
     article_id = 'ID'
     article_services = ArticleServices(
         change_service[0],
@@ -155,7 +155,7 @@ def test_get_article_file_in_database(mocked_get_attachment,
 def test_get_article_file_not_found(mocked_get_attachment,
                                     setup,
                                     change_service,
-                                    inmemory_receive_article):
+                                    inmemory_receive_package):
     article_services = ArticleServices(
         change_service[0],
         change_service[1]
@@ -167,7 +167,7 @@ def test_get_article_file_not_found(mocked_get_attachment,
     )
 
 
-def test_get_article_file(setup, change_service, inmemory_receive_article):
+def test_get_article_file(setup, change_service, inmemory_receive_package):
     article_services = ArticleServices(
         change_service[0],
         change_service[1]
