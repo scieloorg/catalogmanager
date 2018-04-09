@@ -388,7 +388,8 @@ def test_get_attachment_not_found(setup, database_service, xml_test):
         article_record['document_id'],
         "filename"
     )
-    assert attachment is None
+    assert attachment is not None
+    assert len(attachment.getvalue()) == 0
 
 
 def test_sort_result():
