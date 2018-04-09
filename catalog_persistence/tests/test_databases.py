@@ -1,4 +1,3 @@
-import io
 from unittest.mock import patch
 
 import pytest
@@ -8,6 +7,7 @@ from uuid import uuid4
 from catalog_persistence.databases import (
     DocumentNotFound,
     ChangeType,
+    sort_results,
     DatabaseService
 )
 from catalog_persistence.models import get_record, RecordType
@@ -28,7 +28,7 @@ def test_register_document(setup, database_service):
         article_record
     )
 
-    check_list = database_service.find()
+    check_list = database_service.find({}, [], [])
     assert isinstance(check_list[0], dict)
     article_check = check_list[0]
     assert article_check['document_id'] == article_record['document_id']
@@ -389,3 +389,75 @@ def test_get_attachment_not_found(setup, database_service, xml_test):
         "filename"
     )
     assert attachment is None
+
+
+def test_sort_result():
+    sort = []
+    sort.append({'num': 'asc'})
+    sort.append({'name': 'asc'})
+    sort.append({'type': 'asc'})
+    results = []
+    results.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    results.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    results.append({'name': 'F', 'num': 500, 'type': 'A'})
+    results.append({'name': 'F', 'num': 200, 'type': 'B'})
+    expected = []
+    expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    expected.append({'name': 'F', 'num': 200, 'type': 'B'})
+    expected.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'F', 'num': 500, 'type': 'A'})
+    got = sort_results(results, sort)
+    assert expected == got
+
+    sort = []
+    sort.append({'name': 'asc'})
+    sort.append({'type': 'asc'})
+    sort.append({'num': 'asc'})
+    expected = []
+    expected.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    expected.append({'name': 'F', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'F', 'num': 200, 'type': 'B'})
+    got = sort_results(results, sort)
+    assert expected == got
+
+    sort = []
+    sort.append({'type': 'asc'})
+    sort.append({'name': 'asc'})
+    sort.append({'num': 'asc'})
+    expected = []
+    expected.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'F', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    expected.append({'name': 'F', 'num': 200, 'type': 'B'})
+    got = sort_results(results, sort)
+    assert expected == got
+
+    sort = []
+    sort.append({'type': 'desc'})
+    sort.append({'name': 'asc'})
+    sort.append({'num': 'asc'})
+    expected = []
+    expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    expected.append({'name': 'F', 'num': 200, 'type': 'B'})
+    expected.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'F', 'num': 500, 'type': 'A'})
+    got = sort_results(results, sort)
+    assert expected == got
+
+    sort = []
+    sort.append({'num': 'desc'})
+    sort.append({'type': 'desc'})
+    sort.append({'name': 'asc'})
+    results = []
+    results.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    results.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    results.append({'name': 'F', 'num': 500, 'type': 'A'})
+    results.append({'name': 'F', 'num': 200, 'type': 'Z'})
+    expected = []
+    expected.append({'name': 'Ana', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'F', 'num': 500, 'type': 'A'})
+    expected.append({'name': 'F', 'num': 200, 'type': 'Z'})
+    expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
+    got = sort_results(results, sort)
+    assert expected == got

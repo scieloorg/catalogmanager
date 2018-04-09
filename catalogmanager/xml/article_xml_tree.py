@@ -2,7 +2,6 @@
 
 from .xml_tree import (
     XMLTree,
-    etree
 )
 
 
@@ -31,15 +30,8 @@ class HRefNode:
         if self.href is not None and '/' in self.href:
             return self.href
 
-    @property
-    def xml(self):
-        return etree.tostring(self.node)
-
 
 class ArticleXMLTree(XMLTree):
-
-    def __init__(self, xml):
-        super().__init__(xml)
 
     @property
     def asset_nodes(self):
@@ -54,4 +46,5 @@ class ArticleXMLTree(XMLTree):
     @property
     def nodes_which_has_xlink_href(self):
         if self.tree is not None:
-            return self.tree.findall('.//*[@{http://www.w3.org/1999/xlink}href]')
+            return self.tree.findall(
+                './/*[@{http://www.w3.org/1999/xlink}href]')

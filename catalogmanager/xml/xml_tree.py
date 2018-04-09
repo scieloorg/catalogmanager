@@ -1,9 +1,7 @@
 # coding=utf-8
 
-import os
-
 from lxml import etree
-from io import StringIO
+from io import BytesIO
 
 
 namespaces = {}
@@ -17,43 +15,28 @@ for namespace_id, namespace_link in namespaces.items():
 
 class XMLTree:
 
-    def __init__(self, xml):
+    def __init__(self):
         self.tree = None
         self.xml_error = None
-        self.load(xml)
-
-    def _tostring(self):
-        return etree.tostring(self.tree.getroot(), encoding='utf-8')
-
-    @property
-    def file_name(self):
-        if os.path.isfile(self.file_fullpath):
-            return os.path.basename(self.file_fullpath)
 
     @property
     def content(self):
-        return str(self.bytes_content)
+        if self.tree is not None:
+            return etree.tostring(self.tree.getroot(), encoding='utf-8')
 
-    @property
-    def bytes_content(self):
-        return self._tostring()
+    @content.setter
+    def content(self, xml_content):
+        bytes_io = BytesIO(xml_content)
+        self.tree, self.xml_error = self.parse(bytes_io)
 
-    def load(self, xml):
-        self.tree, self.xml_error = self.parse(self.read(xml))
-
-    def read(self, xml):
-        self.file_fullpath = None
-        if '<' not in xml:
-            self.file_fullpath = xml
-            xml = open(self.file_fullpath).read()
-        return StringIO(xml)
-
-    def parse(self, content):
+    def parse(self, bytes_io):
         message = None
         try:
-            r = etree.parse(content)
+            r = etree.parse(bytes_io)
         except Exception as e:
             message = 'XML is not well formed\n'
-            raise e
             r = None
         return (r, message)
+
+    def compare(self, xml_content):
+        return self.content == xml_content

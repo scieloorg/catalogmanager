@@ -1,3 +1,4 @@
+import os
 import pytest
 from pyramid import testing
 from webtest import TestApp
@@ -9,6 +10,80 @@ from catalog_persistence.databases import (
     CouchDBManager,
     DatabaseService
 )
+
+
+FIXTURE_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    'test_files',
+    )
+
+
+PKG_A = [
+    os.path.join(
+        FIXTURE_DIR,
+        '741a',
+        '0034-8910-rsp-S01518-87872016050006741.xml'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741a',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741a',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+    ),
+]
+
+PKG_B = [
+    os.path.join(
+        FIXTURE_DIR,
+        '741b',
+        '0034-8910-rsp-S01518-87872016050006741.xml'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741b',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741b',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+    ),
+]
+
+
+PKG_C = [
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        '0034-8910-rsp-S01518-87872016050006741.xml'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
+    ),
+    os.path.join(
+        FIXTURE_DIR,
+        '741c',
+        'fig.jpg'
+    ),
+]
+
+
+def package_files(datafiles):
+    pkg_files = list([str(item) for item in datafiles.listdir()])
+    xml_file_path = pkg_files[0]
+    files = pkg_files[1:]
+    return xml_file_path, files
 
 
 @pytest.yield_fixture
@@ -46,32 +121,67 @@ def xml_test():
 
 
 @pytest.fixture
-def article_files(tmpdir, xml_test):
-    article_tmp_dir = tmpdir.mkdir("articles")
-    xml_file = article_tmp_dir.join("article.xml")
-    xml_file.write(xml_test)
-    files = []
-    for image in ["img1.png", "img2.png", "img3.png"]:
-        img = article_tmp_dir.join(image)
-        img.write(bytes(image, encoding='utf-8'))
-        files.append(img.strpath)
-    return xml_file.strpath, files
+def article_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'articles',
+    }
 
 
 @pytest.fixture
-def inmemory_article_location(change_service, article_files):
+def change_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'changes',
+    }
+
+
+@pytest.fixture
+def setup(request, functional_config, change_service):
+    database_service = DatabaseService(change_service[0], change_service[1])
+
+    def fin():
+        database_service.db_manager.drop_database()
+        database_service.changes_db_manager.drop_database()
+    request.addfinalizer(fin)
+
+
+@pytest.fixture
+def article_tmp_dir(tmpdir):
+    return tmpdir.mkdir("articles")
+
+
+@pytest.fixture
+def assets_files(setup, article_tmp_dir, xml_test):
+    files = []
+    for image in ["img1.png", "img2.png", "img3.png"]:
+        img = article_tmp_dir.join(image)
+        img.write(image.encode('utf-8'))
+        files.append(img.strpath)
+    return files
+
+
+@pytest.fixture
+def article_file(setup, article_tmp_dir, xml_test):
+    xml_file = article_tmp_dir.join("article.xml")
+    xml_file.write(xml_test.encode('utf-8'))
+    return xml_file.strpath
+
+
+@pytest.fixture
+def inmemory_receive_article(change_service):
     article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_article(
-        'ID',
-        article_files[0],
-        article_files[1]
-    )
+    return article_services.receive_package('ID', PKG_A[0], PKG_A[1:])
 
 
 @pytest.fixture
 def database_config():
     return {
-        'db_host': 'http://localhost',
+        'db_host': 'http://127.0.0.1',
         'db_port': '5984',
         'username': 'admin',
         'password': 'password'
@@ -81,12 +191,12 @@ def database_config():
 @pytest.fixture
 def dbserver_service(functional_config, database_config):
     couchdb_config = {
-        'couchdb.uri': '{}:{}'.format(
+        'database_uri': '{}:{}'.format(
             database_config['db_host'],
             database_config['db_port']
         ),
-        'couchdb.username': database_config['username'],
-        'couchdb.password': database_config['password'],
+        'database_username': database_config['username'],
+        'database_password': database_config['password'],
     }
 
     articles_database_config = couchdb_config.copy()
@@ -94,15 +204,15 @@ def dbserver_service(functional_config, database_config):
     changes_database_config = couchdb_config.copy()
     changes_database_config['database_name'] = "changes"
     return (
-        CouchDBManager(articles_database_config),
-        CouchDBManager(changes_database_config)
+        CouchDBManager(**articles_database_config),
+        CouchDBManager(**changes_database_config)
     )
 
 
 @pytest.fixture
-def couchdb_article_location(dbserver_service, article_files):
+def couchdb_receive_article(dbserver_service, article_file, assets_files):
     article_services = ArticleServices(
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_article('ID', article_files[0], article_files[1])
+    return article_services.receive_package('ID', article_file, assets_files)

@@ -1,5 +1,5 @@
 CouchDB==1.2
-lxml-4.2.1
+lxml==4.2.1
 Mako==1.0.7
 Pygments==2.2.0
 pyramid==1.9.1

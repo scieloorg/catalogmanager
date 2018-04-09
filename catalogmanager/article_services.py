@@ -10,7 +10,6 @@ from catalog_persistence.databases import (
 from .data_services import DataServices
 from .models.article_model import (
     Article,
-    File
 )
 
 
@@ -27,6 +26,10 @@ def FileProperties(file):
     }
 
 
+class ArticleServicesException(Exception):
+    pass
+
+
 class ArticleServices:
 
     def __init__(self, articles_db_manager, changes_db_manager):
@@ -34,9 +37,16 @@ class ArticleServices:
         self.article_db_service = DatabaseService(
             articles_db_manager, changes_db_manager)
 
-    def receive_article(self, id, xml, files):
-        article = Article(xml, files)
-        article.id = id
+    def receive_package(self, id, xml_file_path, files=None):
+        article = self.receive_xml_file(id, xml_file_path)
+        self.receive_asset_files(article, files)
+        return article.unexpected_files_list, article.missing_files_list
+
+    def receive_xml_file(self, id, xml_file_path):
+        article = Article(id)
+
+        article.xml_file = xml_file_path
+
         article_record = Record(
             document_id=article.id,
             content=article.get_record_content(),
@@ -45,30 +55,43 @@ class ArticleServices:
         self.article_db_service.register(
             article.id, article_record)
 
-        f = File(article.xml_tree.file_fullpath)
         self.article_db_service.put_attachment(
-                document_id=article.id,
-                file_id=f.name,
-                content=f.content,
-                file_properties=FileProperties(f)
-            )
+            document_id=article.id,
+            file_id=article.xml_file.name,
+            content=article.xml_tree.content,
+            file_properties=FileProperties(article.xml_file)
+        )
+        return article
 
-        if article.assets is not None:
-            for name, asset in article.assets.items():
+    def receive_asset_files(self, article, files):
+        if files is not None:
+            for file in files:
+                self.receive_asset_file(article, file)
+
+    def receive_asset_file(self, article, file):
+        if file is not None:
+            asset = article.update_asset_file(file)
+            if asset is not None:
                 self.article_db_service.put_attachment(
-                        document_id=article.id,
-                        file_id=asset.file.name,
-                        content=asset.file.content,
-                        file_properties=FileProperties(asset.file)
-                    )
-        return self.article_db_service.read(article.id)
+                    document_id=article.id,
+                    file_id=asset.file.name,
+                    content=asset.file.content,
+                    file_properties=FileProperties(asset.file)
+                )
+
+    def get_article_data(self, article_id):
+        try:
+            article_record = self.article_db_service.read(article_id)
+            return article_record
+        except DocumentNotFound:
+            raise ArticleServicesException
 
     def get_article_file(self, article_id):
-        article_record = self.article_db_service.read(article_id)
+        article_record = self.get_article_data(article_id)
         try:
             return self.article_db_service.get_attachment(
                 document_id=article_id,
                 file_id=article_record['content']['xml']
             )
         except DocumentNotFound:
-            return None
+            raise ArticleServicesException
