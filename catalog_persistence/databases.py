@@ -122,8 +122,7 @@ class InMemoryDBManager(BaseDBManager):
 
     def list_attachments(self, id):
         doc = self.read(id)
-        if doc.get(self._attachments_key):
-            return list(doc[self._attachments_key].keys())
+        return list(doc.get(self._attachments_key, {}).keys())
 
     def attachment_exists(self, id, file_id):
         doc = self.read(id)
@@ -212,8 +211,7 @@ class CouchDBManager(BaseDBManager):
 
     def list_attachments(self, id):
         doc = self.read(id)
-        if doc.get(self._attachments_key):
-            return list(doc[self._attachments_key].keys())
+        return list(doc.get(self._attachments_key, {}).keys())
 
     def attachment_exists(self, id, file_id):
         doc = self.read(id)
@@ -293,8 +291,10 @@ class DatabaseService:
         }
         if document.get('updated_date'):
             document_record['updated_date'] = document['updated_date']
-        document_record['attachments'] = \
-            self.db_manager.list_attachments(document_id)
+        attachments = self.db_manager.list_attachments(document_id)
+        if attachments:
+            document_record['attachments'] = \
+                self.db_manager.list_attachments(document_id)
         return document_record
 
     def update(self, document_id, document_record):
