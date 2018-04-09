@@ -76,7 +76,7 @@ def test_receive_package():
 @patch.object(DatabaseService, 'read')
 def test_get_article_in_database(mocked_dataservices_read,
                                  change_service,
-                                 inmemory_article_location):
+                                 inmemory_receive_article):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_services = ArticleServices(
@@ -92,7 +92,7 @@ def test_get_article_in_database(mocked_dataservices_read,
 @patch.object(DatabaseService, 'read', side_effect=DocumentNotFound)
 def test_get_article_in_database_not_found(mocked_dataservices_read,
                                            change_service,
-                                           inmemory_article_location):
+                                           inmemory_receive_article):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_services = ArticleServices(
@@ -107,7 +107,7 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
 
 
 def test_get_article_record(change_service,
-                            inmemory_article_location,
+                            inmemory_receive_article,
                             article_file,
                             assets_files):
     article_id = 'ID'
