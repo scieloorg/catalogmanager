@@ -178,3 +178,50 @@ def test_get_article_file(setup, change_service, inmemory_receive_package):
         xml_tree = XMLTree()
         xml_tree.content = file.read()
         assert xml_tree.compare(article_check)
+
+
+@patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)
+def test_get_asset_file_not_found(mocked_get_attachment,
+                                    setup,
+                                    change_service,
+                                    inmemory_receive_package):
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    pytest.raises(
+        ArticleServicesException,
+        article_services.get_asset_file,
+        'ID',
+        'file_id'
+    )
+
+
+def test_get_asset_file():
+    xml_file_path, files = PKG_A[0], PKG_A[1:]
+
+    changes_db_manager = InMemoryDBManager(database_name='changes')
+    articles_db_manager = InMemoryDBManager(database_name='articles')
+
+    article_services = ArticleServices(articles_db_manager, changes_db_manager)
+    article_services.receive_package('ID', xml_file_path, files)
+    for f in files:
+        name = os.path.basename(f)
+        assert open(f, 'rb').read() == article_services.get_asset_file(
+            'ID', name)
+
+
+def test_get_asset_files():
+    xml_file_path, files = PKG_A[0], PKG_A[1:]
+
+    changes_db_manager = InMemoryDBManager(database_name='changes')
+    articles_db_manager = InMemoryDBManager(database_name='articles')
+
+    article_services = ArticleServices(articles_db_manager, changes_db_manager)
+    article_services.receive_package('ID', xml_file_path, files)
+
+    items, msg = article_services.get_asset_files('ID')
+    assert len(items) == len(files)
+    assert len(msg) == 0
+    for f in files:
+        assert open(f, 'rb').read() in items
