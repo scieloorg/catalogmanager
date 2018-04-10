@@ -1,5 +1,4 @@
 # coding=utf-8
-
 from catalog_persistence.models import (
         get_record,
         RecordType,
@@ -84,5 +83,15 @@ class ArticleServices:
         try:
             article_record = self.article_db_service.read(article_id)
             return article_record
+        except DocumentNotFound:
+            raise ArticleServicesException
+
+    def get_article_file(self, article_id):
+        article_record = self.get_article_data(article_id)
+        try:
+            return self.article_db_service.get_attachment(
+                document_id=article_id,
+                file_id=article_record['content']['xml']
+            )
         except DocumentNotFound:
             raise ArticleServicesException

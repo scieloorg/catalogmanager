@@ -1,4 +1,4 @@
-
+import os
 from unittest.mock import patch
 
 import pytest
@@ -15,6 +15,9 @@ from catalogmanager.article_services import (
 )
 from catalogmanager.models.article_model import (
     Article,
+)
+from catalogmanager.xml.xml_tree import (
+    XMLTree
 )
 from .conftest import (
     PKG_A,
@@ -75,8 +78,9 @@ def test_receive_package():
 
 @patch.object(DatabaseService, 'read')
 def test_get_article_in_database(mocked_dataservices_read,
+                                 setup,
                                  change_service,
-                                 inmemory_receive_article):
+                                 inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_services = ArticleServices(
@@ -91,8 +95,9 @@ def test_get_article_in_database(mocked_dataservices_read,
 
 @patch.object(DatabaseService, 'read', side_effect=DocumentNotFound)
 def test_get_article_in_database_not_found(mocked_dataservices_read,
+                                           setup,
                                            change_service,
-                                           inmemory_receive_article):
+                                           inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_services = ArticleServices(
@@ -106,15 +111,16 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
     )
 
 
-def test_get_article_record(change_service,
-                            inmemory_receive_article,
+def test_get_article_record(setup,
+                            change_service,
+                            inmemory_receive_package,
                             article_file,
                             assets_files):
-    article_id = 'ID'
     article_services = ArticleServices(
         change_service[0],
         change_service[1]
     )
+    article_id = 'ID'
     article_check = article_services.get_article_data(article_id)
     assert article_check is not None
     assert isinstance(article_check, dict)
@@ -126,3 +132,49 @@ def test_get_article_record(change_service,
     assert article_check.get('created_date') is not None
     assert article_check.get('attachments') is not None
     assert isinstance(article_check['attachments'], list)
+
+
+@patch.object(DatabaseService, 'get_attachment')
+def test_get_article_file_in_database(mocked_get_attachment,
+                                      setup,
+                                      change_service,
+                                      inmemory_receive_package):
+    article_id = 'ID'
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    article_services.get_article_file(article_id)
+    mocked_get_attachment.assert_called_with(
+        document_id=article_id,
+        file_id=os.path.basename(PKG_A[0])
+    )
+
+
+@patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)
+def test_get_article_file_not_found(mocked_get_attachment,
+                                    setup,
+                                    change_service,
+                                    inmemory_receive_package):
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    pytest.raises(
+        ArticleServicesException,
+        article_services.get_article_file,
+        'ID'
+    )
+
+
+def test_get_article_file(setup, change_service, inmemory_receive_package):
+    article_services = ArticleServices(
+        change_service[0],
+        change_service[1]
+    )
+    article_check = article_services.get_article_file('ID')
+    assert article_check is not None
+    with open(PKG_A[0], 'rb') as file:
+        xml_tree = XMLTree()
+        xml_tree.content = file.read()
+        assert xml_tree.compare(article_check)

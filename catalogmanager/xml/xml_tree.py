@@ -37,3 +37,6 @@ class XMLTree:
             message = 'XML is not well formed\n'
             r = None
         return (r, message)
+
+    def compare(self, xml_content):
+        return self.content == xml_content
