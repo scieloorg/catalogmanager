@@ -110,11 +110,11 @@ class ArticleServices:
     def get_asset_files(self, article_id):
         article_record = self.get_article_data(article_id)
         assets = article_record['content'].get('assets') or []
-        asset_files = []
+        asset_files = {}
         missing = []
         for file_id in assets:
             try:
-                asset_files.append(self.get_asset_file(article_id, file_id))
+                asset_files[file_id] = self.get_asset_file(article_id, file_id)
             except ArticleServicesException:
                 missing.append(file_id)
         return asset_files, missing

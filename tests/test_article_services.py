@@ -224,4 +224,4 @@ def test_get_asset_files():
     assert len(items) == len(files)
     assert len(msg) == 0
     for f in files:
-        assert open(f, 'rb').read() in items
+        assert open(f, 'rb').read() in items.values()
