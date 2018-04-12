@@ -399,10 +399,6 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         read_record = self.db_manager.read(document_id)
-        if self.db_manager.attachment_exists(document_id, file_id):
-            change_type = ChangeType.UPDATE
-        else:
-            change_type = ChangeType.CREATE
         self.db_manager.put_attachment(document_id,
                                        file_id,
                                        content,
@@ -412,7 +408,7 @@ class DatabaseService:
             'document_type': read_record['document_type'],
             'created_date': read_record['created_date'],
         }
-        self._register_change(document_record, change_type, file_id)
+        self._register_change(document_record, ChangeType.UPDATE, file_id)
 
     def get_attachment(self, document_id, file_id):
         """
