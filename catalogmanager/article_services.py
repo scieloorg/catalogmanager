@@ -13,6 +13,11 @@ from .models.article_model import (
     Article,
 )
 
+from translation import gettext_translation
+
+
+_ = gettext_translation('catalogmanager')
+
 
 Record = get_record
 
@@ -31,10 +36,6 @@ class ArticleServicesException(Exception):
 
     def __init__(self, message):
         self.message = message
-
-
-class ArticleServicesMissingAssetFileException(Exception):
-    pass
 
 
 class ArticleServices:
@@ -92,7 +93,7 @@ class ArticleServices:
             return article_record
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing XML file {}'.format(article_id)
+                _('The article ({}) is not registered. ').format(article_id)
             )
 
     def get_article_file(self, article_id):
@@ -104,7 +105,8 @@ class ArticleServices:
             )
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing XML file {}'.format(article_id)
+                _('The XML file ({}) of the article ({}) is not registered. ').format(
+                    article_record['content']['xml'])
             )
 
     def get_asset_files(self, article_id):
@@ -127,5 +129,6 @@ class ArticleServices:
             )
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing asset file: {}. '.format(file_id)
+                _('The asset file ({}) of the article ({}) is not registered. ').format(
+                    file_id, article_id)
             )
