@@ -73,9 +73,22 @@ class LocaleCreator:
             for locale, f in self.po_file_paths.items()
         }
 
-    def copy_locale_dir(self):
+    @property
+    def app_locale_files(self):
+        files = []
         if os.path.isdir(self.app_locale_dir):
-            pass
+            for (dirpath, dirnames, filenames) in os.walk(self.app_locale_dir):
+                for file in filenames:
+                    files.append(os.path.join(dirpath, file))
+        return files
+
+    def copy_locale_dir(self):
+        for f in self.app_locale_files:
+            new = f.replace(self.app_locale_dir, self.locale_dir)
+            dirname = os.path.dirname(new)
+            if not os.path.isdir(dirname):
+                os.makedirs(dirname)
+            shutil.copyfile(f, new)
 
     def po_file_path(self, locale):
         return os.path.join(
