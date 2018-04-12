@@ -24,6 +24,8 @@ class PO_File:
                 k = item
             elif item.startswith('msgstr '):
                 self.terms[k] = item
+                if '/en/' in self.po_file:
+                    self.terms[k] = item.replace('msgstr ', 'msgid ')
 
     def merge(self, origin, fixer):
         bkpfile = self.po_file+'.bkp'
@@ -36,10 +38,9 @@ class PO_File:
                 k = item
                 new.append(item)
             elif item.startswith('msgstr '):
-                text = self.items.get(k, '')
-                if text == item:
-                    text = k.replace('msgid ', 'msgstr ')
-                text = fix(text, fixer)
+                text = origin.terms.get(k)
+                for a, b in fixer:
+                    text = text.replace(a, b)
                 new.append(text)
             else:
                 new.append(item)
@@ -47,7 +48,7 @@ class PO_File:
         open(self.po_file, 'w').write('\n'.join(new))
         os.system(
             'diff -rup {} {} > {}.diff.txt'.format(
-                bkpfile, _dest_file, os.path.basename(_dest_file)))
+                bkpfile, self.po_file, os.path.basename(self.po_file)))
 
 
 class LocaleCreator:
@@ -71,6 +72,10 @@ class LocaleCreator:
             locale: PO_File(f)
             for locale, f in self.po_file_paths.items()
         }
+
+    def copy_locale_dir(self):
+        if os.path.isdir(self.app_locale_dir):
+            pass
 
     def po_file_path(self, locale):
         return os.path.join(
@@ -103,6 +108,51 @@ class LocaleCreator:
         )
         os.system(cmd)
 
+    def update(self):
+        q = 0
+        for locale in self.LOCALES:
+            self.update_locale(locale)
+
+        auto = [
+            ('en', 'pt'),
+            ('pt', 'pt_PT'),
+            ('pt_PT', 'es'),
+            ('es', 'es_ES'),
+        ]
+
+        for locale_origin, locale_dest in auto:
+            origin = self.PO_FILES.get(locale_origin)
+            dest = self.PO_FILES.get(locale_dest)
+
+            fixer_file = '_'.join(
+                [locale_origin, locale_dest.replace('_', '')])+'.tsv'
+            fixer_file = os.path.join(CURRENT_PATH, 'transltabs', fixer_file)
+
+            fixer = []
+            if os.path.isfile(fixer_file):
+                fixer = [
+                    item.split('\t')
+                    for item in open(fixer_file).readlines()
+                ]
+
+            q = origin.count + dest.count
+            if origin.count > 0:
+                print('\n=====\n')
+                print('  Revise {}'.format(origin.po_file))
+                print('  Depois execute novamente a atualizacao')
+                print('  Faltam {} termos'.format(origin.count))
+                print('\n=====\n')
+            elif dest.count > 0:
+                dest.merge(origin.po_file, fixer)
+                print('\n=====\n')
+                print('  Revise {}'.format(dest.po_file))
+                print('  Depois execute novamente a atualizacao')
+                print('  Faltam {} termos'.format(dest.count))
+                print('\n=====\n')
+            if q > 0:
+                break
+        return q == 0
+
     def compile_locale(self, locale):
         cmd = 'pybabel compile -D {} -d {} -i {} -l {} -f --statistics'.format(
                 self.domain,
@@ -124,97 +174,10 @@ class LocaleCreator:
             print('  Gerado {}'.format(mo_file))
             print('\n=====\n')
 
-
-
-
-def update(pot_file=self.pot_file):
-    q = 0
-    for locale in self.LOCALES:
-        os.system(cmd_update(pot_file, locale))
-
-    auto = [
-        ('en', 'pt', fixer_en_pt()),
-        ('pt', 'pt_PT', fixer_pt_pt_PT()),
-        ('pt_PT', 'es', fixer_pt_es()),
-        ('es', 'es_ES', fixer_es_es_ES()),
-    ]
-
-    for locale1, locale2, fixer in auto:
-        c1 = missing_translation(PO_FILES[locale1])
-        if locale1 == 'en':
-            c1 = 0
-        c2 = missing_translation(PO_FILES[locale2])
-        q = c1 + c2
-        if c1 > 0:
-            print('Revise {}'.format(PO_FILES[locale1]))
-            print('Depois execute novamente a atualizacao')
-            print('Faltam {} termos'.format(c1))
-        elif c2 > 0:
-            merge(PO_FILES[locale1], PO_FILES[locale2], fixer)
-            print('Revise {}'.format(PO_FILES[locale2]))
-            print('Depois execute novamente a atualizacao')
-            print('Faltam {} termos'.format(c2))
-        if q > 0:
-            break
-    if q == 0:
-        print('Sem pendencias. Executar opcao C. ')
-        return True
-
-
-def fixer_es_es_ES():
-    return [
-        ('archivo', 'fichero'),
-    ]
-
-
-def fixer_pt_pt_PT():
-    return [
-        ('arquivo', 'ficheiro'),
-    ]
-
-
-def fixer_pt_es():
-    return [
-        ('ficheiro', 'archivo'),
-        ('arquivo', 'archivo'),
-        ('artigo', 'artículo'),
-        ('Não', 'No'),
-        ('não', 'no'),
-        ('encontrado', 'se encontró'),
-        (' o ', ' el '),
-        (' os ', ' los '),
-        ('ativo', 'activo'),
-        (' do ', ' del '),
-        ('O ', 'El '),
-    ]
-
-
-def fixer_en_pt():
-    return [
-        ('asset file', 'ativo digital'),
-        ('file', 'arquivo'),
-        ('Not found', 'Não encontrado'),
-        ('article', 'artigo'),
-        ('of the', 'do'),
-        (' the ', ' o '),
-        ('The ', 'O '),
-        ('is not ', 'não está '),
-        ('registered', 'registrado'),
-    ]
-
-
-def fix(text, fixer):
-    for a, b in fixer:
-        text = text.replace(a, b)
-    return text
-
-
-
-
-reset = not os.path.isfile(self.pot_file)
-os.system(cmd_extract(self.pot_file))
-if reset:
-    init()
-r = update()
-if r is True:
-    compile()
+    def create(self):
+        reset = not os.path.isfile(self.pot_file)
+        self.extract()
+        if reset:
+            self.init()
+        if self.update():
+            self.compile()
