@@ -42,7 +42,7 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = catalog_persistence:main',
+            'main = catalogmanager_api:main',
         ],
     },
 )
