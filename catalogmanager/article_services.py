@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 
 from catalog_persistence.models import (
         get_record,
@@ -13,10 +14,16 @@ from .models.article_model import (
     Article,
 )
 
-from translation import gettext_translation
+from tools.locale_tools.locale_manager import gettext_translation
 
 
-_ = gettext_translation('catalogmanager')
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+CURRENT_PATH = os.path.dirname(CURRENT_PATH)
+
+_ = gettext_translation(
+        'catalogmanager',
+        os.path.join(CURRENT_PATH, 'locale')
+    )
 
 
 Record = get_record

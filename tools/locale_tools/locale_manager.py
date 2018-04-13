@@ -2,8 +2,11 @@
 
 import os
 import shutil
+import gettext
+import locale
 
 
+DEFAULT_LOCALE = 'en'
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -13,6 +16,26 @@ def short_path(f):
 
 def print_path(f):
     print(short_path(f))
+
+
+def get_current_locale(locale_path):
+    current_locale, encoding = locale.getdefaultlocale()
+    folder = current_locale
+    folders = os.listdir(locale_path)
+    if current_locale not in folders:
+        r = [f for f in folders if folder.startswith(current_locale)]
+        folder = r[0] if len(r) > 0 else DEFAULT_LOCALE
+    return folder
+
+
+def gettext_translation(domain, localedir, current_language=None):
+    CURRENT_LOCALE = current_language or get_current_locale(localedir)
+    t = gettext.translation(
+        domain,
+        localedir=localedir,
+        languages=[CURRENT_LOCALE]
+    )
+    return t.gettext
 
 
 class PO_File:
