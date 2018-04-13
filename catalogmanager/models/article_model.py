@@ -38,8 +38,8 @@ class Article:
         return self._xml_file
 
     @xml_file.setter
-    def xml_file(self, xml_file_path):
-        self._xml_file = File(xml_file_path)
+    def xml_file(self, xml_file):
+        self._xml_file = xml_file
         self.xml_tree = ArticleXMLTree()
         self.xml_tree.content = self._xml_file.content
         self.assets = {
@@ -50,17 +50,20 @@ class Article:
     def update_asset_files(self, files):
         updated = []
         if files is not None:
-            for f in files:
-                updated.append(self.update_asset_file(f))
+            for file_properties in files:
+                updated.append(self.update_asset_file(file_properties))
         return updated
 
-    def update_asset_file(self, file):
-        if file is not None and os.path.isfile(file):
-            name = os.path.basename(file)
+    def update_asset_file(self, file_properties):
+        if file_properties.get('path'):
+            name = os.path.basename(file_properties['path'])
             if name in self.assets.keys():
-                self.assets[name].file = File(file)
+                asset_file = File(file_properties['path'])
+                asset_file.content = file_properties['content']
+                asset_file.size = file_properties['content_size']
+                self.assets[name].file = asset_file
                 return self.assets[name]
-            self.unexpected_files_list.append(file)
+            self.unexpected_files_list.append(file_properties['path'])
 
     def get_record_content(self):
         record_content = {}

@@ -22,12 +22,14 @@ def _get_article_service(db_host, db_port, username, password):
     )
 
 
-def put_article(article_id, xml_file, assets_files=None, **kwargs):
+def put_article(article_id, xml_properties, assets_files=None, **kwargs):
     article_services = _get_article_service(kwargs['db_host'],
                                             kwargs['db_port'],
                                             kwargs['username'],
                                             kwargs['password'])
-    return article_services.receive_package(article_id, xml_file, assets_files)
+    return article_services.receive_package(id=article_id,
+                                            files=assets_files,
+                                            **xml_properties)
 
 
 def get_article_data(article_id, db_host, db_port, username, password):
@@ -36,3 +38,11 @@ def get_article_data(article_id, db_host, db_port, username, password):
                                             username,
                                             password)
     return article_services.get_article_data(article_id)
+
+
+def get_article_file(article_id, db_host, db_port, username, password):
+    article_services = _get_article_service(db_host,
+                                            db_port,
+                                            username,
+                                            password)
+    return article_services.get_article_file(article_id)

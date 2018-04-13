@@ -3,6 +3,7 @@ import os
 from catalogmanager.models.article_model import (
     Article,
 )
+from catalogmanager.models.file import File
 from catalogmanager.xml.xml_tree import (
     XMLTree,
 )
@@ -16,8 +17,22 @@ from .conftest import (
 def test_article():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
     article = Article('ID')
-    article.xml_file = xml_file_path
-    assets = article.update_asset_files(files)
+    xml_file = File(xml_file_path)
+    xml_file.content = open(xml_file_path, 'rb').read()
+    xml_file.size = os.stat(xml_file_path).st_size
+    article.xml_file = xml_file
+    assets_files = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets_files.append(
+                {
+                    'path': file_path,
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article.update_asset_files(assets_files)
     assets = [
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg',
         '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
@@ -29,7 +44,7 @@ def test_article():
     assert article.xml_file.name == os.path.basename(xml_file_path)
     assert article.xml_tree.xml_error is None
     assert article.get_record_content() == expected
-    assert article.xml_file.content == open(xml_file_path, 'rb').read()
+    assert article.xml_file.content == xml_file.content
     xml_from_file = XMLTree()
     xml_from_file.content = article.xml_file.content
     xml_from_tree = XMLTree()
@@ -40,9 +55,22 @@ def test_article():
 def test_missing_files_list():
     xml_file_path, files = PKG_B[0], PKG_B[1:]
     article = Article('ID')
-    article.xml_file = xml_file_path
-
-    article.update_asset_files(files)
+    xml_file = File(xml_file_path)
+    xml_file.content = open(xml_file_path, 'rb').read()
+    xml_file.size = os.stat(xml_file_path).st_size
+    article.xml_file = xml_file
+    assets_files = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets_files.append(
+                {
+                    'path': file_path,
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article.update_asset_files(assets_files)
 
     assert len(article.assets) == 3
     assert sorted(article.assets.keys()) == sorted(
@@ -62,8 +90,22 @@ def test_unexpected_files_list():
     xml_file_path, files = PKG_C[0], PKG_C[1:]
 
     article = Article('ID')
-    article.xml_file = xml_file_path
-    article.update_asset_files(files)
+    xml_file = File(xml_file_path)
+    xml_file.content = open(xml_file_path, 'rb').read()
+    xml_file.size = os.stat(xml_file_path).st_size
+    article.xml_file = xml_file
+    assets_files = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets_files.append(
+                {
+                    'path': file_path,
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article.update_asset_files(assets_files)
 
     assert len(article.assets) == 2
     assert sorted(article.assets.keys()) == sorted(
@@ -82,8 +124,22 @@ def test_update_href():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
 
     article = Article('ID')
-    article.xml_file = xml_file_path
-    article.update_asset_files(files)
+    xml_file = File(xml_file_path)
+    xml_file.content = open(xml_file_path, 'rb').read()
+    xml_file.size = os.stat(xml_file_path).st_size
+    article.xml_file = xml_file
+    assets_files = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets_files.append(
+                {
+                    'path': file_path,
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article.update_asset_files(assets_files)
     content = article.xml_tree.content
     asset = article.assets.get(
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg')

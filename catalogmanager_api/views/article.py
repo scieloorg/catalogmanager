@@ -1,5 +1,7 @@
 import json
 
+from pyramid.response import Response
+from pyramid.view import view_config
 from cornice.resource import resource
 import catalogmanager
 
@@ -20,10 +22,17 @@ class Article:
 
     def put(self):
         try:
-            file = self.request.POST.get('xml_file')
+            file_field = self.request.POST.get('xml_file')
+            content = file_field.file.read()
+            size = len(content)
+            xml_properties = {
+                'path': file_field.filename,
+                'content': content,
+                'content_size': size,
+            }
             catalogmanager.put_article(
                 article_id=self.request.matchdict['id'],
-                xml_file=file.filename,
+                xml_properties=xml_properties,
                 **self.db_settings
             )
         except catalogmanager.article_services.ArticleServicesException as e:
@@ -35,10 +44,24 @@ class Article:
     def get(self):
         try:
             article_data = catalogmanager.get_article_data(
-                self.request.matchdict['id'],
+                article_id=self.request.matchdict['id'],
                 **self.db_settings
             )
             return json.dumps(article_data)
+        except catalogmanager.article_services.ArticleServicesException as e:
+            return json.dumps({
+                "error": "404",
+                "message": "Article not found"
+            })
+
+    @view_config(route_name='get_xml')
+    def get_xml(self):
+        try:
+            xml_file = catalogmanager.get_article_file(
+                article_id=self.request.matchdict['id'],
+                **self.db_settings
+            )
+            return Response(content_type='application/xml', body=xml_file)
         except catalogmanager.article_services.ArticleServicesException as e:
             return json.dumps({
                 "error": "404",

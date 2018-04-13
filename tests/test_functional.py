@@ -1,4 +1,6 @@
 
+import os
+import json
 from collections import OrderedDict
 
 import pytest
@@ -18,7 +20,7 @@ def testapp():
     return webtest.TestApp(test_app)
 
 
-def test_add_article_register_change(testapp):
+def test_add_article_register_change(testapp, setup_couchdb):
     article_id = 'ID-post-article-123'
     url = '/articles/{}'.format(article_id)
 
@@ -37,12 +39,17 @@ def test_add_article_register_change(testapp):
     result = testapp.get(url)
     assert result.status_code == 200
     assert result.json is not None
-    assert result.json.get("document_id") == article_id
-    assert result.json.get("content") is not None
-    assert result.json["content"]["xml"] == xml_file_path
+    res_dict = json.loads(result.json)
+    assert res_dict.get("document_id") == article_id
+    assert res_dict.get("content") is not None
+    assert res_dict["content"]["xml"] == os.path.basename(xml_file_path)
 
     # Deve ser possível ter uma URL para resgatar o arquivo XML
-    # xml_url = '{}/{}'.format(url, )
+    xml_url = '{}/xml'.format(url)
+    result = testapp.get(xml_url)
+    assert result.status_code == 200
+    with open(xml_file_path, 'rb') as fb:
+        assert result.body == fb.read()
 
     # Checa se a lista de mudanças trás o registro de mundança do registro do
     # documento
