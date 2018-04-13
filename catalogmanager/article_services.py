@@ -106,7 +106,9 @@ class ArticleServices:
         except DocumentNotFound:
             raise ArticleServicesException(
                 _('The XML file ({}) of the article ({}) is not registered. ').format(
-                    article_record['content']['xml'])
+                    article_record['content']['xml'],
+                    article_id
+                )
             )
 
     def get_asset_files(self, article_id):

@@ -1,8 +1,18 @@
+# coding=utf-8
+
 import os
 import shutil
 
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+
+
+def short_path(f):
+    return f.replace(CURRENT_PATH, '.')
+
+
+def print_path(f):
+    print(short_path(f))
 
 
 class PO_File:
@@ -11,25 +21,30 @@ class PO_File:
         self.po_file = po_file
         self.load()
 
+    @property
     def count(self):
         if '/en/' in self.po_file:
             return 0
-        return open(self.po_file).read().count('msgstr ""')-1
+        if os.path.isfile(self.po_file):
+            c = open(self.po_file).read().count('msgstr ""')-1
+            return c
+        return 0
 
     def load(self):
         self.terms = {}
-        for item in open(self.po_file).readlines():
-            item = item.strip()
-            if item.startswith('msgid '):
-                k = item
-            elif item.startswith('msgstr '):
-                self.terms[k] = item
-                if '/en/' in self.po_file:
-                    self.terms[k] = item.replace('msgstr ', 'msgid ')
+        if os.path.isfile(self.po_file):
+            for item in open(self.po_file).readlines():
+                item = item.strip()
+                if item.startswith('msgid '):
+                    MSGID = item
+                elif item.startswith('msgstr '):
+                    self.terms[MSGID] = item
+                    if '/en/' in self.po_file:
+                        self.terms[MSGID] = MSGID.replace('msgid ', 'msgstr ')
 
     def merge(self, origin, fixer):
-        bkpfile = self.po_file+'.bkp'
-        shutil.copyfile(self.po_file, bkpfile)
+        # bkpfile = self.po_file+'.bkp'
+        # shutil.copyfile(self.po_file, bkpfile)
 
         new = []
         for item in open(self.po_file).readlines():
@@ -38,31 +53,32 @@ class PO_File:
                 k = item
                 new.append(item)
             elif item.startswith('msgstr '):
-                text = origin.terms.get(k)
-                for a, b in fixer:
-                    text = text.replace(a, b)
-                new.append(text)
+                translation = origin.terms.get(k)
+                if translation is None:
+                    print('Not found transl:' + k)
+                else:
+                    item = translation
+                    for a, b in fixer:
+                        item = item.replace(a, b)
+                new.append(item)
             else:
                 new.append(item)
 
         open(self.po_file, 'w').write('\n'.join(new))
-        os.system(
-            'diff -rup {} {} > {}.diff.txt'.format(
-                bkpfile, self.po_file, os.path.basename(self.po_file)))
 
 
 class LocaleCreator:
 
-    def __init__(self, domain, app_dir, app_locale_dir):
+    def __init__(self, app_locale_dir):
         self.LOCALES = ['en', 'es', 'pt', 'es_ES', 'pt_PT', ]
-        self.domain = domain
-        self.app_dir = app_dir
         self.app_locale_dir = app_locale_dir
+        self.app_dir = os.path.dirname(app_locale_dir)
+        self.domain = os.path.basename(self.app_dir)
 
         self.pot_file = os.path.join(
-            CURRENT_PATH, 'tmp', domain, domain+'.pot')
-        self.locale_dir = os.path.join(
-            CURRENT_PATH, 'tmp', domain, 'locale')
+            CURRENT_PATH, 'tmp', self.domain, self.domain+'.pot')
+        self.tmp_locale_dir = os.path.join(
+            CURRENT_PATH, 'tmp', self.domain, 'locale')
 
         self.po_file_paths = {
             locale: self.po_file_path(locale)
@@ -84,7 +100,7 @@ class LocaleCreator:
 
     def copy_locale_dir(self):
         for f in self.app_locale_files:
-            new = f.replace(self.app_locale_dir, self.locale_dir)
+            new = f.replace(self.app_locale_dir, self.tmp_locale_dir)
             dirname = os.path.dirname(new)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
@@ -92,7 +108,7 @@ class LocaleCreator:
 
     def po_file_path(self, locale):
         return os.path.join(
-            self.locale_dir,
+            self.tmp_locale_dir,
             locale,
             'LC_MESSAGES',
             self.domain+'.po'
@@ -107,7 +123,7 @@ class LocaleCreator:
             cmd = 'pybabel init -D {} -i {} -d {} -l {}'.format(
                 self.domain,
                 self.pot_file,
-                self.locale_dir,
+                self.tmp_locale_dir,
                 locale
             )
             os.system(cmd)
@@ -115,7 +131,7 @@ class LocaleCreator:
     def update_locale(self, locale):
         cmd = 'pybabel update -i {} -d {} -D {} -l {} --previous --ignore-obsolete'.format(
             self.pot_file,
-            self.locale_dir,
+            self.tmp_locale_dir,
             self.domain,
             locale
         )
@@ -134,33 +150,39 @@ class LocaleCreator:
         ]
 
         for locale_origin, locale_dest in auto:
+            print('---')
             origin = self.PO_FILES.get(locale_origin)
             dest = self.PO_FILES.get(locale_dest)
 
+            print('')
+            print(locale_origin, locale_dest)
+            print_path(origin.po_file)
+            print_path(dest.po_file)
+
             fixer_file = '_'.join(
-                [locale_origin, locale_dest.replace('_', '')])+'.tsv'
+                [
+                    locale_origin.replace('_', ''),
+                    locale_dest.replace('_', '')
+                ])+'.tsv'
             fixer_file = os.path.join(CURRENT_PATH, 'transltabs', fixer_file)
+            print_path(fixer_file)
 
             fixer = []
             if os.path.isfile(fixer_file):
                 fixer = [
-                    item.split('\t')
+                    item.replace('\n', '').replace('\r', '').split('\t')
                     for item in open(fixer_file).readlines()
                 ]
 
             q = origin.count + dest.count
             if origin.count > 0:
                 print('\n=====\n')
-                print('  Revise {}'.format(origin.po_file))
-                print('  Depois execute novamente a atualizacao')
-                print('  Faltam {} termos'.format(origin.count))
+                print('  Revise \n    {}    '.format(short_path(origin.po_file)))
                 print('\n=====\n')
             elif dest.count > 0:
-                dest.merge(origin.po_file, fixer)
+                dest.merge(origin, fixer)
                 print('\n=====\n')
-                print('  Revise {}'.format(dest.po_file))
-                print('  Depois execute novamente a atualizacao')
-                print('  Faltam {} termos'.format(dest.count))
+                print('  Revise \n    {}    '.format(short_path(dest.po_file)))
                 print('\n=====\n')
             if q > 0:
                 break
@@ -169,28 +191,79 @@ class LocaleCreator:
     def compile_locale(self, locale):
         cmd = 'pybabel compile -D {} -d {} -i {} -l {} -f --statistics'.format(
                 self.domain,
-                self.locale_dir,
+                self.tmp_locale_dir,
                 self.po_file_paths.get(locale),
                 locale
             )
         os.system(cmd)
 
     def compile(self):
+        done = []
         for locale in self.LOCALES:
             po_file = self.po_file_paths.get(locale)
-            print('\n=====\n')
             self.compile_locale(locale)
             mo_file = po_file.replace('.po', '.mo')
             path = os.path.dirname(mo_file)
             if not os.path.isdir(path):
                 os.makedirs(path)
-            print('  Gerado {}'.format(mo_file))
-            print('\n=====\n')
+
+            done.append(short_path(mo_file))
+        print('\n=====\n')
+        print('  Gerados\n')
+        for item in done:
+            print('    * {}'.format(item))
+        print('\n=====\n')
 
     def create(self):
-        reset = not os.path.isfile(self.pot_file)
+        self.copy_locale_dir()
         self.extract()
-        if reset:
-            self.init()
-        if self.update():
+        self.init()
+
+        finished = False
+        while not finished:
+            finished = self.update()
+            if not finished:
+                cont = input(
+                    'Se arquivo foi revisado. Continuar (S/N)?\n> ')
+                if cont.upper() != 'S':
+                    break
+        if finished:
             self.compile()
+            self.diff()
+
+    def diff(self):
+        os.system(
+            'diff -rup {} {} > diff.txt'.format(
+                self.app_locale_dir,
+                self.tmp_locale_dir
+            )
+        )
+        print('\n"locale" gerado: {}\n'.format(self.tmp_locale_dir))
+        print('\nVerifique diff.txt\n')
+        print('\nSe estiver correto, copie {} para {} \n'.format(
+                self.tmp_locale_dir, self.app_locale_dir
+            )
+        )
+
+
+if __name__ == '__main__':
+    print(os.getcwd())
+
+    app_locale_dir = input(
+        'Entre o caminho completo da PASTA "locale" da aplicação:\n> ')
+    if not app_locale_dir.endswith('/locale'):
+        print(
+            'Caminho {} deve conter a pasta "locale". '.format(app_locale_dir))
+    elif not os.path.isdir(app_locale_dir):
+        print('{} não existe. Crie o caminho. '.format(app_locale_dir))
+    else:
+        op = input(
+            'Serão gerados os arquivos de {}. Continuar (S/N)?\n> '.format(
+                app_locale_dir
+            )
+        )
+        if op.upper() == 'S':
+            lc = LocaleCreator(app_locale_dir)
+            lc.create()
+        else:
+            print('Você cancelou a operação. ')
