@@ -9,6 +9,7 @@ requires = [
     'pyramid_debugtoolbar>=4.4',
     'waitress',
     'lxml',
+    'Babel',
 ]
 
 test_requires = ['webtest', 'pytest', 'pytest-cov']

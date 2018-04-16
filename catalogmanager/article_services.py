@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 
 from catalog_persistence.models import (
         get_record,
@@ -12,6 +13,17 @@ from .data_services import DataServices
 from .models.article_model import (
     Article,
 )
+
+from tools.locale_tools.locale_manager import gettext_translation
+
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+CURRENT_PATH = os.path.dirname(CURRENT_PATH)
+
+_ = gettext_translation(
+        'catalogmanager',
+        os.path.join(CURRENT_PATH, 'locale')
+    )
 
 
 Record = get_record
@@ -31,10 +43,6 @@ class ArticleServicesException(Exception):
 
     def __init__(self, message):
         self.message = message
-
-
-class ArticleServicesMissingAssetFileException(Exception):
-    pass
 
 
 class ArticleServices:
@@ -92,7 +100,7 @@ class ArticleServices:
             return article_record
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing XML file {}'.format(article_id)
+                _('The article ({}) is not registered. ').format(article_id)
             )
 
     def get_article_file(self, article_id):
@@ -104,7 +112,10 @@ class ArticleServices:
             )
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing XML file {}'.format(article_id)
+                _('The XML file ({}) of the article ({}) is not registered. ').format(
+                    article_record['content']['xml'],
+                    article_id
+                )
             )
 
     def get_asset_files(self, article_id):
@@ -127,5 +138,6 @@ class ArticleServices:
             )
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing asset file: {}. '.format(file_id)
+                _('The asset file ({}) of the article ({}) is not registered. ').format(
+                    file_id, article_id)
             )
