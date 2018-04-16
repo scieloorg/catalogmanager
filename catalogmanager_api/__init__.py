@@ -28,9 +28,9 @@ def main(global_config, **settings):
 
     config.include(includeme)
     config.add_route('home', '/')
-    config.add_route('get_xml', '/articles/{id}/xml')
+    config.add_route('get_article_xml', '/articles/{id}/xml')
 
-    ini_settings = get_appsettings(global_config['ini_filename'])
+    ini_settings = get_appsettings(global_config['__file__'])
     config.registry.settings['database_host'] = \
         ini_settings['catalogmanager.db.host']
     config.registry.settings['database_port'] = \

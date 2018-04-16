@@ -19,7 +19,7 @@ def db_settings():
 
 @pytest.fixture
 def testapp():
-    settings = {'ini_filename': 'development.ini'}
+    settings = {'__file__': 'development.ini'}
     test_app = main(settings)
     return TestApp(test_app)
 

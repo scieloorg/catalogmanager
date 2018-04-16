@@ -162,6 +162,7 @@ def article_file(setup, article_tmp_dir, xml_test):
 def inmemory_receive_package(change_service):
     article_services = ArticleServices(change_service[0], change_service[1])
     xml_file_path = PKG_A[0]
+    xml_filename = os.path.basename(xml_file_path)
     with open(xml_file_path, 'rb') as xml_file:
         xml_content = xml_file.read()
         xml_content_size = os.stat(xml_file_path).st_size
@@ -171,14 +172,14 @@ def inmemory_receive_package(change_service):
                 content = asset_file.read()
                 files.append(
                     {
-                        'path': file_path,
+                        'path': os.path.basename(file_path),
                         'content': content,
                         'content_size': len(content)
                     }
                 )
         return article_services.receive_package(id='ID',
                                                 files=files,
-                                                path=xml_file_path,
+                                                path=xml_filename,
                                                 content=xml_content,
                                                 content_size=xml_content_size)
 

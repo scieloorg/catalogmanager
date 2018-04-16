@@ -7,7 +7,9 @@ import pytest
 import webtest
 
 from catalogmanager_api import main
-
+from catalogmanager.xml.xml_tree import (
+    XMLTree
+)
 from .conftest import (
     PKG_A,
 )
@@ -15,7 +17,7 @@ from .conftest import (
 
 @pytest.fixture
 def testapp():
-    settings = {'ini_filename': 'development.ini'}
+    settings = {'__file__': 'development.ini'}
     test_app = main(settings)
     return webtest.TestApp(test_app)
 
@@ -49,7 +51,9 @@ def test_add_article_register_change(testapp, setup_couchdb):
     result = testapp.get(xml_url)
     assert result.status_code == 200
     with open(xml_file_path, 'rb') as fb:
-        assert result.body == fb.read()
+        xml_tree = XMLTree()
+        xml_tree.content = fb.read()
+        assert xml_tree.compare(result.body)
 
     # Checa se a lista de mudanças trás o registro de mundança do registro do
     # documento

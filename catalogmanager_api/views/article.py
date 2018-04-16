@@ -1,3 +1,4 @@
+import os
 import json
 
 from pyramid.response import Response
@@ -26,7 +27,7 @@ class Article:
             content = file_field.file.read()
             size = len(content)
             xml_properties = {
-                'path': file_field.filename,
+                'path': os.path.basename(file_field.filename),
                 'content': content,
                 'content_size': size,
             }
@@ -54,8 +55,8 @@ class Article:
                 "message": "Article not found"
             })
 
-    @view_config(route_name='get_xml')
-    def get_xml(self):
+    @view_config(route_name='get_article_xml')
+    def get_article_xml(self):
         try:
             xml_file = catalogmanager.get_article_file(
                 article_id=self.request.matchdict['id'],

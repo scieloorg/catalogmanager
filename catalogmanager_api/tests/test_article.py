@@ -75,7 +75,11 @@ def test_http_article_calls_put_article(mocked_put_article,
                          content_type='multipart/form-data')
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
-        xml_file=result.request.POST.get('xml_file'),
+        xml_properties={
+            'path': "test_xml_file.xml",
+            'content': test_xml_file.encode('utf-8'),
+            'content_size': len(test_xml_file)
+        },
         **db_settings
     )
 

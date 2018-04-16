@@ -54,7 +54,7 @@ def test_receive_xml_file():
     xml_content = open(xml_file_path, 'rb').read()
     xml_content_size = os.stat(xml_file_path).st_size
     article_services.receive_xml_file(id='ID',
-                                      path=xml_file_path,
+                                      path=os.path.basename(xml_file_path),
                                       content=xml_content,
                                       content_size=xml_content_size)
     got = article_services.article_db_service.read('ID')
@@ -163,7 +163,9 @@ def test_get_article_record(setup,
 def test_get_article_file_in_database(mocked_get_attachment,
                                       setup,
                                       change_service,
-                                      inmemory_receive_package):
+                                      inmemory_receive_package,
+                                      xml_test):
+    mocked_get_attachment.return_value = xml_test.encode('utf-8')
     article_id = 'ID'
     article_services = ArticleServices(
         change_service[0],
@@ -224,6 +226,7 @@ def test_get_asset_file_not_found(mocked_get_attachment,
 
 def test_get_asset_file():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
+    xml_filename = os.path.basename(xml_file_path)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
@@ -237,14 +240,14 @@ def test_get_asset_file():
             content = asset_file.read()
             assets.append(
                 {
-                    'path': file_path,
+                    'path': os.path.basename(file_path),
                     'content': content,
                     'content_size': len(content)
                 }
             )
     article_services.receive_package(id='ID',
                                      files=assets,
-                                     path=xml_file_path,
+                                     path=xml_filename,
                                      content=xml_content,
                                      content_size=xml_content_size)
     for f in files:
@@ -256,6 +259,7 @@ def test_get_asset_file():
 
 def test_get_asset_files():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
+    xml_filename = os.path.basename(xml_file_path)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
@@ -270,14 +274,14 @@ def test_get_asset_files():
             content = asset_file.read()
             assets.append(
                 {
-                    'path': file_path,
+                    'path': os.path.basename(file_path),
                     'content': content,
                     'content_size': len(content)
                 }
             )
     article_services.receive_package(id='ID',
                                      files=assets,
-                                     path=xml_file_path,
+                                     path=xml_filename,
                                      content=xml_content,
                                      content_size=xml_content_size)
     items, msg = article_services.get_asset_files('ID')

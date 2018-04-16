@@ -16,8 +16,9 @@ from .conftest import (
 
 def test_article():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
+    xml_filename = os.path.basename(xml_file_path)
     article = Article('ID')
-    xml_file = File(xml_file_path)
+    xml_file = File(xml_filename)
     xml_file.content = open(xml_file_path, 'rb').read()
     xml_file.size = os.stat(xml_file_path).st_size
     article.xml_file = xml_file
@@ -27,7 +28,7 @@ def test_article():
             content = asset_file.read()
             assets_files.append(
                 {
-                    'path': file_path,
+                    'path': os.path.basename(file_path),
                     'content': content,
                     'content_size': len(content)
                 }
@@ -41,7 +42,7 @@ def test_article():
         'assets': assets,
         'xml': '0034-8910-rsp-S01518-87872016050006741.xml',
     }
-    assert article.xml_file.name == os.path.basename(xml_file_path)
+    assert article.xml_file.name == xml_filename
     assert article.xml_tree.xml_error is None
     assert article.get_record_content() == expected
     assert article.xml_file.content == xml_file.content
