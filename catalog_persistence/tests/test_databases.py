@@ -201,60 +201,11 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
     )
 
 
-@patch.object(DatabaseService, '_register_change')
-def test_put_attachment_to_document_register_change(mocked_register_change,
+@patch.object(DatabaseService, 'update')
+def test_put_attachment_to_document_update(mocked_update,
                                                     setup,
                                                     database_service,
                                                     xml_test):
-    article_record = get_article_record({'Test': 'Test7'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-    record = database_service.read(article_record['document_id'])
-    document_record = {
-        'document_id': record['document_id'],
-        'document_type': record['document_type'],
-        'created_date': record['created_date'],
-    }
-    attachment_id = "filename"
-    database_service.put_attachment(
-        document_id=article_record['document_id'],
-        file_id=attachment_id,
-        content=xml_test.encode('utf-8'),
-        file_properties={
-            'content_type': "text/xml",
-            'content_size': len(xml_test)
-        }
-    )
-
-    mocked_register_change.assert_called_with(document_record,
-                                              ChangeType.UPDATE,
-                                              attachment_id)
-
-
-def test_put_attachment_to_document_not_found(setup,
-                                              database_service,
-                                              xml_test):
-    article_record = get_article_record({'Test': 'Test8'})
-    pytest.raises(
-        DocumentNotFound,
-        database_service.put_attachment,
-        article_record['document_id'],
-        "filename",
-        xml_test.encode('utf-8'),
-        {
-            'content_type': "text/xml",
-            'content_size': len(xml_test)
-        }
-    )
-
-
-@patch.object(DatabaseService, '_register_change')
-def test_update_attachment_register_change_if_it_exists(mocked_register_change,
-                                                        setup,
-                                                        database_service,
-                                                        xml_test):
     article_record = get_article_record({'Test': 'Test9'})
     database_service.register(
         article_record['document_id'],
@@ -274,8 +225,25 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
     document_record = {
         'document_id': record['document_id'],
         'document_type': record['document_type'],
-        'created_date': record['created_date'],
+        'content': record['content'],
+        'created_date': record['created_date']
     }
+    mocked_update.assert_called_with(
+        article_record['document_id'], document_record)
+
+
+def test_put_attachment_to_document_update_dates(setup,
+                                        database_service,
+                                        xml_test):
+    article_record = get_article_record({'Test': 'Test9'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    record_v1 = database_service.read(article_record['document_id'])
+    dates_v1 = record_v1.get('created_date'), record_v1.get('updated_date')
+
+    attachment_id = "filename"
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id=attachment_id,
@@ -286,17 +254,28 @@ def test_update_attachment_register_change_if_it_exists(mocked_register_change,
         }
     )
 
-    record_check = dict(
-        database_service.db_manager.database[article_record['document_id']]
-    )
-    assert record_check is not None
-    assert database_service.db_manager.attachment_exists(
+    record_v2 = database_service.read(article_record['document_id'])
+    dates_v2 = record_v2.get('created_date'), record_v2.get('updated_date')
+    assert dates_v1[0] == dates_v2[0]
+    assert dates_v1[1] is None
+    assert dates_v2[1] > dates_v1[0]
+
+
+def test_put_attachment_to_document_not_found(setup,
+                                              database_service,
+                                              xml_test):
+    article_record = get_article_record({'Test': 'Test8'})
+    pytest.raises(
+        DocumentNotFound,
+        database_service.put_attachment,
         article_record['document_id'],
-        attachment_id
+        "filename",
+        xml_test.encode('utf-8'),
+        {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
     )
-    mocked_register_change.assert_called_with(document_record,
-                                              ChangeType.UPDATE,
-                                              attachment_id)
 
 
 def test_read_document_with_attachments(setup, database_service, xml_test):
