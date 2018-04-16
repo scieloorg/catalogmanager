@@ -54,7 +54,7 @@ def test_receive_xml_file():
     xml_content = open(xml_file_path, 'rb').read()
     xml_content_size = os.stat(xml_file_path).st_size
     article_services.receive_xml_file(id='ID',
-                                      path=os.path.basename(xml_file_path),
+                                      filename=os.path.basename(xml_file_path),
                                       content=xml_content,
                                       content_size=xml_content_size)
     got = article_services.article_db_service.read('ID')
@@ -78,7 +78,7 @@ def test_receive_package():
             content = asset_file.read()
             assets.append(
                 {
-                    'path': file_path,
+                    'filename': file_path,
                     'content': content,
                     'content_size': len(content)
                 }
@@ -93,7 +93,7 @@ def test_receive_package():
     unexpected, missing = article_services.receive_package(
         id='ID',
         files=assets,
-        path=xml_file_path,
+        filename=xml_file_path,
         content=xml_file.content,
         content_size=xml_file.size
     )
@@ -240,14 +240,14 @@ def test_get_asset_file():
             content = asset_file.read()
             assets.append(
                 {
-                    'path': os.path.basename(file_path),
+                    'filename': os.path.basename(file_path),
                     'content': content,
                     'content_size': len(content)
                 }
             )
     article_services.receive_package(id='ID',
                                      files=assets,
-                                     path=xml_filename,
+                                     filename=xml_filename,
                                      content=xml_content,
                                      content_size=xml_content_size)
     for f in files:
@@ -274,14 +274,14 @@ def test_get_asset_files():
             content = asset_file.read()
             assets.append(
                 {
-                    'path': os.path.basename(file_path),
+                    'filename': os.path.basename(file_path),
                     'content': content,
                     'content_size': len(content)
                 }
             )
     article_services.receive_package(id='ID',
                                      files=assets,
-                                     path=xml_filename,
+                                     filename=xml_filename,
                                      content=xml_content,
                                      content_size=xml_content_size)
     items, msg = article_services.get_asset_files('ID')

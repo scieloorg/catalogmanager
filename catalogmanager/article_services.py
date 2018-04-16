@@ -53,7 +53,7 @@ class ArticleServices:
     def receive_xml_file(self, id, **xml_properties):
         article = Article(id)
 
-        xml_file = File(xml_properties['path'])
+        xml_file = File(xml_properties['filename'])
         xml_file.content = xml_properties['content']
         xml_file.size = xml_properties['content_size']
         article.xml_file = xml_file

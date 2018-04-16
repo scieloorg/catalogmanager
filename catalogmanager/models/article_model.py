@@ -55,15 +55,15 @@ class Article:
         return updated
 
     def update_asset_file(self, file_properties):
-        if file_properties.get('path'):
-            name = os.path.basename(file_properties['path'])
+        if file_properties.get('filename'):
+            name = os.path.basename(file_properties['filename'])
             if name in self.assets.keys():
-                asset_file = File(file_properties['path'])
+                asset_file = File(file_properties['filename'])
                 asset_file.content = file_properties['content']
                 asset_file.size = file_properties['content_size']
                 self.assets[name].file = asset_file
                 return self.assets[name]
-            self.unexpected_files_list.append(file_properties['path'])
+            self.unexpected_files_list.append(file_properties['filename'])
 
     def get_record_content(self):
         record_content = {}
