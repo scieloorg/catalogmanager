@@ -16,6 +16,7 @@ from catalogmanager.article_services import (
 from catalogmanager.models.article_model import (
     Article,
 )
+from catalogmanager.models.file import File
 from catalogmanager.xml.xml_tree import (
     XMLTree
 )
@@ -26,7 +27,7 @@ from .conftest import (
 
 def test_receive_xml_file():
 
-    xml_file_path, _ = PKG_A[0], PKG_A[1:]
+    xml_file_path, __ = PKG_A[0], PKG_A[1:]
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
@@ -50,7 +51,12 @@ def test_receive_xml_file():
         '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg',
     ]
-    article_services.receive_xml_file('ID', xml_file_path)
+    xml_content = open(xml_file_path, 'rb').read()
+    xml_content_size = os.stat(xml_file_path).st_size
+    article_services.receive_xml_file(id='ID',
+                                      path=os.path.basename(xml_file_path),
+                                      content=xml_content,
+                                      content_size=xml_content_size)
     got = article_services.article_db_service.read('ID')
     assert got['content']['xml'] == expected['content']['xml']
     assert sorted(got['content'].get('assets')) == sorted(expected_assets)
@@ -62,8 +68,22 @@ def test_receive_package():
 
     xml_file_path, files = PKG_A[0], PKG_A[1:]
     article = Article('ID')
-    article.xml_file = xml_file_path
-    article.update_asset_files(files)
+    xml_file = File(xml_file_path)
+    xml_file.content = open(xml_file_path, 'rb').read()
+    xml_file.size = os.stat(xml_file_path).st_size
+    article.xml_file = xml_file
+    assets = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets.append(
+                {
+                    'path': file_path,
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article.update_asset_files(assets)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
@@ -71,7 +91,12 @@ def test_receive_package():
     article_services = ArticleServices(articles_db_manager, changes_db_manager)
 
     unexpected, missing = article_services.receive_package(
-        'ID', xml_file_path, files)
+        id='ID',
+        files=assets,
+        path=xml_file_path,
+        content=xml_file.content,
+        content_size=xml_file.size
+    )
     assert unexpected == []
     assert missing == []
 
@@ -138,7 +163,9 @@ def test_get_article_record(setup,
 def test_get_article_file_in_database(mocked_get_attachment,
                                       setup,
                                       change_service,
-                                      inmemory_receive_package):
+                                      inmemory_receive_package,
+                                      xml_test):
+    mocked_get_attachment.return_value = xml_test.encode('utf-8')
     article_id = 'ID'
     article_services = ArticleServices(
         change_service[0],
@@ -182,9 +209,9 @@ def test_get_article_file(setup, change_service, inmemory_receive_package):
 
 @patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)
 def test_get_asset_file_not_found(mocked_get_attachment,
-                                    setup,
-                                    change_service,
-                                    inmemory_receive_package):
+                                  setup,
+                                  change_service,
+                                  inmemory_receive_package):
     article_services = ArticleServices(
         change_service[0],
         change_service[1]
@@ -199,29 +226,67 @@ def test_get_asset_file_not_found(mocked_get_attachment,
 
 def test_get_asset_file():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
+    xml_filename = os.path.basename(xml_file_path)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
 
     article_services = ArticleServices(articles_db_manager, changes_db_manager)
-    article_services.receive_package('ID', xml_file_path, files)
+    xml_content = open(xml_file_path, 'rb').read()
+    xml_content_size = os.stat(xml_file_path).st_size
+    assets = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets.append(
+                {
+                    'path': os.path.basename(file_path),
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article_services.receive_package(id='ID',
+                                     files=assets,
+                                     path=xml_filename,
+                                     content=xml_content,
+                                     content_size=xml_content_size)
     for f in files:
         name = os.path.basename(f)
-        assert open(f, 'rb').read() == article_services.get_asset_file(
-            'ID', name)
+        with open(f, 'rb') as fb:
+            assert fb.read() == article_services.get_asset_file(
+                'ID', name)
 
 
 def test_get_asset_files():
     xml_file_path, files = PKG_A[0], PKG_A[1:]
+    xml_filename = os.path.basename(xml_file_path)
 
     changes_db_manager = InMemoryDBManager(database_name='changes')
     articles_db_manager = InMemoryDBManager(database_name='articles')
 
     article_services = ArticleServices(articles_db_manager, changes_db_manager)
-    article_services.receive_package('ID', xml_file_path, files)
 
+    xml_content = open(xml_file_path, 'rb').read()
+    xml_content_size = os.stat(xml_file_path).st_size
+    assets = []
+    for file_path in files:
+        with open(file_path, 'rb') as asset_file:
+            content = asset_file.read()
+            assets.append(
+                {
+                    'path': os.path.basename(file_path),
+                    'content': content,
+                    'content_size': len(content)
+                }
+            )
+    article_services.receive_package(id='ID',
+                                     files=assets,
+                                     path=xml_filename,
+                                     content=xml_content,
+                                     content_size=xml_content_size)
     items, msg = article_services.get_asset_files('ID')
     assert len(items) == len(files)
     assert len(msg) == 0
     for f in files:
-        assert open(f, 'rb').read() in items.values()
+        with open(f, 'rb') as fb:
+            assert fb.read() in items.values()

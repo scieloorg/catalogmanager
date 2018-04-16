@@ -247,7 +247,7 @@ class CouchDBManager(BaseDBManager):
         doc = self.read(id)
         attachment = self.database.get_attachment(doc, file_id)
         if attachment:
-            return attachment.getbuffer()
+            return attachment.read()
         return io.BytesIO()
 
     def list_attachments(self, id):

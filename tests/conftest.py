@@ -1,10 +1,8 @@
 import os
 import pytest
 from pyramid import testing
-from webtest import TestApp
 
 from catalogmanager.article_services import ArticleServices
-from catalog_persistence import main
 from catalog_persistence.databases import (
     InMemoryDBManager,
     CouchDBManager,
@@ -101,18 +99,6 @@ def change_service(functional_config):
 
 
 @pytest.fixture
-def testapp(functional_config):
-    settings = {
-        'database_uri': 'http://localhost:5984',
-        'couchdb.db_name': 'catalog_manager',
-        'database_username': 'admin',
-        'database_password': 'password',
-    }
-    test_app = main(settings)
-    return TestApp(test_app)
-
-
-@pytest.fixture
 def xml_test():
     return """
     <article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" dtd-version="1.0" article-type="research-article" xml:lang="en">
@@ -175,7 +161,27 @@ def article_file(setup, article_tmp_dir, xml_test):
 @pytest.fixture
 def inmemory_receive_package(change_service):
     article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_package('ID', PKG_A[0], PKG_A[1:])
+    xml_file_path = PKG_A[0]
+    xml_filename = os.path.basename(xml_file_path)
+    with open(xml_file_path, 'rb') as xml_file:
+        xml_content = xml_file.read()
+        xml_content_size = os.stat(xml_file_path).st_size
+        files = []
+        for file_path in PKG_A[1:]:
+            with open(file_path, 'rb') as asset_file:
+                content = asset_file.read()
+                files.append(
+                    {
+                        'path': os.path.basename(file_path),
+                        'content': content,
+                        'content_size': len(content)
+                    }
+                )
+        return article_services.receive_package(id='ID',
+                                                files=files,
+                                                path=xml_filename,
+                                                content=xml_content,
+                                                content_size=xml_content_size)
 
 
 @pytest.fixture
@@ -215,4 +221,18 @@ def couchdb_receive_package(dbserver_service, article_file, assets_files):
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_package('ID', article_file, assets_files)
+    xml_content = open(article_file, 'rb').read()
+    xml_content_size = os.stat(article_file).st_size
+    return article_services.receive_package('ID', article_file, xml_content,
+                                            xml_content_size, assets_files)
+
+
+@pytest.fixture
+def setup_couchdb(request, functional_config, dbserver_service):
+    database_service = DatabaseService(dbserver_service[0],
+                                       dbserver_service[1])
+
+    def fin():
+        database_service.db_manager.drop_database()
+        database_service.changes_db_manager.drop_database()
+    request.addfinalizer(fin)
