@@ -229,7 +229,7 @@ def test_put_attachment_to_document_register_change(mocked_register_change,
     )
 
     mocked_register_change.assert_called_with(document_record,
-                                              ChangeType.CREATE,
+                                              ChangeType.UPDATE,
                                               attachment_id)
 
 
