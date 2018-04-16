@@ -1,6 +1,5 @@
 from catalogmanager.article_services import (
-    ArticleServices,
-    ArticleServicesException
+    ArticleServices
 )
 from catalog_persistence.databases import CouchDBManager
 

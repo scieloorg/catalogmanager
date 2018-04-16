@@ -70,9 +70,9 @@ def test_http_article_calls_put_article(mocked_put_article,
          webtest.forms.Upload("test_xml_file.xml",
                               test_xml_file.encode('utf-8')))
     ])
-    result = testapp.put('/articles/{}'.format(article_id),
-                         params=params,
-                         content_type='multipart/form-data')
+    testapp.put('/articles/{}'.format(article_id),
+                params=params,
+                content_type='multipart/form-data')
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
         xml_properties={

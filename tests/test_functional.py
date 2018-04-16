@@ -27,7 +27,7 @@ def test_add_article_register_change(testapp, setup_couchdb):
     url = '/articles/{}'.format(article_id)
 
     # Um documento é registrado no módulo de persistencia. Ex: Artigo
-    xml_file_path, xml_assets_files = PKG_A[0], PKG_A[1:]
+    xml_file_path, __ = PKG_A[0], PKG_A[1:]
     params = OrderedDict([
         ("article_id", article_id),
         ("xml_file", webtest.forms.Upload(xml_file_path))
