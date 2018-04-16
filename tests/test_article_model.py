@@ -28,7 +28,7 @@ def test_article():
             content = asset_file.read()
             assets_files.append(
                 {
-                    'path': os.path.basename(file_path),
+                    'filename': os.path.basename(file_path),
                     'content': content,
                     'content_size': len(content)
                 }
@@ -66,7 +66,7 @@ def test_missing_files_list():
             content = asset_file.read()
             assets_files.append(
                 {
-                    'path': file_path,
+                    'filename': file_path,
                     'content': content,
                     'content_size': len(content)
                 }
@@ -101,7 +101,7 @@ def test_unexpected_files_list():
             content = asset_file.read()
             assets_files.append(
                 {
-                    'path': file_path,
+                    'filename': file_path,
                     'content': content,
                     'content_size': len(content)
                 }
@@ -135,7 +135,7 @@ def test_update_href():
             content = asset_file.read()
             assets_files.append(
                 {
-                    'path': file_path,
+                    'filename': file_path,
                     'content': content,
                     'content_size': len(content)
                 }

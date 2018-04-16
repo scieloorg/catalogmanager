@@ -172,14 +172,14 @@ def inmemory_receive_package(change_service):
                 content = asset_file.read()
                 files.append(
                     {
-                        'path': os.path.basename(file_path),
+                        'filename': os.path.basename(file_path),
                         'content': content,
                         'content_size': len(content)
                     }
                 )
         return article_services.receive_package(id='ID',
                                                 files=files,
-                                                path=xml_filename,
+                                                filename=xml_filename,
                                                 content=xml_content,
                                                 content_size=xml_content_size)
 

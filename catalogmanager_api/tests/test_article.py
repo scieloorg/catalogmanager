@@ -76,7 +76,7 @@ def test_http_article_calls_put_article(mocked_put_article,
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
         xml_properties={
-            'path': "test_xml_file.xml",
+            'filename': "test_xml_file.xml",
             'content': test_xml_file.encode('utf-8'),
             'content_size': len(test_xml_file)
         },

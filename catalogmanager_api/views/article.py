@@ -27,7 +27,7 @@ class Article:
             content = file_field.file.read()
             size = len(content)
             xml_properties = {
-                'path': os.path.basename(file_field.filename),
+                'filename': os.path.basename(file_field.filename),
                 'content': content,
                 'content_size': size,
             }
