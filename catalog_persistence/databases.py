@@ -87,7 +87,9 @@ class InMemoryDBManager(BaseDBManager):
         return doc
 
     def update(self, id, document):
-        self.database.update({id: document})
+        _document = self.read(id)
+        _document.update(document)
+        self.database.update({id: _document})
 
     def delete(self, id):
         self.read(id)
@@ -151,11 +153,7 @@ class InMemoryDBManager(BaseDBManager):
         return list(doc.get(self._attachments_key, {}).keys())
 
     def attachment_exists(self, id, file_id):
-        doc = self.read(id)
-        return (
-            doc.get(self._attachments_key) and
-            doc[self._attachments_key].get(file_id)
-        )
+        return file_id in self.list_attachments(id)
 
 
 class CouchDBManager(BaseDBManager):
@@ -255,11 +253,7 @@ class CouchDBManager(BaseDBManager):
         return list(doc.get(self._attachments_key, {}).keys())
 
     def attachment_exists(self, id, file_id):
-        doc = self.read(id)
-        return (
-            doc.get(self._attachments_key) and
-            doc[self._attachments_key].get(file_id)
-        )
+        return file_id in self.list_attachments(id)
 
 
 class DatabaseService:
@@ -398,17 +392,18 @@ class DatabaseService:
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
         """
-        read_record = self.db_manager.read(document_id)
         self.db_manager.put_attachment(document_id,
                                        file_id,
                                        content,
                                        file_properties)
+        document = self.db_manager.read(document_id)
         document_record = {
-            'document_id': read_record['document_id'],
-            'document_type': read_record['document_type'],
-            'created_date': read_record['created_date'],
+            'document_id': document['document_id'],
+            'document_type': document['document_type'],
+            'content': document['content'],
+            'created_date': document['created_date']
         }
-        self._register_change(document_record, ChangeType.UPDATE, file_id)
+        self.update(document_id, document_record)
 
     def get_attachment(self, document_id, file_id):
         """
