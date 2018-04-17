@@ -21,19 +21,29 @@ class Article:
             'password': self.settings.get('database_password')
         }
 
+    def _get_file_property(self, file_field):
+        content = file_field.file.read()
+        size = len(content)
+        return {
+            'filename': os.path.basename(file_field.filename),
+            'content': content,
+            'content_size': size
+        }
+
     def put(self):
         try:
-            file_field = self.request.POST.get('xml_file')
-            content = file_field.file.read()
-            size = len(content)
-            xml_properties = {
-                'filename': os.path.basename(file_field.filename),
-                'content': content,
-                'content_size': size,
-            }
+            xml_file_field = self.request.POST.get('xml_file')
+            xml_properties = self._get_file_property(xml_file_field)
+
+            assets_files_field = self.request.POST.getall('asset_field')
+            assets_files = [
+                self._get_file_property(asset_file_field)
+                for asset_file_field in assets_files_field
+            ]
             catalogmanager.put_article(
                 article_id=self.request.matchdict['id'],
                 xml_properties=xml_properties,
+                assets_files=assets_files,
                 **self.db_settings
             )
         except catalogmanager.article_services.ArticleServicesException as e:

@@ -6,6 +6,14 @@ import webtest
 import catalogmanager
 
 
+def _get_file_property(filename, content, size):
+    return {
+        'filename': filename,
+        'content': content,
+        'content_size': size
+    }
+
+
 def test_http_get_home(testapp):
     result = testapp.get('/', status=200)
     assert result.status == '200 OK'
@@ -75,11 +83,10 @@ def test_http_article_calls_put_article(mocked_put_article,
                 content_type='multipart/form-data')
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
-        xml_properties={
-            'filename': "test_xml_file.xml",
-            'content': test_xml_file.encode('utf-8'),
-            'content_size': len(test_xml_file)
-        },
+        xml_properties=_get_file_property("test_xml_file.xml",
+                                          test_xml_file.encode('utf-8'),
+                                          len(test_xml_file)),
+        assets_files=[],
         **db_settings
     )
 
@@ -125,3 +132,44 @@ def test_http_article_put_article_succeeded(mocked_put_article,
                          params=params,
                          content_type='multipart/form-data')
     assert result.status == '200 OK'
+
+
+@patch.object(catalogmanager, 'put_article')
+def test_http_article_put_article_with_assets(mocked_put_article,
+                                              db_settings,
+                                              testapp,
+                                              test_xml_file,
+                                              test_article_files):
+    article_id = 'ID-post-article-123'
+    expected_assets_properties = []
+    assets_field = []
+    for article_file in test_article_files:
+        with open(article_file, 'rb') as fb:
+            file_content = fb.read()
+            expected_assets_properties.append(
+                _get_file_property(article_file.name,
+                                   file_content,
+                                   article_file.lstat().st_size),
+            )
+        assets_field.append(
+            ('asset_field', article_file.name, file_content)
+        )
+    params = OrderedDict([
+        ('article_id', article_id),
+        ("xml_file",
+         webtest.forms.Upload("test_xml_file.xml",
+                              test_xml_file.encode('utf-8')))
+    ])
+    result = testapp.put('/articles/{}'.format(article_id),
+                         params=params,
+                         upload_files=assets_field,
+                         content_type='multipart/form-data')
+    assert result.status == '200 OK'
+    mocked_put_article.assert_called_once_with(
+        article_id=article_id,
+        xml_properties=_get_file_property("test_xml_file.xml",
+                                          test_xml_file.encode('utf-8'),
+                                          len(test_xml_file)),
+        assets_files=expected_assets_properties,
+        **db_settings
+    )
