@@ -322,11 +322,12 @@ def test_get_attachment_from_document(setup, database_service, xml_test):
         }
     )
 
-    attachment = database_service.get_attachment(
+    content_type, content = database_service.get_attachment(
         document_id=article_record['document_id'],
         file_id="href_file"
     )
-    assert attachment == xml_test.encode('utf-8')
+    assert content == xml_test.encode('utf-8')
+    assert content_type == "text/xml"
 
 
 def test_get_attachment_from_document_not_found(setup,
@@ -363,12 +364,13 @@ def test_get_attachment_not_found(setup, database_service, xml_test):
             }
         )
 
-    attachment = database_service.get_attachment(
+    content_type, content = database_service.get_attachment(
         article_record['document_id'],
         "filename"
     )
-    assert attachment is not None
-    assert len(attachment.getvalue()) == 0
+    assert content_type == ''
+    assert content is not None
+    assert len(content.getvalue()) == 0
 
 
 def test_sort_result():

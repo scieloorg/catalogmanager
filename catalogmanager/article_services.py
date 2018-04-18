@@ -101,18 +101,12 @@ class ArticleServices:
 
     def get_article_file(self, article_id):
         article_record = self.get_article_data(article_id)
-        article = Article(article_id)
         try:
             attachment = self.article_db_service.get_attachment(
                 document_id=article_id,
                 file_id=article_record['content']['xml']
             )
-
-            xml_file = File(article_record['content']['xml'])
-            xml_file.content = attachment
-            xml_file.size = len(attachment)
-            article.xml_file = xml_file
-            return article.xml_file.content
+            return attachment
         except DocumentNotFound:
             raise ArticleServicesException(
                 'Missing XML file {}'.format(article_id)

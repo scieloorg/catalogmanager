@@ -422,7 +422,12 @@ class DatabaseService:
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
         """
-        return self.db_manager.get_attachment(document_id, file_id)
+        prop = self.db_manager.get_attachment_properties(document_id, file_id)
+        content_type = prop.get('content_type') if prop is not None else ''
+        return (
+                content_type,
+                self.db_manager.get_attachment(document_id, file_id)
+            )
 
 
 def sort_results(results, sort):
