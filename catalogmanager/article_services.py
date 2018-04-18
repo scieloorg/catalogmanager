@@ -96,7 +96,7 @@ class ArticleServices:
             return article_record
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing XML file {}'.format(article_id)
+                'Article {} not found'.format(article_id)
             )
 
     def get_article_file(self, article_id):

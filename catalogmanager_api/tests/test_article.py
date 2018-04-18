@@ -28,13 +28,14 @@ def test_http_get_article_calls_get_article_data(mocked_get_article_data,
 @patch.object(catalogmanager, 'get_article_data')
 def test_http_get_article_not_found(mocked_get_article_data, testapp):
     article_id = 'ID123456'
+    error_msg = 'Article {} not found'.format(article_id)
     mocked_get_article_data.side_effect = \
         catalogmanager.article_services.ArticleServicesException(
-            message='Missing XML file {}'.format(article_id)
+            message=error_msg
         )
     expected = {
         "error": "404",
-        "message": "Article not found"
+        "message": error_msg
     }
     result = testapp.get('/articles/{}'.format(article_id))
     assert result.status == '200 OK'
@@ -56,6 +57,65 @@ def test_http_get_article_succeeded(mocked_get_article_data, testapp):
     result = testapp.get('/articles/{}'.format(article_id))
     assert result.status == '200 OK'
     assert result.json == json.dumps(expected)
+
+
+@patch.object(catalogmanager, 'get_article_file')
+def test_http_get_xml_file_calls_get_article_file(mocked_get_article_file,
+                                                  db_settings,
+                                                  testapp):
+    article_id = 'ID123456'
+    mocked_get_article_file.return_value = b'123456Test'
+    testapp.get('/articles/{}/xml'.format(article_id))
+    mocked_get_article_file.assert_called_once_with(
+        article_id=article_id,
+        **db_settings
+    )
+
+
+@patch.object(catalogmanager, 'get_article_file')
+def test_http_get_xml_file_article_not_found(mocked_get_article_file, testapp):
+    article_id = 'ID123456'
+    error_msg = 'Article {} not found'.format(article_id)
+    mocked_get_article_file.side_effect = \
+        catalogmanager.article_services.ArticleServicesException(
+            message=error_msg
+        )
+    expected = {
+        "error": "404",
+        "message": error_msg
+    }
+    result = testapp.get('/articles/{}/xml'.format(article_id))
+    assert result.status == '200 OK'
+    assert result.json == expected
+
+
+@patch.object(catalogmanager, 'get_article_file')
+def test_http_get_xml_file_not_found(mocked_get_article_file, testapp):
+    article_id = 'ID123456'
+    error_msg = 'Missing XML file {}'.format(article_id)
+    mocked_get_article_file.side_effect = \
+        catalogmanager.article_services.ArticleServicesException(
+            message=error_msg
+        )
+    expected = {
+        "error": "404",
+        "message": error_msg
+    }
+    result = testapp.get('/articles/{}/xml'.format(article_id))
+    assert result.status == '200 OK'
+    assert result.json == expected
+
+
+@patch.object(catalogmanager, 'get_article_file')
+def test_http_get_xml_file_succeeded(mocked_get_article_file,
+                                     testapp, test_xml_file):
+    article_id = 'ID123456'
+    expected = test_xml_file.encode('utf-8')
+    mocked_get_article_file.return_value = expected
+    result = testapp.get('/articles/{}/xml'.format(article_id))
+    assert result.status == '200 OK'
+    assert result.body == expected
+    assert result.content_type == 'application/xml'
 
 
 @patch.object(catalogmanager, 'put_article')

@@ -52,7 +52,7 @@ class Article:
         except catalogmanager.article_services.ArticleServicesException as e:
             return json.dumps({
                 "error": "404",
-                "message": "Article not found"
+                "message": e.message
             })
 
     @view_config(route_name='get_article_xml')
@@ -64,7 +64,9 @@ class Article:
             )
             return Response(content_type='application/xml', body=xml_file)
         except catalogmanager.article_services.ArticleServicesException as e:
-            return json.dumps({
-                "error": "404",
-                "message": "Article not found"
-            })
+            return Response(
+                json={
+                    "error": "404",
+                    "message": e.message
+                }
+            )
