@@ -61,6 +61,7 @@ class InMemoryDBManager(BaseDBManager):
     def __init__(self, **kwargs):
         self._database_name = kwargs['database_name']
         self._attachments_key = 'attachments'
+        self._attachments_properties_key = 'attachments_properties'
         self._database = {}
 
     @property
@@ -137,6 +138,18 @@ class InMemoryDBManager(BaseDBManager):
             content_properties['content_size']
         self.database.update({id: doc})
 
+    def _add_attachment_properties(self, record, file_id, file_properties):
+        """
+        """
+        if not record.get(self._attachments_properties_key):
+            record[self._attachments_properties_key] = {}
+        if not record[self._attachments_properties_key].get(file_id):
+            record[self._attachments_properties_key][file_id] = {}
+
+        record[self._attachments_properties_key][file_id].update(
+            file_properties)
+        return record
+
     def get_attachment(self, id, file_id):
         doc = self.read(id)
         if (doc.get(self._attachments_key) and
@@ -154,6 +167,7 @@ class CouchDBManager(BaseDBManager):
     def __init__(self, **kwargs):
         self._database_name = kwargs['database_name']
         self._attachments_key = '_attachments'
+        self._attachments_properties_key = 'attachments_properties'
         self._database = None
         self._db_server = couchdb.Server(kwargs['database_uri'])
         self._db_server.resource.credentials = (
@@ -236,6 +250,18 @@ class CouchDBManager(BaseDBManager):
             filename=file_id,
             content_type=content_properties.get('content_type')
         )
+
+    def _add_attachment_properties(self, record, file_id, file_properties):
+        """
+        """
+        if not record.get(self._attachments_properties_key):
+            record[self._attachments_properties_key] = {}
+        if not record[self._attachments_properties_key].get(file_id):
+            record[self._attachments_properties_key][file_id] = {}
+
+        record[self._attachments_properties_key][file_id].update(
+            file_properties)
+        return record
 
     def get_attachment(self, id, file_id):
         doc = self.read(id)
@@ -396,6 +422,11 @@ class DatabaseService:
             'content': document['content'],
             'created_date': document['created_date']
         }
+        document_record = self.db_manager._add_attachment_properties(
+                document_record,
+                file_id,
+                file_properties
+            )
         self.update(document_id, document_record)
 
     def get_attachment(self, document_id, file_id):

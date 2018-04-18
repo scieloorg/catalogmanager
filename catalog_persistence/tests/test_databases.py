@@ -226,7 +226,15 @@ def test_put_attachment_to_document_update(mocked_update,
         'document_id': record['document_id'],
         'document_type': record['document_type'],
         'content': record['content'],
-        'created_date': record['created_date']
+        'created_date': record['created_date'],
+        database_service.db_manager._attachments_properties_key:
+            {
+                attachment_id:
+                {
+                    'content_type': "text/xml",
+                    'content_size': len(xml_test)
+                }
+            }
     }
     mocked_update.assert_called_with(
         article_record['document_id'], document_record)
@@ -441,3 +449,26 @@ def test_sort_result():
     expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
     got = sort_results(results, sort)
     assert expected == got
+
+
+def test_add_attachment_properties(setup, database_service, xml_test):
+    expected = {
+        database_service.db_manager._attachments_properties_key:
+            {
+                'href_file':
+                {
+                    'content_type': "text/xml",
+                    'content_size': len(xml_test)
+                }
+            }
+        }
+    file_properties = {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
+    record = {}
+    assert expected == database_service.db_manager._add_attachment_properties(
+            record,
+            'href_file',
+            file_properties
+        )
