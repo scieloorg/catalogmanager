@@ -3,23 +3,14 @@ import os
 import json
 from collections import OrderedDict
 
-import pytest
 import webtest
 
-from catalogmanager_api import main
 from catalogmanager.xml.xml_tree import (
     XMLTree
 )
 from .conftest import (
     PKG_A,
 )
-
-
-@pytest.fixture
-def testapp():
-    settings = {'__file__': 'development.ini'}
-    test_app = main(settings)
-    return webtest.TestApp(test_app)
 
 
 def test_add_article_register_change(testapp, setup_couchdb):
