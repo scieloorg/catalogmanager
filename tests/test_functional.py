@@ -8,17 +8,14 @@ import webtest
 from catalogmanager.xml.xml_tree import (
     XMLTree
 )
-from .conftest import (
-    PKG_A,
-)
 
 
-def test_add_article_register_change(testapp, setup_couchdb):
+def test_add_article_register_change(testapp, setup_db, test_package_A):
     article_id = 'ID-post-article-123'
     url = '/articles/{}'.format(article_id)
 
     # Um documento é registrado no módulo de persistencia. Ex: Artigo
-    xml_file_path, assets_files = PKG_A[0], PKG_A[1:]
+    xml_file_path, assets_files = test_package_A[0], test_package_A[1:]
     assets_field = []
     for article_file in assets_files:
         with open(article_file, 'rb') as fb:

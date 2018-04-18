@@ -10,71 +10,52 @@ from catalog_persistence.databases import (
 )
 
 
-FIXTURE_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    'test_files',
+@pytest.fixture
+def test_fixture_dir():
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'test_files',
     )
 
 
-PKG_A = [
-    os.path.join(
-        FIXTURE_DIR,
-        '741a',
-        '0034-8910-rsp-S01518-87872016050006741.xml'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741a',
-        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741a',
+@pytest.fixture
+def test_package_A(test_fixture_dir):
+    filenames = (
+        '0034-8910-rsp-S01518-87872016050006741.xml',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    ),
-]
-
-PKG_B = [
-    os.path.join(
-        FIXTURE_DIR,
-        '741b',
-        '0034-8910-rsp-S01518-87872016050006741.xml'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741b',
-        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741b',
-        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    ),
-]
+    )
+    return tuple(
+        os.path.join(test_fixture_dir, '741a', filename)
+        for filename in filenames
+    )
 
 
-PKG_C = [
-    os.path.join(
-        FIXTURE_DIR,
-        '741c',
-        '0034-8910-rsp-S01518-87872016050006741.xml'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741c',
-        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741c',
+@pytest.fixture
+def test_package_B(test_fixture_dir):
+    filenames = (
+        '0034-8910-rsp-S01518-87872016050006741.xml',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741c',
+    )
+    return tuple(
+        os.path.join(test_fixture_dir, '741b', filename)
+        for filename in filenames
+    )
+
+
+@pytest.fixture
+def test_package_C(test_fixture_dir):
+    filenames = (
+        '0034-8910-rsp-S01518-87872016050006741.xml',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
+        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg',
         'fig.jpg'
-    ),
-]
+    )
+    return tuple(
+        os.path.join(test_fixture_dir, '741c', filename)
+        for filename in filenames
+    )
 
 
 def package_files(datafiles):
@@ -111,26 +92,6 @@ def xml_test():
 
 
 @pytest.fixture
-def article_db_settings():
-    return {
-        'database_uri': 'http://localhost:5984',
-        'database_username': 'admin',
-        'database_password': 'password',
-        'database_name': 'articles',
-    }
-
-
-@pytest.fixture
-def change_db_settings():
-    return {
-        'database_uri': 'http://localhost:5984',
-        'database_username': 'admin',
-        'database_password': 'password',
-        'database_name': 'changes',
-    }
-
-
-@pytest.fixture
 def setup(request, functional_config, change_service):
     database_service = DatabaseService(change_service[0], change_service[1])
 
@@ -141,37 +102,15 @@ def setup(request, functional_config, change_service):
 
 
 @pytest.fixture
-def article_tmp_dir(tmpdir):
-    return tmpdir.mkdir("articles")
-
-
-@pytest.fixture
-def assets_files(setup, article_tmp_dir, xml_test):
-    files = []
-    for image in ["img1.png", "img2.png", "img3.png"]:
-        img = article_tmp_dir.join(image)
-        img.write(image.encode('utf-8'))
-        files.append(img.strpath)
-    return files
-
-
-@pytest.fixture
-def article_file(setup, article_tmp_dir, xml_test):
-    xml_file = article_tmp_dir.join("article.xml")
-    xml_file.write(xml_test.encode('utf-8'))
-    return xml_file.strpath
-
-
-@pytest.fixture
-def inmemory_receive_package(change_service):
+def inmemory_receive_package(change_service, test_package_A):
     article_services = ArticleServices(change_service[0], change_service[1])
-    xml_file_path = PKG_A[0]
+    xml_file_path = test_package_A[0]
     xml_filename = os.path.basename(xml_file_path)
     with open(xml_file_path, 'rb') as xml_file:
         xml_content = xml_file.read()
         xml_content_size = os.stat(xml_file_path).st_size
         files = []
-        for file_path in PKG_A[1:]:
+        for file_path in test_package_A[1:]:
             with open(file_path, 'rb') as asset_file:
                 content = asset_file.read()
                 files.append(
@@ -220,23 +159,29 @@ def dbserver_service(functional_config, database_config):
 
 
 @pytest.fixture
-def couchdb_receive_package(dbserver_service, article_file, assets_files):
+def couchdb_receive_package(dbserver_service, test_package_A):
     article_services = ArticleServices(
         dbserver_service[0],
         dbserver_service[1]
     )
-    xml_content = open(article_file, 'rb').read()
-    xml_content_size = os.stat(article_file).st_size
-    return article_services.receive_package('ID', article_file, xml_content,
-                                            xml_content_size, assets_files)
-
-
-@pytest.fixture
-def setup_couchdb(request, functional_config, dbserver_service):
-    database_service = DatabaseService(dbserver_service[0],
-                                       dbserver_service[1])
-
-    def fin():
-        database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
-    request.addfinalizer(fin)
+    xml_file_path = test_package_A[0]
+    xml_filename = os.path.basename(xml_file_path)
+    with open(xml_file_path, 'rb') as xml_file:
+        xml_content = xml_file.read()
+        xml_content_size = os.stat(xml_file_path).st_size
+        files = []
+        for file_path in test_package_A[1:]:
+            with open(file_path, 'rb') as asset_file:
+                content = asset_file.read()
+                files.append(
+                    {
+                        'filename': os.path.basename(file_path),
+                        'content': content,
+                        'content_size': len(content)
+                    }
+                )
+        return article_services.receive_package(id='ID',
+                                                files=files,
+                                                filename=xml_filename,
+                                                content=xml_content,
+                                                content_size=xml_content_size)

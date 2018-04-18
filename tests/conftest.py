@@ -5,35 +5,31 @@ import webtest
 from pyramid import testing
 
 from catalog_persistence.databases import (
-    CouchDBManager,
+    InMemoryDBManager,
     DatabaseService
 )
 from catalogmanager_api import main
 
 
-FIXTURE_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    'test_files',
+@pytest.fixture
+def test_fixture_dir():
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'test_files',
     )
 
 
-PKG_A = [
-    os.path.join(
-        FIXTURE_DIR,
-        '741a',
-        '0034-8910-rsp-S01518-87872016050006741.xml'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741a',
-        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg'
-    ),
-    os.path.join(
-        FIXTURE_DIR,
-        '741a',
+@pytest.fixture
+def test_package_A(test_fixture_dir):
+    filenames = (
+        '0034-8910-rsp-S01518-87872016050006741.xml',
+        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
         '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    ),
-]
+    )
+    return tuple(
+        os.path.join(test_fixture_dir, '741a', filename)
+        for filename in filenames
+    )
 
 
 @pytest.fixture
@@ -75,13 +71,13 @@ def dbserver_service(functional_config, database_config):
     changes_database_config = couchdb_config.copy()
     changes_database_config['database_name'] = "changes"
     return (
-        CouchDBManager(**articles_database_config),
-        CouchDBManager(**changes_database_config)
+        InMemoryDBManager(**articles_database_config),
+        InMemoryDBManager(**changes_database_config)
     )
 
 
 @pytest.fixture
-def setup_couchdb(request, functional_config, dbserver_service):
+def setup_db(request, functional_config, dbserver_service):
     database_service = DatabaseService(dbserver_service[0],
                                        dbserver_service[1])
 
