@@ -368,7 +368,7 @@ def test_get_attachment_not_found(setup, database_service, xml_test):
         article_record['document_id'],
         "filename"
     )
-    assert content_type == ''
+    assert content_type == 'text/xml'
     assert content is not None
     assert len(content.getvalue()) == 0
 
