@@ -181,9 +181,10 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
         article_record['document_id'],
         article_record
     )
+    file_id = "href_file"
     database_service.put_attachment(
         document_id=article_record['document_id'],
-        file_id="href_file",
+        file_id=file_id,
         content=xml_test.encode('utf-8'),
         file_properties={
             'content_type': "text/xml",
@@ -195,17 +196,16 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
         database_service.db_manager.database[article_record['document_id']]
     )
     assert record_check is not None
-    assert database_service.db_manager.attachment_exists(
-        article_record['document_id'],
-        "href_file"
+    assert file_id in database_service.db_manager.list_attachments(
+        article_record['document_id']
     )
 
 
 @patch.object(DatabaseService, 'update')
 def test_put_attachment_to_document_update(mocked_update,
-                                                    setup,
-                                                    database_service,
-                                                    xml_test):
+                                           setup,
+                                           database_service,
+                                           xml_test):
     article_record = get_article_record({'Test': 'Test9'})
     database_service.register(
         article_record['document_id'],
@@ -233,8 +233,8 @@ def test_put_attachment_to_document_update(mocked_update,
 
 
 def test_put_attachment_to_document_update_dates(setup,
-                                        database_service,
-                                        xml_test):
+                                                 database_service,
+                                                 xml_test):
     article_record = get_article_record({'Test': 'Test9'})
     database_service.register(
         article_record['document_id'],
