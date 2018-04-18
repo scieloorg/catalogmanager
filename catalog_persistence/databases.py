@@ -99,7 +99,7 @@ class InMemoryDBManager(BaseDBManager):
         selector: criterio para selecionar campo com determinados valores
             Ex.: {'type': 'ART'}
         fields: lista de campos para retornar. Ex.: ['name']
-        sort: lista de dict com nome de campo e sua ordenacao. [{'name': 'asc'}]
+        sort: lista de dict com nome de campo e sua ordenacao.[{'name': 'asc'}]
 
         Retorno:
         Lista de registros de documento registrados na base de dados
@@ -208,7 +208,7 @@ class CouchDBManager(BaseDBManager):
         selector: criterio para selecionar campo com determinados valores
             Ex.: {'type': 'ART'}
         fields: lista de campos para retornar. Ex.: ['name']
-        sort: lista de dict com nome de campo e sua ordenacao. [{'name': 'asc'}]
+        sort: lista de dict com nome de campo e sua ordenacao.[{'name': 'asc'}]
 
         Retorno:
         Lista de registros de documento registrados na base de dados
@@ -218,7 +218,10 @@ class CouchDBManager(BaseDBManager):
             'fields': fields,
             'sort': sort,
         }
-        return [dict(document) for document in self.database.find(selection_criteria)]
+        return [
+            dict(document)
+            for document in self.database.find(selection_criteria)
+        ]
 
     def put_attachment(self, id, file_id, content, content_properties):
         """
@@ -361,7 +364,7 @@ class DatabaseService:
         selector: criterio para selecionar campo com determinados valores
             Ex.: {'type': 'ART'}
         fields: lista de campos para retornar. Ex.: ['name']
-        sort: lista de dict com nome de campo e sua ordenacao. [{'name': 'asc'}]
+        sort: lista de dict com nome de campo e sua ordenacao.[{'name': 'asc'}]
 
         Retorno:
         Lista de registros de documento registrados na base de dados
