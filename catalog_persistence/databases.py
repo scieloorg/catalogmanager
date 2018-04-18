@@ -55,10 +55,6 @@ class BaseDBManager(metaclass=abc.ABCMeta):
     def list_attachments(self, id) -> list:
         return NotImplemented
 
-    @abc.abstractmethod
-    def attachment_exists(self, id, file_id) -> bool:
-        return NotImplemented
-
 
 class InMemoryDBManager(BaseDBManager):
 
@@ -151,9 +147,6 @@ class InMemoryDBManager(BaseDBManager):
     def list_attachments(self, id):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
-
-    def attachment_exists(self, id, file_id):
-        return file_id in self.list_attachments(id)
 
 
 class CouchDBManager(BaseDBManager):
@@ -251,9 +244,6 @@ class CouchDBManager(BaseDBManager):
     def list_attachments(self, id):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
-
-    def attachment_exists(self, id, file_id):
-        return file_id in self.list_attachments(id)
 
 
 class DatabaseService:
