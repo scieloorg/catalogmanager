@@ -441,3 +441,29 @@ def test_sort_result():
     expected.append({'name': 'Ana', 'num': 200, 'type': 'B'})
     got = sort_results(results, sort)
     assert expected == got
+
+
+def test_get_attachment_properties(setup, database_service, xml_test):
+
+    article_record = get_article_record({'Test': 'Test11'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    file_properties = {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
+
+    database_service.put_attachment(
+        document_id=article_record['document_id'],
+        file_id='href_file',
+        content=xml_test.encode('utf-8'),
+        file_properties=file_properties
+    )
+    expected = file_properties
+    assert expected == \
+        database_service.db_manager.get_attachment_properties(
+            article_record['document_id'],
+            'href_file'
+        )

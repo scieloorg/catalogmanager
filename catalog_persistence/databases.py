@@ -65,6 +65,7 @@ class InMemoryDBManager(BaseDBManager):
     def __init__(self, **kwargs):
         self._database_name = kwargs['database_name']
         self._attachments_key = 'attachments'
+        self._attachments_properties_key = 'attachments_properties'
         self._database = {}
 
     @property
@@ -148,6 +149,10 @@ class InMemoryDBManager(BaseDBManager):
             return doc[self._attachments_key][file_id]['content']
         return io.BytesIO()
 
+    def get_attachment_properties(self, id, file_id):
+        doc = self.read(id)
+        return doc.get(self._attachments_properties_key, {}).get(file_id)
+
     def list_attachments(self, id):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
@@ -161,6 +166,7 @@ class CouchDBManager(BaseDBManager):
     def __init__(self, **kwargs):
         self._database_name = kwargs['database_name']
         self._attachments_key = '_attachments'
+        self._attachments_properties_key = 'attachments_properties'
         self._database = None
         self._db_server = couchdb.Server(kwargs['database_uri'])
         self._db_server.resource.credentials = (
@@ -247,6 +253,10 @@ class CouchDBManager(BaseDBManager):
         if attachment:
             return attachment.read()
         return io.BytesIO()
+
+    def get_attachment_properties(self, id, file_id):
+        doc = self.read(id)
+        return doc.get(self._attachments_properties_key, {}).get(file_id)
 
     def list_attachments(self, id):
         doc = self.read(id)
