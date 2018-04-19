@@ -330,11 +330,12 @@ def test_get_attachment_from_document(setup, database_service, xml_test):
         }
     )
 
-    attachment = database_service.get_attachment(
+    content_type, content = database_service.get_attachment(
         document_id=article_record['document_id'],
         file_id="href_file"
     )
-    assert attachment == xml_test.encode('utf-8')
+    assert content == xml_test.encode('utf-8')
+    assert content_type == "text/xml"
 
 
 def test_get_attachment_from_document_not_found(setup,
@@ -371,12 +372,13 @@ def test_get_attachment_not_found(setup, database_service, xml_test):
             }
         )
 
-    attachment = database_service.get_attachment(
+    content_type, content = database_service.get_attachment(
         article_record['document_id'],
         "filename"
     )
-    assert attachment is not None
-    assert len(attachment.getvalue()) == 0
+    assert content_type == ''
+    assert content is not None
+    assert len(content.getvalue()) == 0
 
 
 def test_sort_result():
@@ -471,4 +473,37 @@ def test_add_attachment_properties(setup, database_service, xml_test):
             record,
             'href_file',
             file_properties
+        )
+
+
+def test_get_attachment_properties(setup, database_service, xml_test):
+
+    article_record = get_article_record({'Test': 'Test11'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    file_properties = {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
+
+    database_service.put_attachment(
+        document_id=article_record['document_id'],
+        file_id='href_file',
+        content=xml_test.encode('utf-8'),
+        file_properties=file_properties
+    )
+
+    database_service.put_attachment(
+        document_id=article_record['document_id'],
+        file_id='href_file2',
+        content=xml_test.encode('utf-8'),
+        file_properties=file_properties
+    )
+    expected = file_properties
+    assert expected == \
+        database_service.db_manager.get_attachment_properties(
+            article_record['document_id'],
+            'href_file'
         )

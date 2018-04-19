@@ -80,3 +80,20 @@ class Article:
                     "message": e.message
                 }
             )
+
+    @view_config(route_name='get_asset_file')
+    def get_asset_file(self):
+        try:
+            content_type, content = catalogmanager.get_asset_file(
+                article_id=self.request.matchdict['id'],
+                asset_id=self.request.matchdict['asset_id'],
+                **self.db_settings
+            )
+            return Response(content_type=content_type, body=content)
+        except catalogmanager.article_services.ArticleServicesException as e:
+            return Response(
+                json={
+                    "error": "404",
+                    "message": e.message
+                }
+            )
