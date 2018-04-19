@@ -226,7 +226,15 @@ def test_put_attachment_to_document_update(mocked_update,
         'document_id': record['document_id'],
         'document_type': record['document_type'],
         'content': record['content'],
-        'created_date': record['created_date']
+        'created_date': record['created_date'],
+        database_service.db_manager._attachments_properties_key:
+            {
+                attachment_id:
+                {
+                    'content_type': "text/xml",
+                    'content_size': len(xml_test)
+                }
+            }
     }
     mocked_update.assert_called_with(
         article_record['document_id'], document_record)
@@ -368,7 +376,7 @@ def test_get_attachment_not_found(setup, database_service, xml_test):
         article_record['document_id'],
         "filename"
     )
-    assert content_type == 'text/xml'
+    assert content_type == ''
     assert content is not None
     assert len(content.getvalue()) == 0
 
@@ -445,6 +453,29 @@ def test_sort_result():
     assert expected == got
 
 
+def test_add_attachment_properties(setup, database_service, xml_test):
+    expected = {
+        database_service.db_manager._attachments_properties_key:
+            {
+                'href_file':
+                {
+                    'content_type': "text/xml",
+                    'content_size': len(xml_test)
+                }
+            }
+        }
+    file_properties = {
+            'content_type': "text/xml",
+            'content_size': len(xml_test)
+        }
+    record = {}
+    assert expected == database_service.db_manager._add_attachment_properties(
+            record,
+            'href_file',
+            file_properties
+        )
+
+
 def test_get_attachment_properties(setup, database_service, xml_test):
 
     article_record = get_article_record({'Test': 'Test11'})
@@ -460,6 +491,13 @@ def test_get_attachment_properties(setup, database_service, xml_test):
     database_service.put_attachment(
         document_id=article_record['document_id'],
         file_id='href_file',
+        content=xml_test.encode('utf-8'),
+        file_properties=file_properties
+    )
+
+    database_service.put_attachment(
+        document_id=article_record['document_id'],
+        file_id='href_file2',
         content=xml_test.encode('utf-8'),
         file_properties=file_properties
     )

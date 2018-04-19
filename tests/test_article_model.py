@@ -155,4 +155,5 @@ def test_update_href():
     assert items[0].href == 'novo href'
     assert items[0].name == '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
 
-    assert not article.xml_tree.content == content
+    assert not article.xml_tree.compare(content)
+    assert b'novo href' in article.xml_tree.content
