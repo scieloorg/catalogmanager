@@ -1,4 +1,5 @@
 import os
+import io
 import json
 
 from pyramid.response import Response
@@ -68,11 +69,24 @@ class Article:
     @view_config(route_name='get_article_xml')
     def get_article_xml(self):
         try:
-            xml_file = catalogmanager.get_article_file(
-                article_id=self.request.matchdict['id'],
+            article_id = self.request.matchdict['id']
+            xml_file_content = catalogmanager.get_article_file(
+                article_id=article_id,
                 **self.db_settings
             )
-            return Response(content_type='application/xml', body=xml_file)
+            article_data = catalogmanager.get_article_data(
+                article_id=article_id,
+                **self.db_settings
+            )
+            if article_data['content'].get('assets'):
+                xml_file_content = catalogmanager.set_assets_public_url(
+                    article_id=article_id,
+                    xml_content=xml_file_content,
+                    assets_filenames=article_data['content']['assets'],
+                    public_url='/articles/{}/{}'
+                )
+            return Response(content_type='application/xml',
+                            body_file=io.BytesIO(xml_file_content))
         except catalogmanager.article_services.ArticleServicesException as e:
             return Response(
                 json={

@@ -22,7 +22,8 @@ class HRefNode:
 
     @property
     def local_href(self):
-        if self.href is not None and '/' not in self.href:
+        if (self.href is not None and
+                ('/' not in self.href or self.href.startswith('/'))):
             return self.href
 
     @property
