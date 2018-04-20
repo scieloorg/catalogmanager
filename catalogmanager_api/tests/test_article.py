@@ -233,3 +233,52 @@ def test_http_article_put_article_with_assets(mocked_put_article,
         assets_files=expected_assets_properties,
         **db_settings
     )
+
+
+@patch.object(catalogmanager, 'get_asset_file')
+def test_http_get_asset_file_calls_get_asset_file(mocked_get_asset_file,
+                                                  db_settings,
+                                                  testapp):
+
+    article_id = 'ID123456'
+    asset_id = 'ID123456'
+    mocked_get_asset_file.return_value = '', b'123456Test'
+    testapp.get('/articles/{}/{}'.format(article_id, asset_id))
+    mocked_get_asset_file.assert_called_once_with(
+        article_id=article_id,
+        asset_id=asset_id,
+        **db_settings
+    )
+
+
+@patch.object(catalogmanager, 'get_asset_file')
+def test_http_get_asset_file_not_found(mocked_get_asset_file,
+                                       testapp):
+    article_id = 'ID123456'
+    asset_id = 'a.jpg'
+    error_msg = 'Asset {} (Article {}) not found'.format(asset_id, article_id)
+    mocked_get_asset_file.side_effect = \
+        catalogmanager.article_services.ArticleServicesException(
+            message=error_msg
+        )
+    expected = {
+        "error": "404",
+        "message": error_msg
+    }
+    result = testapp.get('/articles/{}/{}'.format(article_id, asset_id))
+    assert result.status == '200 OK'
+    assert result.json == expected
+
+
+@patch.object(catalogmanager, 'get_asset_file')
+def test_http_get_asset_file_succeeded(mocked_get_asset_file,
+                                       testapp,
+                                       test_xml_file):
+    article_id = 'ID123456'
+    asset_id = 'a.jpg'
+    expected = 'text/xml', test_xml_file.encode('utf-8')
+    mocked_get_asset_file.return_value = expected
+    result = testapp.get('/articles/{}/{}'.format(article_id, asset_id))
+    assert result.status == '200 OK'
+    assert result.body == expected[1]
+    assert result.content_type == expected[0]
