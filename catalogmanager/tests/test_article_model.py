@@ -7,15 +7,10 @@ from catalogmanager.models.file import File
 from catalogmanager.xml.xml_tree import (
     XMLTree,
 )
-from .conftest import (
-    PKG_A,
-    PKG_B,
-    PKG_C,
-)
 
 
-def test_article():
-    xml_file_path, files = PKG_A[0], PKG_A[1:]
+def test_article(test_package_A):
+    xml_file_path, files = test_package_A[0], test_package_A[1:]
     xml_filename = os.path.basename(xml_file_path)
     article = Article('ID')
     xml_file = File(xml_filename)
@@ -53,8 +48,8 @@ def test_article():
     assert xml_from_file.content == xml_from_tree.content
 
 
-def test_missing_files_list():
-    xml_file_path, files = PKG_B[0], PKG_B[1:]
+def test_missing_files_list(test_package_B):
+    xml_file_path, files = test_package_B[0], test_package_B[1:]
     article = Article('ID')
     xml_file = File(xml_file_path)
     xml_file.content = open(xml_file_path, 'rb').read()
@@ -87,8 +82,8 @@ def test_missing_files_list():
     ]
 
 
-def test_unexpected_files_list():
-    xml_file_path, files = PKG_C[0], PKG_C[1:]
+def test_unexpected_files_list(test_package_C):
+    xml_file_path, files = test_package_C[0], test_package_C[1:]
 
     article = Article('ID')
     xml_file = File(xml_file_path)
@@ -121,8 +116,8 @@ def test_unexpected_files_list():
     assert article.missing_files_list == []
 
 
-def test_update_href():
-    xml_file_path, files = PKG_A[0], PKG_A[1:]
+def test_update_href(test_package_A):
+    xml_file_path, files = test_package_A[0], test_package_A[1:]
 
     article = Article('ID')
     xml_file = File(xml_file_path)
