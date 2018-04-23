@@ -23,14 +23,21 @@ def _get_article_service(db_host, db_port, username, password):
     )
 
 
-def put_article(article_id, xml_properties, assets_files=None, **kwargs):
+def create_file(filename, content, content_size):
+    file = File(filename)
+    file.content = content
+    file.size = content_size
+    return file
+
+
+def put_article(article_id, xml_file, assets_files=[], **kwargs):
     article_services = _get_article_service(kwargs['db_host'],
                                             kwargs['db_port'],
                                             kwargs['username'],
                                             kwargs['password'])
     return article_services.receive_package(id=article_id,
-                                            files=assets_files,
-                                            **xml_properties)
+                                            xml_file=xml_file,
+                                            files=assets_files)
 
 
 def get_article_data(article_id, db_host, db_port, username, password):

@@ -1,6 +1,6 @@
-import os
 import io
 import json
+from pathlib import Path
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -23,18 +23,17 @@ class Article:
         }
 
     def _get_file_property(self, file_field):
+        file_path = Path(file_field.filename)
         content = file_field.file.read()
         size = len(content)
-        return {
-            'filename': os.path.basename(file_field.filename),
-            'content': content,
-            'content_size': size
-        }
+        return catalogmanager.create_file(filename=file_path.name,
+                                          content=content,
+                                          content_size=size)
 
     def put(self):
         try:
             xml_file_field = self.request.POST.get('xml_file')
-            xml_properties = self._get_file_property(xml_file_field)
+            xml_file = self._get_file_property(xml_file_field)
 
             assets_files_field = self.request.POST.getall('asset_field')
             assets_files = [
@@ -43,7 +42,7 @@ class Article:
             ]
             catalogmanager.put_article(
                 article_id=self.request.matchdict['id'],
-                xml_properties=xml_properties,
+                xml_file=xml_file,
                 assets_files=assets_files,
                 **self.db_settings
             )

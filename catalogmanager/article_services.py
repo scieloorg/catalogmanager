@@ -35,17 +35,13 @@ class ArticleServices:
         self.article_db_service = DatabaseService(
             articles_db_manager, changes_db_manager)
 
-    def receive_package(self, id, files=None, **xml_properties):
-        article = self.receive_xml_file(id, **xml_properties)
+    def receive_package(self, id, xml_file, files=None):
+        article = self.receive_xml_file(id, xml_file)
         self.receive_asset_files(article, files)
         return article.unexpected_files_list, article.missing_files_list
 
-    def receive_xml_file(self, id, **xml_properties):
+    def receive_xml_file(self, id, xml_file):
         article = Article(id)
-
-        xml_file = File(xml_properties['filename'])
-        xml_file.content = xml_properties['content']
-        xml_file.size = xml_properties['content_size']
         article.xml_file = xml_file
 
         article_record = Record(
@@ -66,12 +62,12 @@ class ArticleServices:
 
     def receive_asset_files(self, article, files):
         if files is not None:
-            for file_properties in files:
-                self.receive_asset_file(article, file_properties)
+            for file in files:
+                self.receive_asset_file(article, file)
 
-    def receive_asset_file(self, article, file_properties):
-        if file_properties is not None:
-            asset = article.update_asset_file(file_properties)
+    def receive_asset_file(self, article, file):
+        if file is not None:
+            asset = article.update_asset_file(file)
             if asset is not None:
                 self.article_db_service.put_attachment(
                     document_id=article.id,

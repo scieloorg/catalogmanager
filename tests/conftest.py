@@ -1,13 +1,9 @@
 import os
 
+import couchdb
 import pytest
 import webtest
-from pyramid import testing
 
-from catalog_persistence.databases import (
-    InMemoryDBManager,
-    DatabaseService
-)
 from catalogmanager_api import main
 
 
@@ -33,20 +29,7 @@ def test_package_A(test_fixture_dir):
 
 
 @pytest.fixture
-def testapp():
-    settings = {'__file__': 'development.ini'}
-    test_app = main(settings)
-    return webtest.TestApp(test_app)
-
-
-@pytest.yield_fixture
-def functional_config(request):
-    yield testing.setUp()
-    testing.tearDown()
-
-
-@pytest.fixture
-def database_config():
+def db_settings():
     return {
         'db_host': 'http://127.0.0.1',
         'db_port': '5984',
@@ -56,32 +39,19 @@ def database_config():
 
 
 @pytest.fixture
-def dbserver_service(functional_config, database_config):
-    couchdb_config = {
-        'database_uri': '{}:{}'.format(
-            database_config['db_host'],
-            database_config['db_port']
-        ),
-        'database_username': database_config['username'],
-        'database_password': database_config['password'],
-    }
+def testapp(request, db_settings):
+    settings = {'__file__': 'development.ini'}
+    test_app = main(settings)
 
-    articles_database_config = couchdb_config.copy()
-    articles_database_config['database_name'] = "articles"
-    changes_database_config = couchdb_config.copy()
-    changes_database_config['database_name'] = "changes"
-    return (
-        InMemoryDBManager(**articles_database_config),
-        InMemoryDBManager(**changes_database_config)
-    )
-
-
-@pytest.fixture
-def setup_db(request, functional_config, dbserver_service):
-    database_service = DatabaseService(dbserver_service[0],
-                                       dbserver_service[1])
-
-    def fin():
-        database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
-    request.addfinalizer(fin)
+    def drop_database():
+        db_server = couchdb.Server('{}:{}'.format(db_settings['db_host'],
+                                                  db_settings['db_port']))
+        db_server.resource.credentials = (db_settings['username'],
+                                          db_settings['password'])
+        try:
+            db_server.delete('changes')
+            db_server.delete('articles')
+        except couchdb.http.ResourceNotFound:
+            pass
+    request.addfinalizer(drop_database)
+    return webtest.TestApp(test_app)

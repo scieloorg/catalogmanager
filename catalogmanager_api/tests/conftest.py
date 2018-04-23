@@ -1,6 +1,7 @@
 
 from pathlib import Path
 
+import couchdb
 import pytest
 from pyramid.paster import get_appsettings
 from webtest import TestApp
@@ -20,9 +21,21 @@ def db_settings():
 
 
 @pytest.fixture
-def testapp():
+def testapp(request, db_settings):
     settings = {'__file__': 'development.ini'}
     test_app = main(settings)
+
+    def drop_database():
+        db_server = couchdb.Server('{}:{}'.format(db_settings['db_host'],
+                                                  db_settings['db_port']))
+        db_server.resource.credentials = (db_settings['username'],
+                                          db_settings['password'])
+        try:
+            db_server.delete('changes')
+            db_server.delete('articles')
+        except couchdb.http.ResourceNotFound:
+            pass
+    request.addfinalizer(drop_database)
     return TestApp(test_app)
 
 
