@@ -35,8 +35,8 @@ def test_xml_file():
              xml:lang="en"
              xmlns:mml="http://www.w3.org/1998/Math/MathML"
              xmlns:xlink="http://www.w3.org/1999/xlink">
-		<graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg"/>
-		<graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf01.jpg"/>
+        <graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg"/>
+        <graphic xlink:href="0034-8910-rsp-S01518-87872016050006741-gf01.jpg"/>
     </article>
     """
 

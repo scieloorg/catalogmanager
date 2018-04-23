@@ -4,12 +4,8 @@ import pytest
 from datetime import datetime
 from uuid import uuid4
 
-from catalog_persistence.databases import (
-    DocumentNotFound,
-    ChangeType,
-    sort_results,
-    DatabaseService
-)
+from catalog_persistence.databases import DocumentNotFound, sort_results
+from catalog_persistence.services import DatabaseService, ChangeType
 from catalog_persistence.models import get_record, RecordType
 
 
@@ -469,11 +465,11 @@ def test_add_attachment_properties(setup, database_service, xml_test):
     )
 
     document_record = database_service.db_manager \
-                            .add_attachment_properties_to_document_record(
-                                article_record['document_id'],
-                                'file1',
-                                file_properties1
-                            )
+        .add_attachment_properties_to_document_record(
+            article_record['document_id'],
+            'file1',
+            file_properties1
+        )
     assert expected[key] == document_record[key]
 
 

@@ -4,10 +4,8 @@ import pytest
 import webtest
 from pyramid import testing
 
-from catalog_persistence.databases import (
-    InMemoryDBManager,
-    DatabaseService
-)
+from catalog_persistence.databases import InMemoryDBManager
+from catalog_persistence.services import DatabaseService
 from catalogmanager_api import main
 
 
