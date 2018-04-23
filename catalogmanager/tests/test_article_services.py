@@ -22,75 +22,41 @@ from catalogmanager.xml.xml_tree import (
 )
 
 
-def test_receive_xml_file(test_package_A):
-
-    xml_file_path = test_package_A[0]
-
-    changes_db_manager = InMemoryDBManager(database_name='changes')
-    articles_db_manager = InMemoryDBManager(database_name='articles')
-
-    article_services = ArticleServices(articles_db_manager, changes_db_manager)
-
-    article_content = {
-        'xml': '0034-8910-rsp-S01518-87872016050006741.xml',
-    }
-
+def test_receive_xml_file(change_service, test_package_A,
+                          test_packA_filenames):
+    file = test_package_A[0]
+    article_services = ArticleServices(change_service[0], change_service[1])
     expected = {
-        'attachments': [
-            '0034-8910-rsp-S01518-87872016050006741.xml',
-        ],
-        'content': article_content,
+        'attachments': [test_packA_filenames[0]],
+        'content': {
+            'xml': test_packA_filenames[0],
+        },
         'document_type': 'ART',
         'document_id': 'ID',
     }
 
-    expected_assets = [
-        '0034-8910-rsp-S01518-87872016050006741-gf01-pt.jpg',
-        '0034-8910-rsp-S01518-87872016050006741-gf01.jpg',
-    ]
-    xml_content = open(xml_file_path, 'rb').read()
-    xml_content_size = os.stat(xml_file_path).st_size
+    expected_assets = test_packA_filenames[1:]
     article_services.receive_xml_file(id='ID',
-                                      filename=os.path.basename(xml_file_path),
-                                      content=xml_content,
-                                      content_size=xml_content_size)
+                                      filename=file.name,
+                                      content=file.content,
+                                      content_size=file.size)
     got = article_services.article_db_service.read('ID')
     assert got['content']['xml'] == expected['content']['xml']
     assert sorted(got['content'].get('assets')) == sorted(expected_assets)
-    assert sorted(got['attachments']) == sorted(
-        expected['attachments'])
+    assert sorted(got['attachments']) == sorted(expected['attachments'])
 
 
-def test_receive_package(test_package_A):
-
-    xml_file_path, files = test_package_A[0], test_package_A[1:]
+def test_receive_package(change_service, test_package_A,
+                         test_packA_assets_files):
     article = Article('ID')
-    xml_file = File(xml_file_path)
-    xml_file.content = open(xml_file_path, 'rb').read()
-    xml_file.size = os.stat(xml_file_path).st_size
+    xml_file = test_package_A[0]
     article.xml_file = xml_file
-    assets = []
-    for file_path in files:
-        with open(file_path, 'rb') as asset_file:
-            content = asset_file.read()
-            assets.append(
-                {
-                    'filename': file_path,
-                    'content': content,
-                    'content_size': len(content)
-                }
-            )
-    article.update_asset_files(assets)
-
-    changes_db_manager = InMemoryDBManager(database_name='changes')
-    articles_db_manager = InMemoryDBManager(database_name='articles')
-
-    article_services = ArticleServices(articles_db_manager, changes_db_manager)
-
+    article.update_asset_files(test_packA_assets_files)
+    article_services = ArticleServices(change_service[0], change_service[1])
     unexpected, missing = article_services.receive_package(
         id='ID',
-        files=assets,
-        filename=xml_file_path,
+        files=test_packA_assets_files,
+        filename=xml_file.name,
         content=xml_file.content,
         content_size=xml_file.size
     )
@@ -160,7 +126,7 @@ def test_get_article_file_in_database(mocked_get_attachment,
                                       change_service,
                                       inmemory_receive_package,
                                       xml_test,
-                                      test_package_A):
+                                      test_packA_filenames):
     mocked_get_attachment.return_value = xml_test.encode('utf-8')
     article_id = 'ID'
     article_services = ArticleServices(
@@ -170,7 +136,7 @@ def test_get_article_file_in_database(mocked_get_attachment,
     article_services.get_article_file(article_id)
     mocked_get_attachment.assert_called_with(
         document_id=article_id,
-        file_id=os.path.basename(test_package_A[0])
+        file_id=test_packA_filenames[0]
     )
 
 
@@ -200,10 +166,9 @@ def test_get_article_file(setup,
     )
     article_check = article_services.get_article_file('ID')
     assert article_check is not None
-    with open(test_package_A[0], 'rb') as file:
-        xml_tree = XMLTree()
-        xml_tree.content = file.read()
-        assert xml_tree.compare(article_check)
+    xml_tree = XMLTree()
+    xml_tree.content = test_package_A[0].content
+    assert xml_tree.compare(article_check)
 
 
 @patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)
@@ -223,36 +188,37 @@ def test_get_asset_file_not_found(mocked_get_attachment,
     )
 
 
-def test_get_asset_file(test_package_A):
-    xml_file_path, files = test_package_A[0], test_package_A[1:]
-    xml_filename = os.path.basename(xml_file_path)
-
-    changes_db_manager = InMemoryDBManager(database_name='changes')
-    articles_db_manager = InMemoryDBManager(database_name='articles')
-
-    article_services = ArticleServices(articles_db_manager, changes_db_manager)
-    xml_content = open(xml_file_path, 'rb').read()
-    xml_content_size = os.stat(xml_file_path).st_size
-    asset_files = []
-    for file_path in files:
-        with open(file_path, 'rb') as f:
-            content = f.read()
-            asset_files.append(
-                {
-                    'filename': os.path.basename(file_path),
-                    'content': content,
-                    'content_size': len(content)
-                }
-            )
+def test_get_asset_file(change_service, test_package_A, test_packA_filenames,
+                        test_packA_assets_files):
+    xml_file = test_package_A[0]
+    article_services = ArticleServices(change_service[0], change_service[1])
     article_services.receive_package(id='ID',
-                                     files=asset_files,
-                                     filename=xml_filename,
-                                     content=xml_content,
-                                     content_size=xml_content_size)
-    for f in files:
-        name = os.path.basename(f)
-        with open(f, 'rb') as fb:
-            content_type, content = article_services.get_asset_file(
-                'ID', name)
-            assert fb.read() == content
-            assert content_type == 'image/jpeg'
+                                     files=test_packA_assets_files,
+                                     filename=xml_file.name,
+                                     content=xml_file.content,
+                                     content_size=xml_file.size)
+    for file in test_package_A[1:]:
+        content_type, content = article_services.get_asset_file(
+            'ID', file.name)
+        assert file.content == content
+
+
+def test_get_asset_files(change_service, test_package_A,
+                         test_packA_assets_files):
+    xml_file, files = test_package_A[0], test_package_A[1:]
+    article_services = ArticleServices(change_service[0], change_service[1])
+    article_services.receive_package(id='ID',
+                                     files=test_packA_assets_files,
+                                     filename=xml_file.name,
+                                     content=xml_file.content,
+                                     content_size=xml_file.size)
+    items, msg = article_services.get_asset_files('ID')
+    asset_contents = [
+        asset_data[1]
+        for name, asset_data in items.items()
+        if len(asset_data) == 2
+    ]
+    assert len(items) == len(files)
+    assert len(msg) == 0
+    for asset in files:
+        assert asset.content in asset_contents

@@ -68,9 +68,10 @@ class Article:
     def get_record_content(self):
         record_content = {}
         record_content['xml'] = self.xml_file.name
-        record_content['assets'] = []
-        for asset in self.assets.values():
-            record_content['assets'].append(asset.name)
+        record_content['assets'] = [
+            asset.name
+            for asset in self.assets.values()
+        ]
         return record_content
 
     @property
