@@ -49,6 +49,14 @@ def get_article_file(article_id, db_host, db_port, username, password):
     return article_services.get_article_file(article_id)
 
 
+def get_asset_file(article_id, asset_id, db_host, db_port, username, password):
+    article_services = _get_article_service(db_host,
+                                            db_port,
+                                            username,
+                                            password)
+    return article_services.get_asset_file(article_id, asset_id)
+
+
 def set_assets_public_url(article_id, xml_content, assets_filenames,
                           public_url):
     article = Article(article_id)

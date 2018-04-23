@@ -98,6 +98,4 @@ def test_update_href(test_package_A, test_packA_filenames,
     ]
 
     assert len(items) == 1
-    assert items[0].href == new_href
-    assert items[0].name == filename
-    assert not article.xml_tree.content == content
+    assert not article.xml_tree.compare(content)
