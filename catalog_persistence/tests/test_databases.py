@@ -452,26 +452,29 @@ def test_sort_result():
 
 
 def test_add_attachment_properties(setup, database_service, xml_test):
-    expected = {
-        database_service.db_manager._attachments_properties_key:
-            {
-                'href_file':
-                {
-                    'content_type': "text/xml",
-                    'content_size': len(xml_test)
-                }
-            }
-        }
-    file_properties = {
+    file_properties1 = {
             'content_type': "text/xml",
             'content_size': len(xml_test)
         }
-    record = {}
-    assert expected == database_service.db_manager._add_attachment_properties(
-            record,
-            'href_file',
-            file_properties
-        )
+    key = database_service.db_manager._attachments_properties_key
+    expected = {}
+    expected[key] = {
+        'file1': file_properties1,
+    }
+
+    article_record = get_article_record({'Test': 'Test13'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    document_record = database_service.db_manager \
+                            .add_attachment_properties_to_document_record(
+                                article_record['document_id'],
+                                'file1',
+                                file_properties1
+                            )
+    assert expected[key] == document_record[key]
 
 
 def test_get_attachment_properties(setup, database_service, xml_test):
