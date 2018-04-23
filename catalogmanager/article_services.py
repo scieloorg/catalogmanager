@@ -18,16 +18,6 @@ from .models.file import File
 Record = get_record
 
 
-def FileProperties(file):
-    return {
-        'content_size': file.size,
-        'content_type': file.content_type,
-        'file_fullpath': file.file_fullpath,
-        'file_name': file.name,
-        'file_path': file.path,
-    }
-
-
 class ArticleServicesException(Exception):
 
     def __init__(self, message):
@@ -70,7 +60,7 @@ class ArticleServices:
             document_id=article.id,
             file_id=article.xml_file.name,
             content=article.xml_tree.content,
-            file_properties=FileProperties(article.xml_file)
+            file_properties=article.xml_file.properties()
         )
         return article
 
@@ -87,7 +77,7 @@ class ArticleServices:
                     document_id=article.id,
                     file_id=asset.file.name,
                     content=asset.file.content,
-                    file_properties=FileProperties(asset.file)
+                    file_properties=asset.file.properties()
                 )
 
     def get_article_data(self, article_id):
