@@ -1,13 +1,11 @@
 
 import os
+import io
 import json
 from collections import OrderedDict
 
 import webtest
-
-from catalogmanager.xml.xml_tree import (
-    XMLTree
-)
+from lxml import etree
 
 
 def test_add_article_register_change(testapp, setup_db, test_package_A):
@@ -46,14 +44,21 @@ def test_add_article_register_change(testapp, setup_db, test_package_A):
     for asset_file in assets_files:
         assert os.path.basename(asset_file) in res_assets
 
-    # Deve ser possível ter uma URL para resgatar o arquivo XML
+    # Deve ser possível ter uma URL para resgatar o arquivo XML e os ativos
+    # digitais
     xml_url = '{}/xml'.format(url)
     result = testapp.get(xml_url)
     assert result.status_code == 200
-    with open(xml_file_path, 'rb') as fb:
-        xml_tree = XMLTree()
-        xml_tree.content = fb.read()
-        assert xml_tree.compare(result.body)
-
-    # Checa se a lista de mudanças trás o registro de mundança do registro do
-    # documento
+    assert result.body is not None
+    xml_tree = etree.parse(io.BytesIO(result.body))
+    xpath = '{http://www.w3.org/1999/xlink}href'
+    xml_nodes = [
+        node.get(xpath)
+        for node in xml_tree.findall('.//*[@{}]'.format(xpath))
+    ]
+    expected_hrefs = [
+        '{}/{}'.format(url, os.path.basename(asset_file))
+        for asset_file in assets_files
+    ]
+    for expected_href in expected_hrefs:
+        assert expected_href in xml_nodes
