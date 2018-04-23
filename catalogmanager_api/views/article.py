@@ -1,6 +1,5 @@
 import os
 import io
-import json
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -48,10 +47,10 @@ class Article:
                 **self.db_settings
             )
         except catalogmanager.article_services.ArticleServicesException as e:
-            return json.dumps({
+            return {
                 "error": "500",
                 "message": "Article error"
-            })
+            }
 
     def get(self):
         try:
@@ -59,12 +58,12 @@ class Article:
                 article_id=self.request.matchdict['id'],
                 **self.db_settings
             )
-            return json.dumps(article_data)
+            return article_data
         except catalogmanager.article_services.ArticleServicesException as e:
-            return json.dumps({
+            return {
                 "error": "404",
                 "message": e.message
-            })
+            }
 
     @view_config(route_name='get_article_xml')
     def get_article_xml(self):

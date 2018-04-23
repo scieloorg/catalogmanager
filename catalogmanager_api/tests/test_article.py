@@ -49,7 +49,7 @@ def test_http_get_article_not_found(mocked_get_article_data, testapp):
     }
     result = testapp.get('/articles/{}'.format(article_id))
     assert result.status == '200 OK'
-    assert result.json == json.dumps(expected)
+    assert result.json == expected
 
 
 @patch.object(catalogmanager, 'get_article_data')
@@ -66,7 +66,7 @@ def test_http_get_article_succeeded(mocked_get_article_data, testapp):
     mocked_get_article_data.return_value = expected
     result = testapp.get('/articles/{}'.format(article_id))
     assert result.status == '200 OK'
-    assert result.json == json.dumps(expected)
+    assert result.json == expected
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -282,7 +282,7 @@ def test_http_article_calls_put_article_service_error(mocked_put_article,
                          params=params,
                          content_type='multipart/form-data')
     assert result.status == '200 OK'
-    assert result.json == json.dumps(expected)
+    assert result.json == expected
 
 
 @patch.object(catalogmanager, 'put_article')
