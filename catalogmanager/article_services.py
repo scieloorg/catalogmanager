@@ -7,7 +7,7 @@ from catalog_persistence.models import (
 from catalog_persistence.databases import DocumentNotFound
 from catalog_persistence.services import DatabaseService
 from .models.article_model import (
-    Article,
+    ArticleDocument,
 )
 from .models.file import File
 
@@ -47,7 +47,7 @@ class ArticleServices:
         return article.unexpected_files_list, article.missing_files_list
 
     def receive_xml_file(self, id, **xml_properties):
-        article = Article(id)
+        article = ArticleDocument(id)
 
         xml_file = File(xml_properties['filename'])
         xml_file.content = xml_properties['content']
@@ -92,12 +92,12 @@ class ArticleServices:
             return article_record
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Article {} not found'.format(article_id)
+                'ArticleDocument {} not found'.format(article_id)
             )
 
     def get_article_file(self, article_id):
         article_record = self.get_article_data(article_id)
-        article = Article(article_id)
+        article = ArticleDocument(article_id)
         try:
             attachment = self.article_db_service.get_attachment(
                 document_id=article_id,
@@ -143,6 +143,6 @@ class ArticleServices:
             return content_type, content
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Asset file {} (Article {}) not found. '.format(
+                'AssetDocument file {} (ArticleDocument {}) not found.'.format(
                     asset_id, article_id)
             )

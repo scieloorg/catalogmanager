@@ -1,6 +1,6 @@
 
 from catalogmanager.models.article_model import (
-    Article,
+    ArticleDocument,
 )
 from catalogmanager.xml.xml_tree import (
     XMLTree,
@@ -9,7 +9,7 @@ from catalogmanager.xml.xml_tree import (
 
 def test_article(test_package_A, test_packA_filenames,
                  test_packA_assets_files):
-    article = Article('ID')
+    article = ArticleDocument('ID')
     xml_file = test_package_A[0]
     article.xml_file = xml_file
     article.update_asset_files(test_packA_assets_files)
@@ -29,7 +29,7 @@ def test_article(test_package_A, test_packA_filenames,
 
 
 def test_missing_files_list(test_package_B):
-    article = Article('ID')
+    article = ArticleDocument('ID')
     article.xml_file = test_package_B[0]
     assets_files = [
         {
@@ -56,7 +56,7 @@ def test_missing_files_list(test_package_B):
 
 
 def test_unexpected_files_list(test_package_C, test_packC_filenames):
-    article = Article('ID')
+    article = ArticleDocument('ID')
     article.xml_file = test_package_C[0]
     assets_files = [
         {
@@ -85,7 +85,7 @@ def test_update_href(test_package_A, test_packA_filenames,
                      test_packA_assets_files):
     new_href = 'novo href'
     filename = '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    article = Article('ID')
+    article = ArticleDocument('ID')
     article.xml_file = test_package_A[0]
     article.update_asset_files(test_packA_assets_files)
     content = article.xml_tree.content

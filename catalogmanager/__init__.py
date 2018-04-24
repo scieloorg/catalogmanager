@@ -1,7 +1,7 @@
 from catalogmanager.article_services import (
     ArticleServices
 )
-from catalogmanager.models.article_model import Article
+from catalogmanager.models.article_model import ArticleDocument
 from catalogmanager.models.file import File
 from catalog_persistence.databases import CouchDBManager
 
@@ -59,7 +59,7 @@ def get_asset_file(article_id, asset_id, db_host, db_port, username, password):
 
 def set_assets_public_url(article_id, xml_content, assets_filenames,
                           public_url):
-    article = Article(article_id)
+    article = ArticleDocument(article_id)
     xml_file = File("xml_file.xml")
     xml_file.content = xml_content
     xml_file.size = len(xml_content)

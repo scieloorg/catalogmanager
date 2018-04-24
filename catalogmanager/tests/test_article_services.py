@@ -10,7 +10,7 @@ from catalogmanager.article_services import (
     ArticleServicesException
 )
 from catalogmanager.models.article_model import (
-    Article,
+    ArticleDocument,
 )
 from catalogmanager.xml.xml_tree import (
     XMLTree
@@ -43,7 +43,7 @@ def test_receive_xml_file(change_service, test_package_A,
 
 def test_receive_package(change_service, test_package_A,
                          test_packA_assets_files):
-    article = Article('ID')
+    article = ArticleDocument('ID')
     xml_file = test_package_A[0]
     article.xml_file = xml_file
     article.update_asset_files(test_packA_assets_files)
