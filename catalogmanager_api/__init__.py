@@ -1,5 +1,6 @@
 
 from pyramid.config import Configurator
+from pyramid.httpexceptions import HTTPNotFound
 from pyramid.paster import get_appsettings
 from pyramid.response import Response
 from pyramid.view import view_config, notfound_view_config
@@ -12,10 +13,7 @@ def home(request):
 
 @notfound_view_config()
 def notfound(request):
-    return Response(
-        body='{"message": "Not found"}',
-        status='404 Not Found'
-    )
+    return HTTPNotFound(body='{"message": "Not found"}')
 
 
 def includeme(config):
@@ -28,8 +26,6 @@ def main(global_config, **settings):
 
     config.include(includeme)
     config.add_route('home', '/')
-    config.add_route('get_article_xml', '/articles/{id}/xml')
-    config.add_route('get_asset_file', '/articles/{id}/{asset_id}')
 
     ini_settings = get_appsettings(global_config['__file__'])
     config.registry.settings['database_host'] = \
