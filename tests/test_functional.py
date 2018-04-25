@@ -35,7 +35,7 @@ def test_add_article_register_change(testapp, test_package_A):
     result = testapp.get(url)
     assert result.status_code == 200
     assert result.json is not None
-    res_dict = json.loads(result.json)
+    res_dict = result.json
     assert res_dict.get("document_id") == article_id
     assert res_dict.get("content") is not None
     assert res_dict["content"]["xml"] == os.path.basename(xml_file_path)

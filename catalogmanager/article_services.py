@@ -8,7 +8,6 @@ from catalog_persistence.databases import (
         DatabaseService,
         DocumentNotFound
     )
-from .data_services import DataServices
 from .models.article_model import (
     Article,
 )
@@ -31,7 +30,6 @@ class ArticleServicesMissingAssetFileException(Exception):
 class ArticleServices:
 
     def __init__(self, articles_db_manager, changes_db_manager):
-        self.article_data_services = DataServices('articles')
         self.article_db_service = DatabaseService(
             articles_db_manager, changes_db_manager)
 
@@ -93,11 +91,8 @@ class ArticleServices:
                 document_id=article_id,
                 file_id=article_record['content']['xml']
             )
-
-            xml_file = File(article_record['content']['xml'])
-            xml_file.content = attachment
-            xml_file.size = len(attachment)
-            article.xml_file = xml_file
+            article.xml_file = File(file_name=article_record['content']['xml'],
+                                    content=attachment)
             return article.xml_file.content
         except DocumentNotFound:
             raise ArticleServicesException(
@@ -116,13 +111,23 @@ class ArticleServices:
                 missing.append(file_id)
         return asset_files, missing
 
-    def get_asset_file(self, article_id, file_id):
+    def get_asset_file(self, article_id, asset_id):
         try:
-            return self.article_db_service.get_attachment(
+            content = self.article_db_service.get_attachment(
                 document_id=article_id,
-                file_id=file_id
+                file_id=asset_id
             )
+            properties = self.article_db_service.get_attachment_properties(
+                document_id=article_id,
+                file_id=asset_id
+            )
+            content_type = '' if properties is None else properties.get(
+                'content_type',
+                ''
+            )
+            return content_type, content
         except DocumentNotFound:
             raise ArticleServicesException(
-                'Missing asset file: {}. '.format(file_id)
+                'Asset file {} (Article {}) not found. '.format(
+                    asset_id, article_id)
             )

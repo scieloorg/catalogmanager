@@ -5,12 +5,12 @@ import mimetypes
 
 class File:
 
-    def __init__(self, file_name):
+    def __init__(self, file_name, content=None, content_type=None):
         self.name = file_name
-        self.content = None
-        self.size = None
-        self.content_type = None
-        if file_name is not None:
+        self.content = content
+        self.size = len(content) if content is not None else None
+        self.content_type = content_type
+        if content_type is None and file_name is not None:
             self.content_type = mimetypes.guess_type(file_name)[0]
 
     def properties(self):

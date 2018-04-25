@@ -182,7 +182,9 @@ def test_get_asset_file(change_service, test_package_A, test_packA_filenames):
                                      xml_file=test_package_A[0],
                                      files=test_package_A[1:])
     for file in test_package_A[1:]:
-        assert file.content == article_services.get_asset_file('ID', file.name)
+        content_type, content = article_services.get_asset_file(
+            'ID', file.name)
+        assert file.content == content
 
 
 def test_get_asset_files(change_service, test_package_A):
@@ -192,7 +194,12 @@ def test_get_asset_files(change_service, test_package_A):
                                      xml_file=test_package_A[0],
                                      files=test_package_A[1:])
     items, msg = article_services.get_asset_files('ID')
+    asset_contents = [
+        asset_data[1]
+        for name, asset_data in items.items()
+        if len(asset_data) == 2
+    ]
     assert len(items) == len(files)
     assert len(msg) == 0
     for asset in files:
-        assert asset.content in items.values()
+        assert asset.content in asset_contents

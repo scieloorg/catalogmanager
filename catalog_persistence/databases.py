@@ -19,6 +19,8 @@ class ChangeType(Enum):
 
 class BaseDBManager(metaclass=abc.ABCMeta):
 
+    _attachments_properties_key = 'attachments_properties'
+
     @abc.abstractmethod
     def drop_database(self) -> None:
         return NotImplemented
@@ -54,6 +56,46 @@ class BaseDBManager(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def list_attachments(self, id) -> list:
         return NotImplemented
+
+    def add_attachment_properties_to_document_record(self,
+                                            document_id,
+                                            file_id,
+                                            file_properties):
+        """
+        Acrescenta propriedades (file_properties) do arquivo (file_id)
+        ao registro (record)
+        Retorna registro (record) atualizado
+        """
+        _file_properties = {
+            k: v
+            for k, v in file_properties.items()
+            if k not in ['content', 'filename']
+        }
+        document = self.read(document_id)
+        document_record = {
+            'document_id': document['document_id'],
+            'document_type': document['document_type'],
+            'content': document['content'],
+            'created_date': document['created_date'],
+        }
+        properties = document.get(self._attachments_properties_key, {})
+        if file_id not in properties.keys():
+            properties[file_id] = {}
+
+        properties[file_id].update(
+            _file_properties)
+
+        document_record.update(
+            {
+                self._attachments_properties_key:
+                properties
+            }
+        )
+        return document_record
+
+    def get_attachment_properties(self, id, file_id):
+        doc = self.read(id)
+        return doc.get(self._attachments_properties_key, {}).get(file_id)
 
 
 class InMemoryDBManager(BaseDBManager):
@@ -137,18 +179,6 @@ class InMemoryDBManager(BaseDBManager):
         doc[self._attachments_key][file_id]['content_size'] = \
             content_properties['content_size']
         self.database.update({id: doc})
-
-    def _add_attachment_properties(self, record, file_id, file_properties):
-        """
-        """
-        if not record.get(self._attachments_properties_key):
-            record[self._attachments_properties_key] = {}
-        if not record[self._attachments_properties_key].get(file_id):
-            record[self._attachments_properties_key][file_id] = {}
-
-        record[self._attachments_properties_key][file_id].update(
-            file_properties)
-        return record
 
     def get_attachment(self, id, file_id):
         doc = self.read(id)
@@ -250,18 +280,6 @@ class CouchDBManager(BaseDBManager):
             filename=file_id,
             content_type=content_properties.get('content_type')
         )
-
-    def _add_attachment_properties(self, record, file_id, file_properties):
-        """
-        """
-        if not record.get(self._attachments_properties_key):
-            record[self._attachments_properties_key] = {}
-        if not record[self._attachments_properties_key].get(file_id):
-            record[self._attachments_properties_key][file_id] = {}
-
-        record[self._attachments_properties_key][file_id].update(
-            file_properties)
-        return record
 
     def get_attachment(self, id, file_id):
         doc = self.read(id)
@@ -415,15 +433,9 @@ class DatabaseService:
                                        file_id,
                                        content,
                                        file_properties)
-        document = self.db_manager.read(document_id)
-        document_record = {
-            'document_id': document['document_id'],
-            'document_type': document['document_type'],
-            'content': document['content'],
-            'created_date': document['created_date']
-        }
-        document_record = self.db_manager._add_attachment_properties(
-                document_record,
+        document_record = self.db_manager. \
+            add_attachment_properties_to_document_record(
+                document_id,
                 file_id,
                 file_properties
             )
@@ -444,6 +456,22 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         return self.db_manager.get_attachment(document_id, file_id)
+
+    def get_attachment_properties(self, document_id, file_id):
+        """
+        Recupera arquivo anexos ao registro de um documento pelo ID do
+        documento e ID do anexo.
+        Params:
+        document_id: ID do documento ao qual o arquivo está anexado
+        file_id: identificação do arquivo anexado a ser recuperado
+
+        Retorno:
+        Arquivo anexo
+
+        Erro:
+        DocumentNotFound: documento não encontrado na base de dados.
+        """
+        return self.db_manager.get_attachment_properties(document_id, file_id)
 
 
 def sort_results(results, sort):

@@ -29,6 +29,7 @@ def main(global_config, **settings):
     config.include(includeme)
     config.add_route('home', '/')
     config.add_route('get_article_xml', '/articles/{id}/xml')
+    config.add_route('get_asset_file', '/articles/{id}/{asset_id}')
 
     ini_settings = get_appsettings(global_config['__file__'])
     config.registry.settings['database_host'] = \

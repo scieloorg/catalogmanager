@@ -23,11 +23,8 @@ def _get_article_service(db_host, db_port, username, password):
     )
 
 
-def create_file(filename, content, content_size):
-    file = File(filename)
-    file.content = content
-    file.size = content_size
-    return file
+def create_file(filename, content):
+    return File(file_name=filename, content=content)
 
 
 def put_article(article_id, xml_file, assets_files=[], **kwargs):
@@ -56,13 +53,18 @@ def get_article_file(article_id, db_host, db_port, username, password):
     return article_services.get_article_file(article_id)
 
 
+def get_asset_file(article_id, asset_id, db_host, db_port, username, password):
+    article_services = _get_article_service(db_host,
+                                            db_port,
+                                            username,
+                                            password)
+    return article_services.get_asset_file(article_id, asset_id)
+
+
 def set_assets_public_url(article_id, xml_content, assets_filenames,
                           public_url):
     article = Article(article_id)
-    xml_file = File("xml_file.xml")
-    xml_file.content = xml_content
-    xml_file.size = len(xml_content)
-    article.xml_file = xml_file
+    article.xml_file = File(file_name="xml_file.xml", content=xml_content)
     for name in article.assets:
         if name in assets_filenames:
             article.assets[name].href = public_url.format(article_id, name)

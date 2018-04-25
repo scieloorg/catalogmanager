@@ -1,5 +1,4 @@
 import io
-import json
 from pathlib import Path
 
 from pyramid.response import Response
@@ -27,8 +26,7 @@ class Article:
         content = file_field.file.read()
         size = len(content)
         return catalogmanager.create_file(filename=file_path.name,
-                                          content=content,
-                                          content_size=size)
+                                          content=content)
 
     def put(self):
         try:
@@ -47,10 +45,10 @@ class Article:
                 **self.db_settings
             )
         except catalogmanager.article_services.ArticleServicesException as e:
-            return json.dumps({
+            return {
                 "error": "500",
                 "message": "Article error"
-            })
+            }
 
     def get(self):
         try:
@@ -58,12 +56,12 @@ class Article:
                 article_id=self.request.matchdict['id'],
                 **self.db_settings
             )
-            return json.dumps(article_data)
+            return article_data
         except catalogmanager.article_services.ArticleServicesException as e:
-            return json.dumps({
+            return {
                 "error": "404",
                 "message": e.message
-            })
+            }
 
     @view_config(route_name='get_article_xml')
     def get_article_xml(self):
@@ -86,6 +84,23 @@ class Article:
                 )
             return Response(content_type='application/xml',
                             body_file=io.BytesIO(xml_file_content))
+        except catalogmanager.article_services.ArticleServicesException as e:
+            return Response(
+                json={
+                    "error": "404",
+                    "message": e.message
+                }
+            )
+
+    @view_config(route_name='get_asset_file')
+    def get_asset_file(self):
+        try:
+            content_type, content = catalogmanager.get_asset_file(
+                article_id=self.request.matchdict['id'],
+                asset_id=self.request.matchdict['asset_id'],
+                **self.db_settings
+            )
+            return Response(content_type=content_type, body=content)
         except catalogmanager.article_services.ArticleServicesException as e:
             return Response(
                 json={
