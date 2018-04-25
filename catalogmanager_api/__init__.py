@@ -28,7 +28,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')
 
     ini_settings = get_appsettings(global_config['__file__'])
-    
+
     def couchdb_settings(request):
         return {
             'database_uri': '{}:{}'.format(

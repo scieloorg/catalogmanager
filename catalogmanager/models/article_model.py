@@ -1,11 +1,6 @@
 # coding=utf-8
-import os
 
 from ..xml.article_xml_tree import ArticleXMLTree
-
-from .file import (
-    File
-)
 
 
 class Asset:
