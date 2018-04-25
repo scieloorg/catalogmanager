@@ -1,7 +1,7 @@
 from catalogmanager.article_services import (
     ArticleServices
 )
-from catalogmanager.models.article_model import Article
+from catalogmanager.models.article_model import ArticleDocument
 from catalogmanager.models.file import File
 from catalog_persistence.databases import CouchDBManager
 
@@ -133,7 +133,7 @@ def set_assets_public_url(article_id, xml_content, assets_filenames,
 
     :returns: conteúdo do XML atualizado
     """
-    article = Article(article_id)
+    article = ArticleDocument(article_id)
     article.xml_file = File(file_name="xml_file.xml", content=xml_content)
     for name in article.assets:
         if name in assets_filenames:

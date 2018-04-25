@@ -3,7 +3,7 @@
 from ..xml.article_xml_tree import ArticleXMLTree
 
 
-class Asset:
+class AssetDocument:
 
     def __init__(self, asset_node):
         self.file = None
@@ -21,7 +21,7 @@ class Asset:
             self.node.href = value
 
 
-class Article:
+class ArticleDocument:
 
     def __init__(self, article_id):
         self.id = article_id
@@ -38,7 +38,7 @@ class Article:
         self.xml_tree = ArticleXMLTree()
         self.xml_tree.content = self._xml_file.content
         self.assets = {
-            name: Asset(node)
+            name: AssetDocument(node)
             for name, node in self.xml_tree.asset_nodes.items()
         }
 
