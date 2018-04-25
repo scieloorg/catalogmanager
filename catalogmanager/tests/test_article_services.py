@@ -1,19 +1,13 @@
-import os
 from unittest.mock import patch
 
 import pytest
 
-from catalog_persistence.databases import (
-    DatabaseService,
-    DocumentNotFound
-)
+from catalog_persistence.databases import DocumentNotFound
+from catalog_persistence.services import DatabaseService
 from catalog_persistence.models import RecordType
 from catalogmanager.article_services import (
     ArticleServices,
     ArticleServicesException
-)
-from catalogmanager.models.article_model import (
-    Article,
 )
 from catalogmanager.xml.xml_tree import (
     XMLTree

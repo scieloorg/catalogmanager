@@ -6,9 +6,9 @@ from catalogmanager.article_services import ArticleServices
 from catalogmanager.models.file import File
 from catalog_persistence.databases import (
     InMemoryDBManager,
-    CouchDBManager,
-    DatabaseService
+    CouchDBManager
 )
+from catalog_persistence.services import DatabaseService
 
 
 @pytest.fixture(scope="module")
