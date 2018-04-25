@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from catalog_persistence.databases import ChangeType
+from catalog_persistence.services import ChangeType
 from catalog_persistence.models import get_record, RecordType
 
 

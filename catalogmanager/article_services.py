@@ -4,10 +4,8 @@ from catalog_persistence.models import (
         get_record,
         RecordType,
     )
-from catalog_persistence.databases import (
-        DatabaseService,
-        DocumentNotFound
-    )
+from catalog_persistence.databases import DocumentNotFound
+from catalog_persistence.services import DatabaseService
 from .models.article_model import (
     Article,
 )
