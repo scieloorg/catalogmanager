@@ -8,7 +8,7 @@ import webtest
 from lxml import etree
 
 
-def test_add_article_register_change(testapp, setup_db, test_package_A):
+def test_add_article_register_change(testapp, test_package_A):
     article_id = 'ID-post-article-123'
     url = '/articles/{}'.format(article_id)
 

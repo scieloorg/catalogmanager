@@ -7,12 +7,11 @@ from catalogmanager.xml.xml_tree import (
 )
 
 
-def test_article(test_package_A, test_packA_filenames,
-                 test_packA_assets_files):
+def test_article(test_package_A, test_packA_filenames):
     article = Article('ID')
     xml_file = test_package_A[0]
     article.xml_file = xml_file
-    article.update_asset_files(test_packA_assets_files)
+    article.update_asset_files(test_package_A[1:])
     expected = {
         'assets': [asset for asset in test_packA_filenames[1:]],
         'xml': test_packA_filenames[0],
@@ -31,15 +30,7 @@ def test_article(test_package_A, test_packA_filenames,
 def test_missing_files_list(test_package_B):
     article = Article('ID')
     article.xml_file = test_package_B[0]
-    assets_files = [
-        {
-            'filename': asset_file.name,
-            'content': asset_file.content,
-            'content_size': asset_file.size
-        }
-        for asset_file in test_package_B[1:]
-    ]
-    article.update_asset_files(assets_files)
+    article.update_asset_files(test_package_B[1:])
 
     assert len(article.assets) == 3
     assert sorted(article.assets.keys()) == sorted(
@@ -58,15 +49,7 @@ def test_missing_files_list(test_package_B):
 def test_unexpected_files_list(test_package_C, test_packC_filenames):
     article = Article('ID')
     article.xml_file = test_package_C[0]
-    assets_files = [
-        {
-            'filename': asset_file.name,
-            'content': asset_file.content,
-            'content_size': asset_file.size
-        }
-        for asset_file in test_package_C[1:]
-    ]
-    article.update_asset_files(assets_files)
+    article.update_asset_files(test_package_C[1:])
 
     assert len(article.assets) == 2
     assert sorted(article.assets.keys()) == sorted(
@@ -81,13 +64,12 @@ def test_unexpected_files_list(test_package_C, test_packC_filenames):
     assert article.missing_files_list == []
 
 
-def test_update_href(test_package_A, test_packA_filenames,
-                     test_packA_assets_files):
+def test_update_href(test_package_A, test_packA_filenames):
     new_href = 'novo href'
     filename = '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
     article = Article('ID')
     article.xml_file = test_package_A[0]
-    article.update_asset_files(test_packA_assets_files)
+    article.update_asset_files(test_package_A[1:])
     content = article.xml_tree.content
     asset = article.assets.get(filename)
     asset.href = new_href

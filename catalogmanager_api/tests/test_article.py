@@ -234,8 +234,10 @@ def test_http_get_xml_file_succeeded(mocked_get_article_data,
         assert expected_href in xml_nodes
 
 
+@patch.object(catalogmanager, 'create_file')
 @patch.object(catalogmanager, 'put_article')
-def test_http_article_calls_put_article(mocked_put_article,
+def test_http_article_calls_create_file(mocked_put_article,
+                                        mocked_create_file,
                                         db_settings,
                                         testapp,
                                         test_xml_file):
@@ -249,11 +251,36 @@ def test_http_article_calls_put_article(mocked_put_article,
     testapp.put('/articles/{}'.format(article_id),
                 params=params,
                 content_type='multipart/form-data')
+    mocked_create_file.assert_called_once_with(
+        filename="test_xml_file.xml",
+        content=test_xml_file.encode('utf-8')
+    )
+
+
+@patch.object(catalogmanager, 'create_file')
+@patch.object(catalogmanager, 'put_article')
+def test_http_article_calls_put_article(mocked_put_article,
+                                        mocked_create_file,
+                                        db_settings,
+                                        testapp,
+                                        test_xml_file):
+    test_file = _get_file_property("test_xml_file.xml",
+                                   test_xml_file.encode('utf-8'),
+                                   len(test_xml_file))
+    mocked_create_file.return_value = test_file
+    article_id = 'ID-post-article-123'
+    params = OrderedDict([
+        ('article_id', article_id),
+        ("xml_file",
+         webtest.forms.Upload("test_xml_file.xml",
+                              test_xml_file.encode('utf-8')))
+    ])
+    testapp.put('/articles/{}'.format(article_id),
+                params=params,
+                content_type='multipart/form-data')
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
-        xml_properties=_get_file_property("test_xml_file.xml",
-                                          test_xml_file.encode('utf-8'),
-                                          len(test_xml_file)),
+        xml_file=test_file,
         assets_files=[],
         **db_settings
     )
@@ -285,11 +312,9 @@ def test_http_article_calls_put_article_service_error(mocked_put_article,
     assert result.json == expected
 
 
-@patch.object(catalogmanager, 'put_article')
-def test_http_article_put_article_succeeded(mocked_put_article,
-                                            testapp,
+def test_http_article_put_article_succeeded(testapp,
                                             test_xml_file):
-    article_id = 'ID-post-article-123'
+    article_id = 'ID-put-article-123456'
     params = OrderedDict([
         ('article_id', article_id),
         ("xml_file",
@@ -302,19 +327,21 @@ def test_http_article_put_article_succeeded(mocked_put_article,
     assert result.status == '200 OK'
 
 
+@patch.object(catalogmanager, 'create_file')
 @patch.object(catalogmanager, 'put_article')
 def test_http_article_put_article_with_assets(mocked_put_article,
+                                              mocked_create_file,
                                               db_settings,
                                               testapp,
                                               test_xml_file,
                                               test_article_files):
     article_id = 'ID-post-article-123'
-    expected_assets_properties = []
+    expected_assets_files = []
     assets_field = []
     for article_file in test_article_files[1:]:
         with open(article_file, 'rb') as fb:
             file_content = fb.read()
-            expected_assets_properties.append(
+            expected_assets_files.append(
                 _get_file_property(article_file.name,
                                    file_content,
                                    article_file.lstat().st_size),
@@ -322,6 +349,10 @@ def test_http_article_put_article_with_assets(mocked_put_article,
         assets_field.append(
             ('asset_field', article_file.name, file_content)
         )
+    test_file = _get_file_property("test_xml_file.xml",
+                                   test_xml_file.encode('utf-8'),
+                                   len(test_xml_file))
+    mocked_create_file.side_effect = [test_file] + expected_assets_files
     params = OrderedDict([
         ('article_id', article_id),
         ("xml_file",
@@ -335,10 +366,8 @@ def test_http_article_put_article_with_assets(mocked_put_article,
     assert result.status == '200 OK'
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
-        xml_properties=_get_file_property("test_xml_file.xml",
-                                          test_xml_file.encode('utf-8'),
-                                          len(test_xml_file)),
-        assets_files=expected_assets_properties,
+        xml_file=test_file,
+        assets_files=expected_assets_files,
         **db_settings
     )
 

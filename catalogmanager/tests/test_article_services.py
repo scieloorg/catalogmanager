@@ -9,9 +9,6 @@ from catalogmanager.article_services import (
     ArticleServices,
     ArticleServicesException
 )
-from catalogmanager.models.article_model import (
-    Article,
-)
 from catalogmanager.xml.xml_tree import (
     XMLTree
 )
@@ -19,7 +16,6 @@ from catalogmanager.xml.xml_tree import (
 
 def test_receive_xml_file(change_service, test_package_A,
                           test_packA_filenames):
-    file = test_package_A[0]
     article_services = ArticleServices(change_service[0], change_service[1])
     expected = {
         'attachments': [test_packA_filenames[0]],
@@ -32,28 +28,19 @@ def test_receive_xml_file(change_service, test_package_A,
 
     expected_assets = test_packA_filenames[1:]
     article_services.receive_xml_file(id='ID',
-                                      filename=file.name,
-                                      content=file.content,
-                                      content_size=file.size)
+                                      xml_file=test_package_A[0])
     got = article_services.article_db_service.read('ID')
     assert got['content']['xml'] == expected['content']['xml']
     assert sorted(got['content'].get('assets')) == sorted(expected_assets)
     assert sorted(got['attachments']) == sorted(expected['attachments'])
 
 
-def test_receive_package(change_service, test_package_A,
-                         test_packA_assets_files):
-    article = Article('ID')
-    xml_file = test_package_A[0]
-    article.xml_file = xml_file
-    article.update_asset_files(test_packA_assets_files)
+def test_receive_package(change_service, test_package_A):
     article_services = ArticleServices(change_service[0], change_service[1])
     unexpected, missing = article_services.receive_package(
         id='ID',
-        files=test_packA_assets_files,
-        filename=xml_file.name,
-        content=xml_file.content,
-        content_size=xml_file.size
+        xml_file=test_package_A[0],
+        files=test_package_A[1:]
     )
     assert unexpected == []
     assert missing == []
@@ -183,30 +170,23 @@ def test_get_asset_file_not_found(mocked_get_attachment,
     )
 
 
-def test_get_asset_file(change_service, test_package_A, test_packA_filenames,
-                        test_packA_assets_files):
-    xml_file = test_package_A[0]
+def test_get_asset_file(change_service, test_package_A, test_packA_filenames):
     article_services = ArticleServices(change_service[0], change_service[1])
     article_services.receive_package(id='ID',
-                                     files=test_packA_assets_files,
-                                     filename=xml_file.name,
-                                     content=xml_file.content,
-                                     content_size=xml_file.size)
+                                     xml_file=test_package_A[0],
+                                     files=test_package_A[1:])
     for file in test_package_A[1:]:
         content_type, content = article_services.get_asset_file(
             'ID', file.name)
         assert file.content == content
 
 
-def test_get_asset_files(change_service, test_package_A,
-                         test_packA_assets_files):
-    xml_file, files = test_package_A[0], test_package_A[1:]
+def test_get_asset_files(change_service, test_package_A):
+    files = test_package_A[1:]
     article_services = ArticleServices(change_service[0], change_service[1])
     article_services.receive_package(id='ID',
-                                     files=test_packA_assets_files,
-                                     filename=xml_file.name,
-                                     content=xml_file.content,
-                                     content_size=xml_file.size)
+                                     xml_file=test_package_A[0],
+                                     files=test_package_A[1:])
     items, msg = article_services.get_asset_files('ID')
     asset_contents = [
         asset_data[1]
