@@ -28,14 +28,18 @@ def main(global_config, **settings):
     config.add_route('home', '/')
 
     ini_settings = get_appsettings(global_config['__file__'])
-    config.registry.settings['database_host'] = \
-        ini_settings['catalogmanager.db.host']
-    config.registry.settings['database_port'] = \
-        ini_settings['catalogmanager.db.port']
-    config.registry.settings['database_username'] = \
-        ini_settings['catalogmanager.db.username']
-    config.registry.settings['database_password'] = \
-        ini_settings['catalogmanager.db.password']
+    
+    def couchdb_settings(request):
+        return {
+            'database_uri': '{}:{}'.format(
+                ini_settings['catalogmanager.db.host'],
+                ini_settings['catalogmanager.db.port']
+            ),
+            'database_username': ini_settings['catalogmanager.db.username'],
+            'database_password': ini_settings['catalogmanager.db.password']
+        }
+
+    config.add_request_method(couchdb_settings, 'db_settings', reify=True)
 
     config.scan()
     return config.make_wsgi_app()

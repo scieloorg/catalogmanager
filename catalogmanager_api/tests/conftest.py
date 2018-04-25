@@ -13,10 +13,12 @@ from catalogmanager_api import main
 def db_settings():
     ini_settings = get_appsettings('development.ini')
     return {
-        'db_host': ini_settings['catalogmanager.db.host'],
-        'db_port': ini_settings['catalogmanager.db.port'],
-        'username': ini_settings['catalogmanager.db.username'],
-        'password': ini_settings['catalogmanager.db.password'],
+        'database_uri': '{}:{}'.format(
+            ini_settings['catalogmanager.db.host'],
+            ini_settings['catalogmanager.db.port']
+        ),
+        'database_username': ini_settings['catalogmanager.db.username'],
+        'database_password': ini_settings['catalogmanager.db.password']
     }
 
 
@@ -26,10 +28,9 @@ def testapp(request, db_settings):
     test_app = main(settings)
 
     def drop_database():
-        db_server = couchdb.Server('{}:{}'.format(db_settings['db_host'],
-                                                  db_settings['db_port']))
-        db_server.resource.credentials = (db_settings['username'],
-                                          db_settings['password'])
+        db_server = couchdb.Server(db_settings['database_uri'])
+        db_server.resource.credentials = (db_settings['database_username'],
+                                          db_settings['database_password'])
         try:
             db_server.delete('changes')
             db_server.delete('articles')
