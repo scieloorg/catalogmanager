@@ -168,7 +168,7 @@ def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
             article_id=article_id,
             xml_content=xml_content,
             assets_filenames=assets,
-            public_url='/articles/{}/asset/{}'
+            public_url='/articles/{}/assets/{}'
         )
 
 
@@ -206,7 +206,7 @@ def test_http_get_xml_file_succeeded(mocked_get_article_data,
         for asset_file in test_article_files[1:]
     ]
     expected_hrefs = [
-        '/articles/{}/asset/{}'.format(article_id, asset_file.name)
+        '/articles/{}/assets/{}'.format(article_id, asset_file.name)
         for asset_file in test_article_files[1:]
     ]
     mocked_get_article_data.return_value = {
@@ -350,7 +350,7 @@ def test_http_get_asset_file_calls_get_asset_file(mocked_get_asset_file,
     article_id = 'ID123456'
     asset_id = 'ID123456'
     mocked_get_asset_file.return_value = '', b'123456Test'
-    testapp.get('/articles/{}/asset/{}'.format(article_id, asset_id))
+    testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
     mocked_get_asset_file.assert_called_once_with(
         article_id=article_id,
         asset_id=asset_id,
@@ -372,7 +372,7 @@ def test_http_get_asset_file_not_found(mocked_get_asset_file,
         "error": "404",
         "message": error_msg
     }
-    result = testapp.get('/articles/{}/asset/{}'.format(article_id, asset_id))
+    result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
     assert result.status == '200 OK'
     assert result.json == expected
 
@@ -385,7 +385,7 @@ def test_http_get_asset_file_succeeded(mocked_get_asset_file,
     asset_id = 'a.jpg'
     expected = 'text/xml', test_xml_file.encode('utf-8')
     mocked_get_asset_file.return_value = expected
-    result = testapp.get('/articles/{}/asset/{}'.format(article_id, asset_id))
+    result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
     assert result.status == '200 OK'
     assert result.body == expected[1]
     assert result.content_type == expected[0]

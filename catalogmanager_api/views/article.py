@@ -95,7 +95,7 @@ class ArticleXML:
                     article_id=article_id,
                     xml_content=xml_file_content,
                     assets_filenames=article_data['content']['assets'],
-                    public_url='/articles/{}/asset/{}'
+                    public_url='/articles/{}/assets/{}'
                 )
             return Response(content_type='application/xml',
                             body_file=io.BytesIO(xml_file_content))
@@ -106,7 +106,7 @@ class ArticleXML:
             }
 
 
-@resource(path='/articles/{id}/asset/{asset_id}', renderer='json')
+@resource(path='/articles/{id}/assets/{asset_id}', renderer='json')
 class ArticleAsset:
 
     def __init__(self, request, context=None):

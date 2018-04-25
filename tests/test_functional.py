@@ -56,7 +56,7 @@ def test_add_article_register_change(testapp, setup_db, test_package_A):
         for node in xml_tree.findall('.//*[@{}]'.format(xpath))
     ]
     expected_hrefs = [
-        '{}/asset/{}'.format(url, os.path.basename(asset_file))
+        '{}/assets/{}'.format(url, os.path.basename(asset_file))
         for asset_file in assets_files
     ]
     for expected_href in expected_hrefs:
