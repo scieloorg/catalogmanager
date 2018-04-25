@@ -1,6 +1,5 @@
-from io import BytesIO
-import json
 from collections import OrderedDict
+from io import BytesIO
 from unittest.mock import patch
 
 import webtest
@@ -49,7 +48,7 @@ def test_http_get_article_not_found(mocked_get_article_data, testapp):
     }
     result = testapp.get('/articles/{}'.format(article_id))
     assert result.status == '200 OK'
-    assert result.json == json.dumps(expected)
+    assert result.json == expected
 
 
 @patch.object(catalogmanager, 'get_article_data')
@@ -66,7 +65,7 @@ def test_http_get_article_succeeded(mocked_get_article_data, testapp):
     mocked_get_article_data.return_value = expected
     result = testapp.get('/articles/{}'.format(article_id))
     assert result.status == '200 OK'
-    assert result.json == json.dumps(expected)
+    assert result.json == expected
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -169,7 +168,7 @@ def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
             article_id=article_id,
             xml_content=xml_content,
             assets_filenames=assets,
-            public_url='/articles/{}/{}'
+            public_url='/articles/{}/assets/{}'
         )
 
 
@@ -207,7 +206,7 @@ def test_http_get_xml_file_succeeded(mocked_get_article_data,
         for asset_file in test_article_files[1:]
     ]
     expected_hrefs = [
-        '/articles/{}/{}'.format(article_id, asset_file.name)
+        '/articles/{}/assets/{}'.format(article_id, asset_file.name)
         for asset_file in test_article_files[1:]
     ]
     mocked_get_article_data.return_value = {
@@ -234,8 +233,10 @@ def test_http_get_xml_file_succeeded(mocked_get_article_data,
         assert expected_href in xml_nodes
 
 
+@patch.object(catalogmanager, 'create_file')
 @patch.object(catalogmanager, 'put_article')
-def test_http_article_calls_put_article(mocked_put_article,
+def test_http_article_calls_create_file(mocked_put_article,
+                                        mocked_create_file,
                                         db_settings,
                                         testapp,
                                         test_xml_file):
@@ -249,11 +250,36 @@ def test_http_article_calls_put_article(mocked_put_article,
     testapp.put('/articles/{}'.format(article_id),
                 params=params,
                 content_type='multipart/form-data')
+    mocked_create_file.assert_called_once_with(
+        filename="test_xml_file.xml",
+        content=test_xml_file.encode('utf-8')
+    )
+
+
+@patch.object(catalogmanager, 'create_file')
+@patch.object(catalogmanager, 'put_article')
+def test_http_article_calls_put_article(mocked_put_article,
+                                        mocked_create_file,
+                                        db_settings,
+                                        testapp,
+                                        test_xml_file):
+    test_file = _get_file_property("test_xml_file.xml",
+                                   test_xml_file.encode('utf-8'),
+                                   len(test_xml_file))
+    mocked_create_file.return_value = test_file
+    article_id = 'ID-post-article-123'
+    params = OrderedDict([
+        ('article_id', article_id),
+        ("xml_file",
+         webtest.forms.Upload("test_xml_file.xml",
+                              test_xml_file.encode('utf-8')))
+    ])
+    testapp.put('/articles/{}'.format(article_id),
+                params=params,
+                content_type='multipart/form-data')
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
-        xml_properties=_get_file_property("test_xml_file.xml",
-                                          test_xml_file.encode('utf-8'),
-                                          len(test_xml_file)),
+        xml_file=test_file,
         assets_files=[],
         **db_settings
     )
@@ -282,14 +308,12 @@ def test_http_article_calls_put_article_service_error(mocked_put_article,
                          params=params,
                          content_type='multipart/form-data')
     assert result.status == '200 OK'
-    assert result.json == json.dumps(expected)
+    assert result.json == expected
 
 
-@patch.object(catalogmanager, 'put_article')
-def test_http_article_put_article_succeeded(mocked_put_article,
-                                            testapp,
+def test_http_article_put_article_succeeded(testapp,
                                             test_xml_file):
-    article_id = 'ID-post-article-123'
+    article_id = 'ID-put-article-123456'
     params = OrderedDict([
         ('article_id', article_id),
         ("xml_file",
@@ -302,19 +326,21 @@ def test_http_article_put_article_succeeded(mocked_put_article,
     assert result.status == '200 OK'
 
 
+@patch.object(catalogmanager, 'create_file')
 @patch.object(catalogmanager, 'put_article')
 def test_http_article_put_article_with_assets(mocked_put_article,
+                                              mocked_create_file,
                                               db_settings,
                                               testapp,
                                               test_xml_file,
                                               test_article_files):
     article_id = 'ID-post-article-123'
-    expected_assets_properties = []
+    expected_assets_files = []
     assets_field = []
     for article_file in test_article_files[1:]:
         with open(article_file, 'rb') as fb:
             file_content = fb.read()
-            expected_assets_properties.append(
+            expected_assets_files.append(
                 _get_file_property(article_file.name,
                                    file_content,
                                    article_file.lstat().st_size),
@@ -322,6 +348,10 @@ def test_http_article_put_article_with_assets(mocked_put_article,
         assets_field.append(
             ('asset_field', article_file.name, file_content)
         )
+    test_file = _get_file_property("test_xml_file.xml",
+                                   test_xml_file.encode('utf-8'),
+                                   len(test_xml_file))
+    mocked_create_file.side_effect = [test_file] + expected_assets_files
     params = OrderedDict([
         ('article_id', article_id),
         ("xml_file",
@@ -335,10 +365,8 @@ def test_http_article_put_article_with_assets(mocked_put_article,
     assert result.status == '200 OK'
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
-        xml_properties=_get_file_property("test_xml_file.xml",
-                                          test_xml_file.encode('utf-8'),
-                                          len(test_xml_file)),
-        assets_files=expected_assets_properties,
+        xml_file=test_file,
+        assets_files=expected_assets_files,
         **db_settings
     )
 
@@ -351,7 +379,7 @@ def test_http_get_asset_file_calls_get_asset_file(mocked_get_asset_file,
     article_id = 'ID123456'
     asset_id = 'ID123456'
     mocked_get_asset_file.return_value = '', b'123456Test'
-    testapp.get('/articles/{}/{}'.format(article_id, asset_id))
+    testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
     mocked_get_asset_file.assert_called_once_with(
         article_id=article_id,
         asset_id=asset_id,
@@ -373,7 +401,7 @@ def test_http_get_asset_file_not_found(mocked_get_asset_file,
         "error": "404",
         "message": error_msg
     }
-    result = testapp.get('/articles/{}/{}'.format(article_id, asset_id))
+    result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
     assert result.status == '200 OK'
     assert result.json == expected
 
@@ -386,7 +414,7 @@ def test_http_get_asset_file_succeeded(mocked_get_asset_file,
     asset_id = 'a.jpg'
     expected = 'text/xml', test_xml_file.encode('utf-8')
     mocked_get_asset_file.return_value = expected
-    result = testapp.get('/articles/{}/{}'.format(article_id, asset_id))
+    result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
     assert result.status == '200 OK'
     assert result.body == expected[1]
     assert result.content_type == expected[0]

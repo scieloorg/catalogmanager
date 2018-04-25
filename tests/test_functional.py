@@ -1,14 +1,13 @@
 
-import os
 import io
-import json
+import os
 from collections import OrderedDict
 
 import webtest
 from lxml import etree
 
 
-def test_add_article_register_change(testapp, setup_db, test_package_A):
+def test_add_article_register_change(testapp, test_package_A):
     article_id = 'ID-post-article-123'
     url = '/articles/{}'.format(article_id)
 
@@ -35,7 +34,7 @@ def test_add_article_register_change(testapp, setup_db, test_package_A):
     result = testapp.get(url)
     assert result.status_code == 200
     assert result.json is not None
-    res_dict = json.loads(result.json)
+    res_dict = result.json
     assert res_dict.get("document_id") == article_id
     assert res_dict.get("content") is not None
     assert res_dict["content"]["xml"] == os.path.basename(xml_file_path)
@@ -57,7 +56,7 @@ def test_add_article_register_change(testapp, setup_db, test_package_A):
         for node in xml_tree.findall('.//*[@{}]'.format(xpath))
     ]
     expected_hrefs = [
-        '{}/{}'.format(url, os.path.basename(asset_file))
+        '{}/assets/{}'.format(url, os.path.basename(asset_file))
         for asset_file in assets_files
     ]
     for expected_href in expected_hrefs:
