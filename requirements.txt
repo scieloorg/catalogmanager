@@ -1,5 +1,6 @@
 cornice==3.4.0
 CouchDB==1.2
+gunicorn==19.7.1
 lxml==4.2.1
 Mako==1.0.7
 Pygments==2.2.0
