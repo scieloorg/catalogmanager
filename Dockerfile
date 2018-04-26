@@ -5,6 +5,6 @@ COPY . /app/
 
 RUN pip --no-cache-dir install -r /app/requirements.txt
 
-EXPOSE 8000
+EXPOSE 6543
 
 CMD gunicorn --paste /app/production.ini

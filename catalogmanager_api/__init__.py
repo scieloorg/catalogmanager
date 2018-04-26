@@ -27,9 +27,8 @@ def main(global_config, **settings):
     config.include(includeme)
     config.add_route('home', '/')
 
-    ini_settings = get_appsettings(global_config['__file__'])
-
     def couchdb_settings(request):
+        ini_settings = get_appsettings(global_config['__file__'])
         return {
             'database_uri': '{}:{}'.format(
                 ini_settings['catalogmanager.db.host'],
