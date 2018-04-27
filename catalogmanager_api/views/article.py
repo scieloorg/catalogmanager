@@ -12,18 +12,10 @@ class Article:
     def __init__(self, request, context=None):
         self.request = request
         self.context = context
-        self.settings = request.registry.settings
-        self.db_settings = {
-            'db_host': self.settings.get('database_host'),
-            'db_port': self.settings.get('database_port'),
-            'username': self.settings.get('database_username'),
-            'password': self.settings.get('database_password')
-        }
 
     def _get_file_property(self, file_field):
         file_path = Path(file_field.filename)
         content = file_field.file.read()
-        size = len(content)
         return catalogmanager.create_file(filename=file_path.name,
                                           content=content)
 
@@ -41,7 +33,7 @@ class Article:
                 article_id=self.request.matchdict['id'],
                 xml_file=xml_file,
                 assets_files=assets_files,
-                **self.db_settings
+                **self.request.db_settings
             )
         except catalogmanager.article_services.ArticleServicesException as e:
             return {
@@ -53,7 +45,7 @@ class Article:
         try:
             article_data = catalogmanager.get_article_data(
                 article_id=self.request.matchdict['id'],
-                **self.db_settings
+                **self.request.db_settings
             )
             return article_data
         except catalogmanager.article_services.ArticleServicesException as e:
@@ -69,24 +61,17 @@ class ArticleXML:
     def __init__(self, request, context=None):
         self.request = request
         self.context = context
-        self.settings = request.registry.settings
-        self.db_settings = {
-            'db_host': self.settings.get('database_host'),
-            'db_port': self.settings.get('database_port'),
-            'username': self.settings.get('database_username'),
-            'password': self.settings.get('database_password')
-        }
 
     def get(self):
         try:
             article_id = self.request.matchdict['id']
             xml_file_content = catalogmanager.get_article_file(
                 article_id=article_id,
-                **self.db_settings
+                **self.request.db_settings
             )
             article_data = catalogmanager.get_article_data(
                 article_id=article_id,
-                **self.db_settings
+                **self.request.db_settings
             )
             if article_data['content'].get('assets'):
                 xml_file_content = catalogmanager.set_assets_public_url(
@@ -110,20 +95,13 @@ class ArticleAsset:
     def __init__(self, request, context=None):
         self.request = request
         self.context = context
-        self.settings = request.registry.settings
-        self.db_settings = {
-            'db_host': self.settings.get('database_host'),
-            'db_port': self.settings.get('database_port'),
-            'username': self.settings.get('database_username'),
-            'password': self.settings.get('database_password')
-        }
 
     def get(self):
         try:
             content_type, content = catalogmanager.get_asset_file(
                 article_id=self.request.matchdict['id'],
                 asset_id=self.request.matchdict['asset_id'],
-                **self.db_settings
+                **self.request.db_settings
             )
             return Response(content_type=content_type, body=content)
         except catalogmanager.article_services.ArticleServicesException as e:
