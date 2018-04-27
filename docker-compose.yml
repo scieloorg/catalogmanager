@@ -1,14 +1,5 @@
-version: '3'
+version: '2'
 services:
-  db:
-    image: couchdb
-    environment:
-      COUCHDB_USER: admin
-      COUCHDB_PASSWORD: password
-    volumes:
-    - ./couchdb:/usr/local/var/lib/couchdb
-    ports:
-      - "5984:5984"
   webapp:
     build: .
     depends_on:
@@ -17,3 +8,18 @@ services:
       - 6543:6543
     links:
       - db
+  db:
+    privileged: true
+    image: couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    stdin_open: true
+    volumes:
+      - ./couchdb:/usr/local/var/lib/couchdb
+    tty: true
+    ports:
+      - "5984:5984"
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
