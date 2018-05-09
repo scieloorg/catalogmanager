@@ -28,7 +28,7 @@ def test_add_article_register_change(testapp, test_package_A):
                          params=params,
                          upload_files=assets_field,
                          content_type='multipart/form-data')
-    assert result.status_code == 200
+    assert result.status_code == 201
 
     # Checa se é possível recuperar o registro do documento pelo id
     result = testapp.get(url)
