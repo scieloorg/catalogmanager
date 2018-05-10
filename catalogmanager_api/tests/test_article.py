@@ -42,13 +42,9 @@ def test_http_get_article_not_found(mocked_get_article_data, testapp):
         catalogmanager.article_services.ArticleServicesException(
             message=error_msg
         )
-    expected = {
-        "error": "404",
-        "message": error_msg
-    }
-    result = testapp.get('/articles/{}'.format(article_id))
-    assert result.status == '200 OK'
-    assert result.json == expected
+    result = testapp.get('/articles/{}'.format(article_id),
+            expect_errors=True)
+    assert result.status == '404 Not Found'
 
 
 @patch.object(catalogmanager, 'get_article_data')
@@ -76,12 +72,19 @@ def test_http_get_xml_file_calls_get_article_file(mocked_get_article_file,
     article_id = 'ID123456'
     with open(test_article_files[0], 'rb') as fb:
         xml_content = fb.read()
-        mocked_get_article_file.return_value = xml_content
-        testapp.get('/articles/{}/xml'.format(article_id))
-        mocked_get_article_file.assert_called_once_with(
-            article_id=article_id,
-            **db_settings
-        )
+
+    mocked_get_article_file.return_value = xml_content
+    #XXX penso que não é adequado usar o WebTest para realizar testes desta
+    #natureza -- teste de envio de mensagem do objeto sob teste para uma
+    #das suas dependências. O WebTest tem a finalidade de realizar testes
+    #funcionais em aplicações WSGI.
+    testapp.get('/articles/{}/xml'.format(article_id),
+            expect_errors=True)
+
+    mocked_get_article_file.assert_called_once_with(
+        article_id=article_id,
+        **db_settings
+    )
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -92,13 +95,9 @@ def test_http_get_xml_file_article_not_found(mocked_get_article_file, testapp):
         catalogmanager.article_services.ArticleServicesException(
             message=error_msg
         )
-    expected = {
-        "error": "404",
-        "message": error_msg
-    }
-    result = testapp.get('/articles/{}/xml'.format(article_id))
-    assert result.status == '200 OK'
-    assert result.json == expected
+    result = testapp.get('/articles/{}/xml'.format(article_id),
+            expect_errors=True)
+    assert result.status == '404 Not Found'
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -109,13 +108,9 @@ def test_http_get_xml_file_not_found(mocked_get_article_file, testapp):
         catalogmanager.article_services.ArticleServicesException(
             message=error_msg
         )
-    expected = {
-        "error": "404",
-        "message": error_msg
-    }
-    result = testapp.get('/articles/{}/xml'.format(article_id))
-    assert result.status == '200 OK'
-    assert result.json == expected
+    result = testapp.get('/articles/{}/xml'.format(article_id),
+            expect_errors=True)
+    assert result.status == '404 Not Found'
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -128,12 +123,16 @@ def test_http_get_xml_file_calls_get_article_data(mocked_get_article_data,
     article_id = 'ID123456'
     with open(test_article_files[0], 'rb') as fb:
         xml_content = fb.read()
-        mocked_get_article_file.return_value = xml_content
-        testapp.get('/articles/{}/xml'.format(article_id))
-        mocked_get_article_data.assert_called_once_with(
-            article_id=article_id,
-            **db_settings
-        )
+    #XXX penso que não é adequado usar o WebTest para realizar testes desta
+    #natureza -- teste de envio de mensagem do objeto sob teste para uma
+    #das suas dependências. O WebTest tem a finalidade de realizar testes
+    #funcionais em aplicações WSGI.
+    mocked_get_article_file.return_value = xml_content
+    testapp.get('/articles/{}/xml'.format(article_id))
+    mocked_get_article_data.assert_called_once_with(
+        article_id=article_id,
+        **db_settings
+    )
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -161,15 +160,19 @@ def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
     }
     with open(test_article_files[0], 'rb') as fb:
         xml_content = fb.read()
-        mocked_get_article_file.return_value = xml_content
-        mocked_set_assets_public_url.return_value = xml_content
-        testapp.get('/articles/{}/xml'.format(article_id))
-        mocked_set_assets_public_url.assert_called_once_with(
-            article_id=article_id,
-            xml_content=xml_content,
-            assets_filenames=assets,
-            public_url='/articles/{}/assets/{}'
-        )
+    #XXX penso que não é adequado usar o WebTest para realizar testes desta
+    #natureza -- teste de envio de mensagem do objeto sob teste para uma
+    #das suas dependências. O WebTest tem a finalidade de realizar testes
+    #funcionais em aplicações WSGI.
+    mocked_get_article_file.return_value = xml_content
+    mocked_set_assets_public_url.return_value = xml_content
+    testapp.get('/articles/{}/xml'.format(article_id))
+    mocked_set_assets_public_url.assert_called_once_with(
+        article_id=article_id,
+        xml_content=xml_content,
+        assets_filenames=assets,
+        public_url='/articles/{}/assets/{}'
+    )
 
 
 @patch.object(catalogmanager, 'get_article_file')
@@ -190,6 +193,7 @@ def test_http_get_xml_file_doesnt_calls_set_assets_public_url_if_no_assets(
             'xml': "test.xml",
         },
     }
+    #XXX nenhuma interação está sendo testada efetivamente aqui.
     assert not mocked_set_assets_public_url.called
 
 
@@ -200,6 +204,9 @@ def test_http_get_xml_file_succeeded(mocked_get_article_data,
                                      testapp,
                                      test_article_files,
                                      test_xml_file):
+    #XXX este é um típico teste funcional e deveria ser implementado usando
+    #fixtures e implementações reais. O uso de patches praticamente invalida
+    #este teste.
     article_id = 'ID123456'
     assets = [
         asset_file.name
@@ -240,6 +247,7 @@ def test_http_article_calls_create_file(mocked_put_article,
                                         db_settings,
                                         testapp,
                                         test_xml_file):
+    #XXX este teste não faz sentido.
     article_id = 'ID-post-article-123'
     params = OrderedDict([
         ('article_id', article_id),
@@ -263,6 +271,7 @@ def test_http_article_calls_put_article(mocked_put_article,
                                         db_settings,
                                         testapp,
                                         test_xml_file):
+    #XXX este teste não faz sentido.
     test_file = _get_file_property("test_xml_file.xml",
                                    test_xml_file.encode('utf-8'),
                                    len(test_xml_file))
@@ -294,10 +303,6 @@ def test_http_article_calls_put_article_service_error(mocked_put_article,
         catalogmanager.article_services.ArticleServicesException(
             message='Missing XML file {}'.format(article_id)
         )
-    expected = {
-        "error": "500",
-        "message": "Article error"
-    }
     params = OrderedDict([
         ('article_id', article_id),
         ("xml_file",
@@ -306,9 +311,9 @@ def test_http_article_calls_put_article_service_error(mocked_put_article,
     ])
     result = testapp.put('/articles/{}'.format(article_id),
                          params=params,
-                         content_type='multipart/form-data')
-    assert result.status == '200 OK'
-    assert result.json == expected
+                         content_type='multipart/form-data',
+                         expect_errors=True)
+    assert result.status == '500 Internal Server Error'
 
 
 def test_http_article_put_article_succeeded(testapp,
@@ -323,7 +328,7 @@ def test_http_article_put_article_succeeded(testapp,
     result = testapp.put('/articles/{}'.format(article_id),
                          params=params,
                          content_type='multipart/form-data')
-    assert result.status == '200 OK'
+    assert result.status == '201 Created'
 
 
 @patch.object(catalogmanager, 'create_file')
@@ -334,6 +339,8 @@ def test_http_article_put_article_with_assets(mocked_put_article,
                                               testapp,
                                               test_xml_file,
                                               test_article_files):
+    #XXX aqui deveria ser um teste funcional simples, sem qualquer dublê de 
+    #testes (mocks e afins).
     article_id = 'ID-post-article-123'
     expected_assets_files = []
     assets_field = []
@@ -362,7 +369,7 @@ def test_http_article_put_article_with_assets(mocked_put_article,
                          params=params,
                          upload_files=assets_field,
                          content_type='multipart/form-data')
-    assert result.status == '200 OK'
+    assert result.status == '201 Created'
     mocked_put_article.assert_called_once_with(
         article_id=article_id,
         xml_file=test_file,
@@ -376,6 +383,7 @@ def test_http_get_asset_file_calls_get_asset_file(mocked_get_asset_file,
                                                   db_settings,
                                                   testapp):
 
+    #XXX este teste não faz sentido.
     article_id = 'ID123456'
     asset_id = 'ID123456'
     mocked_get_asset_file.return_value = '', b'123456Test'
@@ -397,19 +405,16 @@ def test_http_get_asset_file_not_found(mocked_get_asset_file,
         catalogmanager.article_services.ArticleServicesException(
             message=error_msg
         )
-    expected = {
-        "error": "404",
-        "message": error_msg
-    }
-    result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id))
-    assert result.status == '200 OK'
-    assert result.json == expected
+    result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id),
+            expect_errors=True)
+    assert result.status == '404 Not Found'
 
 
 @patch.object(catalogmanager, 'get_asset_file')
 def test_http_get_asset_file_succeeded(mocked_get_asset_file,
                                        testapp,
                                        test_xml_file):
+    #XXX este teste deveria usar fixture num setup prévio ao invés de patch.
     article_id = 'ID123456'
     asset_id = 'a.jpg'
     expected = 'text/xml', test_xml_file.encode('utf-8')
