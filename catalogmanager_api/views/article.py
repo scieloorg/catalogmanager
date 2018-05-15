@@ -1,8 +1,14 @@
 import io
 from pathlib import Path
 
+from pyramid.httpexceptions import (
+        HTTPCreated,
+        HTTPNotFound,
+        HTTPInternalServerError,
+        )
 from pyramid.response import Response
 from cornice.resource import resource
+
 import catalogmanager
 
 
@@ -29,6 +35,9 @@ class Article:
                 self._get_file_property(asset_file_field)
                 for asset_file_field in assets_files_field
             ]
+            #XXX não há uma maneira de saber se trata-se da criação de um
+            #novo recurso ou da atualização de um já existente para
+            #a emissão correta dos códigos HTTP -- 201 e 200, respectivamente.
             catalogmanager.put_article(
                 article_id=self.request.matchdict['id'],
                 xml_file=xml_file,
@@ -36,10 +45,12 @@ class Article:
                 **self.request.db_settings
             )
         except catalogmanager.services.ArticleServicesException as e:
-            return {
-                "error": "500",
-                "message": "Article error"
-            }
+            #XXX a exceção tratada aqui está sinalizando uma miríade de
+            #situações excepcionais, que abarca erro de dado fornecido pelo
+            #usuário, erro no servidor, e recursos não encontrados.
+            raise HTTPInternalServerError(detail=e.message)
+        else:
+            raise HTTPCreated()
 
     def get(self):
         try:
@@ -49,10 +60,7 @@ class Article:
             )
             return article_data
         except catalogmanager.services.ArticleServicesException as e:
-            return {
-                "error": "404",
-                "message": e.message
-            }
+            raise HTTPNotFound(detail=e.message)
 
 
 @resource(path='/articles/{id}/xml', renderer='json')
@@ -83,10 +91,7 @@ class ArticleXML:
             return Response(content_type='application/xml',
                             body_file=io.BytesIO(xml_file_content))
         except catalogmanager.services.ArticleServicesException as e:
-            return {
-                "error": "404",
-                "message": e.message
-            }
+            raise HTTPNotFound(detail=e.message)
 
 
 @resource(path='/articles/{id}/assets/{asset_id}', renderer='json')
@@ -105,7 +110,4 @@ class ArticleAsset:
             )
             return Response(content_type=content_type, body=content)
         except catalogmanager.services.ArticleServicesException as e:
-            return {
-                "error": "404",
-                "message": e.message
-            }
+            raise HTTPNotFound(detail=e.message)

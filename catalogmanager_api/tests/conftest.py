@@ -11,6 +11,8 @@ from catalogmanager_api import main
 
 @pytest.fixture
 def db_settings():
+    #XXX apenas a implementação in-memory deveria ser usada como dependência
+    #dos testes.  A instância real do CouchDB nunca deveria ser contactada.
     ini_settings = get_appsettings('development.ini')
     return {
         'database_uri': '{}:{}'.format(
