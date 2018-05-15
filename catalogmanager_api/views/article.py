@@ -35,7 +35,7 @@ class Article:
                 assets_files=assets_files,
                 **self.request.db_settings
             )
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             return {
                 "error": "500",
                 "message": "Article error"
@@ -48,7 +48,7 @@ class Article:
                 **self.request.db_settings
             )
             return article_data
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             return {
                 "error": "404",
                 "message": e.message
@@ -82,7 +82,7 @@ class ArticleXML:
                 )
             return Response(content_type='application/xml',
                             body_file=io.BytesIO(xml_file_content))
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             return {
                 "error": "404",
                 "message": e.message
@@ -104,7 +104,7 @@ class ArticleAsset:
                 **self.request.db_settings
             )
             return Response(content_type=content_type, body=content)
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             return {
                 "error": "404",
                 "message": e.message
