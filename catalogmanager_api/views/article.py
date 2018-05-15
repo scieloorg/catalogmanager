@@ -67,7 +67,7 @@ class Article:
             raise HTTPNotFound(detail=e.message)
 
 
-@resource(path='/articles/{id}/xml', renderer='json')
+@resource(path='/articles/{id}/xml', renderer='xml')
 class ArticleXML:
 
     def __init__(self, request, context=None):
@@ -99,7 +99,7 @@ class ArticleXML:
             raise HTTPNotFound(detail=e.message)
 
 
-@resource(path='/articles/{id}/assets/{asset_id}', renderer='json')
+@resource(path='/articles/{id}/assets/{asset_id}')
 class ArticleAsset:
 
     def __init__(self, request, context=None):
