@@ -1,11 +1,15 @@
+from datetime import datetime
+
 from pyramid import testing
 import pytest
 
 from catalog_persistence.databases import (
+    QueryOperator,
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.services import DatabaseService
+from catalog_persistence.models import RecordType
+from catalog_persistence.services import DatabaseService, ChangeType
 
 
 @pytest.yield_fixture
@@ -56,6 +60,110 @@ def setup(request, persistence_config, database_service):
         database_service.db_manager.drop_database()
         database_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
+
+
+@pytest.fixture
+def inmemory_db_setup(request, persistence_config, inmemory_db_service):
+    def fin():
+        inmemory_db_service.changes_db_manager.drop_database()
+    request.addfinalizer(fin)
+
+
+@pytest.fixture
+def test_changes_records(request):
+    changes_list = []
+    for sequential in range(1, 11):
+        change_record = {
+            'change_id': 'SEQ{:0>17}'.format(sequential),
+            'document_id': 'DOC-ID-{}'.format(sequential),
+            'document_type': RecordType.DOCUMENT.value,
+            'type': ChangeType.CREATE.value,
+            'created_date': str(datetime.utcnow().timestamp())
+        }
+        changes_list.append(change_record)
+        file_id = "{}.xml".format(change_record['document_id'])
+        update_change_record = {
+                'type': ChangeType.UPDATE.value,
+                'updated_date': str(datetime.utcnow().timestamp()),
+                'attachment_id': file_id
+        }
+        update_change_record.update(change_record)
+        changes_list.append(update_change_record)
+    return changes_list
+
+
+@pytest.fixture
+def test_documents_records(request):
+    fields_values = ('SEQ{:0>17}', 'field_{}')
+    return tuple(
+        {
+            'document_id': fields_values[0].format(sequential),
+            'field': fields_values[1].format(sequential)
+        }
+        for sequential in range(1, 11)
+    )
+
+
+@pytest.fixture
+def no_filter_all(request, test_documents_records):
+    return (
+        {'filter': {}, 'fields': [], 'sort': []},
+        test_documents_records
+    )
+
+
+@pytest.fixture
+def filter_greater_than_result(request, test_documents_records):
+    initial_id = 'SEQ{:0>17}'.format(5)
+    find_criteria = {
+        'filter': {
+            'document_id': [
+                (QueryOperator.GREATER_THAN, initial_id)
+            ]
+        },
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': []
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records
+        if document_record['document_id'] > initial_id
+    )
+    return (find_criteria, expected)
+
+
+@pytest.fixture
+def filter_limit_result(request, test_documents_records):
+    limit_id = 'SEQ{:0>17}'.format(5)
+    find_criteria = {
+        'filter': {},
+        'fields': ['document_id', 'field'],
+        'limit': 5,
+        'sort': []
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records
+        if document_record['document_id'] <= limit_id
+    )
+    return (find_criteria, expected)
+
+
+@pytest.fixture(params=[
+        pytest.lazy_fixture('no_filter_all'),
+        pytest.lazy_fixture('filter_greater_than_result'),
+        pytest.lazy_fixture('filter_limit_result'),
+    ]
+)
+def find_criteria_result(request):
+    return request.param
 
 
 @pytest.fixture

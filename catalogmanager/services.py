@@ -5,7 +5,7 @@ from catalog_persistence.models import (
         RecordType,
     )
 from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService
+from catalog_persistence.services import DatabaseService, SortOrder
 from .models.article_model import (
     ArticleDocument,
 )
@@ -129,3 +129,14 @@ class ArticleServices:
                 'AssetDocument file {} (ArticleDocument {}) not found.'.format(
                     asset_id, article_id)
             )
+
+
+class ChangeService:
+
+    def __init__(self, changes_db_manager):
+        self.change_db_service = DatabaseService(None, changes_db_manager)
+
+    def list_changes(self, last_sequence, limit):
+        return self.change_db_service.list_changes(
+            last_sequence=last_sequence,
+            limit=limit)
