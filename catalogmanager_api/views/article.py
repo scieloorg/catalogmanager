@@ -12,7 +12,8 @@ from cornice.resource import resource
 import catalogmanager
 
 
-@resource(collection_path='/articles', path='/articles/{id}', renderer='json')
+@resource(collection_path='/articles', path='/articles/{id}', renderer='json',
+          tags=['articles'])
 class Article:
 
     def __init__(self, request, context=None):
@@ -26,6 +27,8 @@ class Article:
                                           content=content)
 
     def put(self):
+        """Receive Article document package which must contain a XML file and
+        assets files referenced."""
         try:
             xml_file_field = self.request.POST.get('xml_file')
             xml_file = self._get_file_property(xml_file_field)
@@ -53,6 +56,7 @@ class Article:
             raise HTTPCreated()
 
     def get(self):
+        """Returns Article document metadata."""
         try:
             article_data = catalogmanager.get_article_data(
                 article_id=self.request.matchdict['id'],
@@ -63,7 +67,7 @@ class Article:
             raise HTTPNotFound(detail=e.message)
 
 
-@resource(path='/articles/{id}/xml', renderer='json')
+@resource(path='/articles/{id}/xml', renderer='xml')
 class ArticleXML:
 
     def __init__(self, request, context=None):
@@ -71,6 +75,7 @@ class ArticleXML:
         self.context = context
 
     def get(self):
+        """Returns XML Article file with updated public URLs to its assets."""
         try:
             article_id = self.request.matchdict['id']
             xml_file_content = catalogmanager.get_article_file(
@@ -94,7 +99,7 @@ class ArticleXML:
             raise HTTPNotFound(detail=e.message)
 
 
-@resource(path='/articles/{id}/assets/{asset_id}', renderer='json')
+@resource(path='/articles/{id}/assets/{asset_id}')
 class ArticleAsset:
 
     def __init__(self, request, context=None):
@@ -102,6 +107,7 @@ class ArticleAsset:
         self.context = context
 
     def get(self):
+        """Returns Asset file."""
         try:
             content_type, content = catalogmanager.get_asset_file(
                 article_id=self.request.matchdict['id'],
