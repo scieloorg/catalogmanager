@@ -6,6 +6,7 @@ from catalog_persistence.databases import (
     InMemoryDBManager,
 )
 from catalog_persistence.services import DatabaseService
+from catalog_persistence.seqnum_generator import SeqNumGenerator
 
 
 @pytest.yield_fixture
@@ -37,6 +38,33 @@ def change_db_settings():
         'database_password': 'password',
         'database_name': 'changes',
     }
+
+
+@pytest.fixture
+def seqnum_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'seqnum',
+    }
+
+
+@pytest.fixture(params=[
+    CouchDBManager,
+    InMemoryDBManager
+])
+def seqnumber_generator(request, seqnum_db_settings):
+    s = SeqNumGenerator(
+        request.param(**seqnum_db_settings),
+        'CHANGE'
+    )
+
+    def fin():
+        s.db_manager.drop_database()
+
+    request.addfinalizer(fin)
+    return s
 
 
 @pytest.fixture(params=[
