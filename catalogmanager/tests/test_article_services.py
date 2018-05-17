@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
-from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService
-from catalog_persistence.models import RecordType
+from persistence.databases import DocumentNotFound
+from persistence.services import DatabaseService
+from persistence.models import RecordType
 from catalogmanager.article_services import (
     ArticleServices,
     ArticleServicesException

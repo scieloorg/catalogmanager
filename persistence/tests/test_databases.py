@@ -4,9 +4,9 @@ import pytest
 from datetime import datetime
 from uuid import uuid4
 
-from catalog_persistence.databases import DocumentNotFound, sort_results
-from catalog_persistence.services import DatabaseService, ChangeType
-from catalog_persistence.models import get_record, RecordType
+from persistence.databases import DocumentNotFound, sort_results
+from persistence.services import DatabaseService, ChangeType
+from persistence.models import get_record, RecordType
 
 
 def get_article_record(content={'Test': 'Test'}):

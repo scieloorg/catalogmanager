@@ -4,11 +4,11 @@ from pyramid import testing
 
 from catalogmanager.article_services import ArticleServices
 from catalogmanager.models.file import File
-from catalog_persistence.databases import (
+from persistence.databases import (
     InMemoryDBManager,
     CouchDBManager
 )
-from catalog_persistence.services import DatabaseService
+from persistence.services import DatabaseService
 
 
 @pytest.fixture(scope="module")

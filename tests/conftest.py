@@ -4,7 +4,7 @@ import couchdb
 import pytest
 import webtest
 
-from catalogmanager_api import main
+from api import main
 
 
 @pytest.fixture

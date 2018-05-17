@@ -3,7 +3,7 @@ from catalogmanager.article_services import (
 )
 from catalogmanager.models.article_model import ArticleDocument
 from catalogmanager.models.file import File
-from catalog_persistence.databases import CouchDBManager
+from persistence.databases import CouchDBManager
 
 
 def _get_article_service(**db_settings):

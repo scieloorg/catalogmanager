@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from catalog_persistence.models import (
+from persistence.models import (
         get_record,
         RecordType,
     )
-from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService
+from persistence.databases import DocumentNotFound
+from persistence.services import DatabaseService
 from .models.article_model import (
     ArticleDocument,
 )
