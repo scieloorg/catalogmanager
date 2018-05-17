@@ -10,16 +10,16 @@ def test_change_api_collection_post_calls_list_changes(mocked_list_changes,
                                                        db_settings,
                                                        testapp):
     request = testing.DummyRequest()
-    request.POST = {
+    request.GET = {
         'last_sequence': 'SEQ123456',
         'limit': 100,
     }
     request.db_settings = db_settings
-    ChangeAPI.collection_post(ChangeAPI(request))
+    ChangeAPI.collection_get(ChangeAPI(request))
 
     mocked_list_changes.assert_called_once_with(
-        last_sequence=request.POST['last_sequence'],
-        limit=request.POST['limit'],
+        last_sequence=request.GET['last_sequence'],
+        limit=request.GET['limit'],
         **db_settings
     )
 
@@ -44,11 +44,11 @@ def test_change_api_collection_post_return_changes_list(mocked_list_changes,
     ]
     mocked_list_changes.return_value = expected
     request = testing.DummyRequest()
-    request.POST = {
+    request.GET = {
         'last_sequence': 'SEQ123456',
         'limit': 100,
     }
     request.db_settings = db_settings
-    response = ChangeAPI.collection_post(ChangeAPI(request))
+    response = ChangeAPI.collection_get(ChangeAPI(request))
     assert response.status_code == 200
     assert response.json == expected

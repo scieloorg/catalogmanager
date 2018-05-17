@@ -1,4 +1,5 @@
 from datetime import datetime
+from random import randint
 
 from pyramid import testing
 import pytest
@@ -63,32 +64,30 @@ def setup(request, persistence_config, database_service):
 
 
 @pytest.fixture
-def inmemory_db_setup(request, persistence_config, inmemory_db_service):
+def inmemory_db_setup(request, persistence_config):
+    inmemory_db_service = DatabaseService(
+        InMemoryDBManager(database_name='articles'),
+        InMemoryDBManager(database_name='changes')
+    )
+
     def fin():
         inmemory_db_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
+    return inmemory_db_service
 
 
 @pytest.fixture
 def test_changes_records(request):
     changes_list = []
     for sequential in range(1, 11):
+        document_type = ['C', 'U', 'D']
         change_record = {
-            'change_id': 'SEQ{:0>17}'.format(sequential),
+            'change_id': '{:0>17}'.format(sequential),
             'document_id': 'DOC-ID-{}'.format(sequential),
-            'document_type': RecordType.DOCUMENT.value,
-            'type': ChangeType.CREATE.value,
+            'type': document_type[randint(0, 2)],
             'created_date': str(datetime.utcnow().timestamp())
         }
         changes_list.append(change_record)
-        file_id = "{}.xml".format(change_record['document_id'])
-        update_change_record = {
-                'type': ChangeType.UPDATE.value,
-                'updated_date': str(datetime.utcnow().timestamp()),
-                'attachment_id': file_id
-        }
-        update_change_record.update(change_record)
-        changes_list.append(update_change_record)
     return changes_list
 
 

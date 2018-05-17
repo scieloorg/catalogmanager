@@ -64,20 +64,16 @@ def test_add_article_register_change(testapp, test_package_A):
 
     # Deve ser possível recuperar os registros de mudanças do documento de
     # acordo com os parâmetros informados no serviço
-    params = {
-        'last_sequence': '',
-        'limit': 10,
-    }
-    result = testapp.post('/changes',
-                          params=params,
-                          content_type='multipart/form-data')
+    last_sequence = ''
+    limit = 10
+    result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
+                                                             limit))
     assert result.status_code == 200
     assert result.json is not None
     assert len(result.json) > 0
-    params['last_sequence'] = result.json[-1]['change_id']
-    result = testapp.post('/changes',
-                          params=params,
-                          content_type='multipart/form-data')
+    last_sequence = result.json[-1]['change_id']
+    result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
+                                                             limit))
     assert result.status_code == 200
     assert result.json is not None
     assert len(result.json) == 0
