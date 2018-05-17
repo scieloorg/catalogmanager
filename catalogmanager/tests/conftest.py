@@ -181,9 +181,7 @@ def list_changes_expected():
             "change_id": "SEQ{}".format(id),
             "document_id": "ID-{}".format(id),
             "document_type": "ARTICLE",
-            "content": {
-                'xml': "ID-{}.xml".format(id),
-            }
+            "type": "CREATE",
         }
         for id in range(123457, 123466)
     ]

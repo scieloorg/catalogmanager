@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService, SortOrder
+from catalog_persistence.services import DatabaseService
 from catalog_persistence.models import RecordType
 from catalogmanager.services import (
     ArticleServices,

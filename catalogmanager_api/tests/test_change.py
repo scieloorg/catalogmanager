@@ -32,13 +32,8 @@ def test_change_api_collection_post_return_changes_list(mocked_list_changes,
         {
             "change_id": "SEQ{}".format(id),
             "document_id": "ID-{}".format(id),
-            "document_type": "ARTICLE",
-            "content": {
-                'xml': "ID-{}.xml".format(id),
-                'assets': [
-                    "{}-{}.png".format(id, asset_id) for asset_id in range(3)
-                ]
-            }
+            "document_type": "ART",
+            "type": "CREATE"
         }
         for id in range(123457, 123466)
     ]

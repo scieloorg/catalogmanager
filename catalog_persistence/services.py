@@ -210,6 +210,10 @@ class DatabaseService:
         Retorno:
         Lista de registros de mudança
         """
+        def convert_change_type(change):
+            change.update({'type': ChangeType(change['type']).name})
+            return change
+
         fields = [
             'change_id',
             'document_id',
@@ -222,8 +226,12 @@ class DatabaseService:
                 (QueryOperator.GREATER_THAN, last_sequence)
             ]
         }
-        sort = [{'change_id': SortOrder.ASC.value}]
-        return self.changes_db_manager.find(fields=fields,
-                                            limit=limit,
-                                            filter=filter,
-                                            sort=sort)
+        sort = [{'created_date': SortOrder.ASC.value}]
+        changes = self.changes_db_manager.find(fields=fields,
+                                               limit=limit,
+                                               filter=filter,
+                                               sort=sort)
+        return [
+            convert_change_type(change)
+            for change in changes
+        ]
