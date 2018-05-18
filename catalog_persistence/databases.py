@@ -171,21 +171,22 @@ class InMemoryDBManager(BaseDBManager):
             return False
 
         if len(filter) == 0:
-            documents = [doc for i, doc in self.database.items()]
-            if limit and len(documents) > limit:
-                return list(islice(documents, limit))
-            return documents
-        results = []
-        for id, doc in self.database.items():
-            for field_name, field_filter in filter.items():
-                if match_doc(doc, field_name, field_filter):
-                    if fields:
-                        d = {f: doc.get(f) for f in fields}
-                        results.append(d)
-                    else:
-                        results.append(doc)
-                    if limit and len(results) > limit:
-                        break
+            results = list(
+                islice(self.database.values(),
+                       limit if limit else None)
+            )
+        else:
+            results = []
+            for doc in self.database.values():
+                for field_name, field_filter in filter.items():
+                    if match_doc(doc, field_name, field_filter):
+                        if fields:
+                            d = {f: doc.get(f) for f in fields}
+                            results.append(d)
+                        else:
+                            results.append(doc)
+                        if limit and len(results) > limit:
+                            break
         return sort_results(results, sort)
 
     def put_attachment(self, id, file_id, content, content_properties):
@@ -290,28 +291,42 @@ class CouchDBManager(BaseDBManager):
         Retorno:
         Lista de registros de documento registrados na base de dados
         """
-        def create_selector(filter):
-            for field_name, field_filter in filter.items():
-                if isinstance(field_filter, list):
-                    filter[field_name] = {
-                        '$' + field_criteria[0].value: field_criteria[1]
-                        for field_criteria in field_filter
+        def create_selector(filter, sort):
+            if not filter and sort:
+                filter = {
+                    sorter_name: {
+                        '$' + QueryOperator.GREATER_THAN.value: None
                     }
+                    for sorter in sort
+                    for sorter_name, __ in sorter.items()
+                }
+            else:
+                for field_name, field_filter in filter.items():
+                    if isinstance(field_filter, list):
+                        filter[field_name] = {
+                            '$' + field_criteria[0].value: field_criteria[1]
+                            for field_criteria in field_filter
+                        }
             return filter
 
         def check_sort_index(sort):
             indexes = self.database.index()
-            __, __, indexes_data = indexes.resource.get_json()
             found_index = [
                 index['def']['fields']
-                for index in indexes_data['indexes']
+                for index in iter(indexes)
                 if index['def']['fields'] == sort
             ]
             if not found_index:
-                index_key = tuple(sort[0].keys())[0]
+                index_key = '_'.join(
+                    [
+                        sorter_key
+                        for sorter in sort
+                        for sorter_key in sorter.keys()
+                    ]
+                )
                 indexes[index_key, index_key] = sort
 
-        selector = create_selector(filter)
+        selector = create_selector(filter, sort)
         if sort and sort[0]:
             check_sort_index(sort)
         selection_criteria = {

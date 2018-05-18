@@ -9,8 +9,7 @@ from catalog_persistence.databases import (
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.models import RecordType
-from catalog_persistence.services import DatabaseService, ChangeType
+from catalog_persistence.services import DatabaseService, SortOrder
 
 
 @pytest.yield_fixture
@@ -155,10 +154,73 @@ def filter_limit_result(request, test_documents_records):
     return (find_criteria, expected)
 
 
+@pytest.fixture
+def filter_greater_than_orded_by_result(request, test_documents_records):
+    initial_id = 'SEQ{:0>17}'.format(5)
+    find_criteria = {
+        'filter': {
+            'document_id': [
+                (QueryOperator.GREATER_THAN, initial_id)
+            ]
+        },
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': [{'document_id': SortOrder.ASC.value}]
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records
+        if document_record['document_id'] > initial_id
+    )
+    return (find_criteria, expected)
+
+
+@pytest.fixture
+def filter_orded_by_result(request, test_documents_records):
+    find_criteria = {
+        'filter': {},
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': [{'document_id': SortOrder.ASC.value}]
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records
+    )
+    return (find_criteria, expected)
+
+
+@pytest.fixture
+def filter_orded_by_desc_result(request, test_documents_records):
+    find_criteria = {
+        'filter': {},
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': [{'document_id': SortOrder.DESC.value}]
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records[::-1]
+    )
+    return (find_criteria, expected)
+
+
 @pytest.fixture(params=[
         pytest.lazy_fixture('no_filter_all'),
         pytest.lazy_fixture('filter_greater_than_result'),
         pytest.lazy_fixture('filter_limit_result'),
+        pytest.lazy_fixture('filter_greater_than_orded_by_result'),
+        pytest.lazy_fixture('filter_orded_by_result'),
+        pytest.lazy_fixture('filter_orded_by_desc_result'),
     ]
 )
 def find_criteria_result(request):
