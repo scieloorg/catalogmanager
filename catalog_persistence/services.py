@@ -9,31 +9,33 @@ class ChangeType(Enum):
     DELETE = 'D'
 
 
-class DatabaseService:
+class ChangesService:
     """
-    Database Service é responsável por persistir registros de documentos(dicts)
+    Changes Service é responsável por persistir registros de mudanças(dicts)
     em um DBManager e de mudanças relacionadas a eles em outro DBManager, ambos
     informados na instanciação desta classe.
 
-    db_manager: Instância do DBManager para persistir registro de documentos
-    changes_db_manager: Instância do DBManager para persistir registro de
-        mudanças
+    changes_db_manager:
+        Instância do DBManager para persistir registro de mudanças
+    seqnum_generator:
+        Instância do DBManager para persistir número sequencial
     """
 
-    def __init__(self, db_manager, changes_db_manager):
-        self.db_manager = db_manager
+    def __init__(self, changes_db_manager, seqnum_generator):
         self.changes_db_manager = changes_db_manager
+        self.seqnum_generator = seqnum_generator
 
-    def _register_change(self,
-                         document_record,
-                         change_type,
-                         attachment_id=None):
+    def register_change(self,
+                        document_record,
+                        change_type,
+                        attachment_id=None):
         change_record = {
             'change_id': uuid4().hex,
             'document_id': document_record['document_id'],
             'document_type': document_record['document_type'],
             'type': change_type.value,
             'created_date': str(datetime.utcnow().timestamp()),
+            'seqnum': self.seqnum_generator.new(),
         }
         if attachment_id:
             change_record.update({'attachment_id': attachment_id})
@@ -42,6 +44,23 @@ class DatabaseService:
             change_record
         )
         return change_record['change_id']
+
+
+class DatabaseService:
+    """
+    Database Service é responsável por persistir registros de documentos(dicts)
+    em um DBManager e de mudanças relacionadas a eles em outro DBManager, ambos
+    informados na instanciação desta classe.
+
+    db_manager:
+        Instância do DBManager para persistir registro de documentos
+    changes_services:
+        Instância do ChangesService para gerir registros de mudanças
+    """
+
+    def __init__(self, db_manager, changes_service):
+        self.db_manager = db_manager
+        self.changes_service = changes_service
 
     def register(self, document_id, document_record):
         """
@@ -55,7 +74,8 @@ class DatabaseService:
             'created_date': str(datetime.utcnow().timestamp())
         })
         self.db_manager.create(document_id, document_record)
-        self._register_change(document_record, ChangeType.CREATE)
+        self.changes_service.register_change(
+            document_record, ChangeType.CREATE)
 
     def read(self, document_id):
         """
@@ -100,7 +120,8 @@ class DatabaseService:
             'updated_date': str(datetime.utcnow().timestamp())
         })
         self.db_manager.update(document_id, document_record)
-        self._register_change(document_record, ChangeType.UPDATE)
+        self.changes_service.register_change(
+            document_record, ChangeType.UPDATE)
 
     def delete(self, document_id, document_record):
         """
@@ -114,7 +135,8 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         self.db_manager.delete(document_id)
-        self._register_change(document_record, ChangeType.DELETE)
+        self.changes_service.register_change(
+            document_record, ChangeType.DELETE)
 
     def find(self, selector, fields, sort):
         """

@@ -5,7 +5,10 @@ from catalog_persistence.databases import (
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.services import DatabaseService
+from catalog_persistence.services import (
+    DatabaseService,
+    ChangesService,
+)
 from catalog_persistence.seqnum_generator import SeqNumGenerator
 
 
@@ -71,10 +74,21 @@ def seqnumber_generator(request, seqnum_db_settings):
     CouchDBManager,
     InMemoryDBManager
 ])
-def database_service(request, article_db_settings, change_db_settings):
+def changes_service(request, change_db_settings, seqnumber_generator):
+    return ChangesService(
+        request.param(**change_db_settings),
+        seqnumber_generator
+    )
+
+
+@pytest.fixture(params=[
+    CouchDBManager,
+    InMemoryDBManager
+])
+def database_service(request, article_db_settings, changes_service):
     return DatabaseService(
         request.param(**article_db_settings),
-        request.param(**change_db_settings)
+        changes_service
     )
 
 
@@ -82,7 +96,7 @@ def database_service(request, article_db_settings, change_db_settings):
 def setup(request, persistence_config, database_service):
     def fin():
         database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
+        database_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
 
 

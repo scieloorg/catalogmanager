@@ -4,18 +4,34 @@ from catalogmanager.article_services import (
 from catalogmanager.models.article_model import ArticleDocument
 from catalogmanager.models.file import File
 from catalog_persistence.databases import CouchDBManager
+from catalog_persistence.services import (
+    ChangesService
+)
+from catalog_persistence.seqnum_generator import SeqNumGenerator
 
 
 def _get_article_service(**db_settings):
     database_config = db_settings
     articles_database_config = database_config.copy()
     articles_database_config['database_name'] = "articles"
+
+    changes_seqnum_database_config = database_config.copy()
+    changes_seqnum_database_config['database_name'] = "changes_seqnum"
+
     changes_database_config = database_config.copy()
     changes_database_config['database_name'] = "changes"
 
+    changes_service = ChangesService(
+        CouchDBManager(**changes_database_config),
+        SeqNumGenerator(
+            CouchDBManager(**changes_seqnum_database_config),
+            'CHANGES_SEQ'
+        )
+    )
+
     return ArticleServices(
         CouchDBManager(**articles_database_config),
-        CouchDBManager(**changes_database_config)
+        changes_service
     )
 
 

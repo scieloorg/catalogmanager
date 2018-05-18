@@ -5,7 +5,11 @@ from datetime import datetime
 from uuid import uuid4
 
 from catalog_persistence.databases import DocumentNotFound, sort_results
-from catalog_persistence.services import DatabaseService, ChangeType
+from catalog_persistence.services import (
+    ChangesService,
+    DatabaseService,
+    ChangeType,
+)
 from catalog_persistence.models import get_record, RecordType
 
 
@@ -33,7 +37,7 @@ def test_register_document(setup, database_service):
     assert article_check['created_date'] is not None
 
 
-@patch.object(DatabaseService, '_register_change')
+@patch.object(ChangesService, 'register_change')
 def test_register_document_register_change(mocked_register_change,
                                            setup,
                                            database_service):
@@ -93,7 +97,7 @@ def test_update_document(setup, database_service):
     assert record_check['updated_date'] is not None
 
 
-@patch.object(DatabaseService, '_register_change')
+@patch.object(ChangesService, 'register_change')
 def test_update_document_register_change(mocked_register_change,
                                          setup,
                                          database_service):
@@ -141,7 +145,7 @@ def test_delete_document(setup, database_service):
                   article_record['document_id'])
 
 
-@patch.object(DatabaseService, '_register_change')
+@patch.object(ChangesService, 'register_change')
 def test_delete_document_register_change(mocked_register_change,
                                          setup,
                                          database_service):
