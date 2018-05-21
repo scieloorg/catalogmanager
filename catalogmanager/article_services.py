@@ -27,9 +27,9 @@ class ArticleServicesMissingAssetFileException(Exception):
 
 class ArticleServices:
 
-    def __init__(self, articles_db_manager, changes_db_manager):
+    def __init__(self, articles_db_manager, changes_services):
         self.article_db_service = DatabaseService(
-            articles_db_manager, changes_db_manager)
+            articles_db_manager, changes_services)
 
     def receive_package(self, id, xml_file, files=None):
         article = self.receive_xml_file(id, xml_file)

@@ -4,11 +4,14 @@ from pyramid import testing
 
 from catalogmanager.article_services import ArticleServices
 from catalogmanager.models.file import File
+from catalog_persistence.seqnum_generator import SeqNumGenerator
 from catalog_persistence.databases import (
     InMemoryDBManager,
-    CouchDBManager
 )
-from catalog_persistence.services import DatabaseService
+from catalog_persistence.services import (
+    DatabaseService,
+    ChangesService,
+)
 
 
 @pytest.fixture(scope="module")
@@ -95,14 +98,6 @@ def functional_config(request):
 
 
 @pytest.fixture
-def change_service(functional_config):
-    return (
-        InMemoryDBManager(database_name='test1'),
-        InMemoryDBManager(database_name='test2')
-    )
-
-
-@pytest.fixture
 def xml_test():
     return """
     <article xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -115,18 +110,52 @@ def xml_test():
 
 
 @pytest.fixture
-def setup(request, functional_config, change_service):
-    database_service = DatabaseService(change_service[0], change_service[1])
+def seqnumber_generator(request):
+    s = SeqNumGenerator(
+        InMemoryDBManager(database_name='test3'),
+        'CHANGE'
+    )
+
+    def fin():
+        s.db_manager.drop_database()
+
+    request.addfinalizer(fin)
+    return s
+
+
+@pytest.fixture
+def changes_service(request, seqnumber_generator):
+    return ChangesService(
+        InMemoryDBManager(database_name='test2'),
+        seqnumber_generator
+    )
+
+
+@pytest.fixture
+def databaseservice_params(functional_config, changes_service):
+    return (
+        InMemoryDBManager(database_name='test1'),
+        changes_service
+    )
+
+
+@pytest.fixture
+def setup(request, functional_config, databaseservice_params):
+    database_service = DatabaseService(
+        databaseservice_params[0],
+        databaseservice_params[1])
 
     def fin():
         database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
+        database_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
 
 
 @pytest.fixture
-def inmemory_receive_package(change_service, test_package_A):
-    article_services = ArticleServices(change_service[0], change_service[1])
+def inmemory_receive_package(databaseservice_params, test_package_A):
+    article_services = ArticleServices(
+        databaseservice_params[0],
+        databaseservice_params[1])
     return article_services.receive_package(id='ID',
                                             xml_file=test_package_A[0],
                                             files=test_package_A[1:])
