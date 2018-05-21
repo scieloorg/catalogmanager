@@ -15,17 +15,17 @@ from .models.file import File
 Record = get_record
 
 
-class ArticleServicesException(Exception):
+class ArticleManagerException(Exception):
 
     def __init__(self, message):
         self.message = message
 
 
-class ArticleServicesMissingAssetFileException(Exception):
+class ArticleManagerMissingAssetFileException(Exception):
     pass
 
 
-class ArticleServices:
+class ArticleManager:
 
     def __init__(self, articles_db_manager, changes_db_manager):
         self.article_db_service = DatabaseService(
@@ -77,7 +77,7 @@ class ArticleServices:
             article_record = self.article_db_service.read(article_id)
             return article_record
         except DocumentNotFound:
-            raise ArticleServicesException(
+            raise ArticleManagerException(
                 'ArticleDocument {} not found'.format(article_id)
             )
 
@@ -93,7 +93,7 @@ class ArticleServices:
                                     content=attachment)
             return article.xml_file.content
         except DocumentNotFound:
-            raise ArticleServicesException(
+            raise ArticleManagerException(
                 'Missing XML file {}'.format(article_id)
             )
 
@@ -105,7 +105,7 @@ class ArticleServices:
         for file_id in assets:
             try:
                 asset_files[file_id] = self.get_asset_file(article_id, file_id)
-            except ArticleServicesException:
+            except ArticleManagerException:
                 missing.append(file_id)
         return asset_files, missing
 
@@ -125,7 +125,7 @@ class ArticleServices:
             )
             return content_type, content
         except DocumentNotFound:
-            raise ArticleServicesException(
+            raise ArticleManagerException(
                 'AssetDocument file {} (ArticleDocument {}) not found.'.format(
                     asset_id, article_id)
             )
