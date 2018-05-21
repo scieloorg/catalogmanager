@@ -201,45 +201,6 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
     )
 
 
-@patch.object(DatabaseService, 'update')
-def test_put_attachment_to_document_update(mocked_update,
-                                           setup,
-                                           database_service,
-                                           xml_test):
-    article_record = get_article_record({'Test': 'Test9'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-    attachment_id = "filename"
-    database_service.put_attachment(
-        document_id=article_record['document_id'],
-        file_id=attachment_id,
-        content=xml_test.encode('utf-8'),
-        file_properties={
-            'content_type': "text/xml",
-            'content_size': len(xml_test)
-        }
-    )
-    record = database_service.read(article_record['document_id'])
-    document_record = {
-        'document_id': record['document_id'],
-        'document_type': record['document_type'],
-        'content': record['content'],
-        'created_date': record['created_date'],
-        database_service.db_manager._attachments_properties_key:
-            {
-                attachment_id:
-                {
-                    'content_type': "text/xml",
-                    'content_size': len(xml_test)
-                }
-            }
-    }
-    mocked_update.assert_called_with(
-        article_record['document_id'], document_record)
-
-
 def test_put_attachment_to_document_update_dates(setup,
                                                  database_service,
                                                  xml_test):
@@ -468,13 +429,13 @@ def test_add_attachment_properties(setup, database_service, xml_test):
         article_record
     )
 
-    document_record = database_service.db_manager \
+    database_service.db_manager \
         .add_attachment_properties_to_document_record(
-            article_record['document_id'],
+            article_record,
             'file1',
             file_properties1
         )
-    assert expected[key] == document_record[key]
+    assert expected[key] == article_record[key]
 
 
 def test_get_attachment_properties(setup, database_service, xml_test):

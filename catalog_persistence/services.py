@@ -95,7 +95,8 @@ class DatabaseService:
             'document_id': document['document_id'],
             'document_type': document['document_type'],
             'content': document['content'],
-            'created_date': document['created_date']
+            'created_date': document['created_date'],
+            'document_rev': document['document_rev'],
         }
         if document.get('updated_date'):
             document_record['updated_date'] = document['updated_date']
@@ -115,6 +116,7 @@ class DatabaseService:
 
         Erro:
         DocumentNotFound: documento não encontrado na base de dados.
+        UpdateFailure: dados do document_record estão desatualizados.
         """
         document_record.update({
             'updated_date': str(datetime.utcnow().timestamp())
@@ -171,9 +173,10 @@ class DatabaseService:
                                        file_id,
                                        content,
                                        file_properties)
-        document_record = self.db_manager. \
+        document_record = self.db_manager.read(document_id)
+        self.db_manager. \
             add_attachment_properties_to_document_record(
-                document_id,
+                document_record,
                 file_id,
                 file_properties
             )

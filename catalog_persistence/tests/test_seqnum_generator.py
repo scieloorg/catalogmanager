@@ -9,21 +9,11 @@ def test_sequential_number_new(seqnumber_generator):
 
 
 def test_sequential_number_new_3(seqnumber_generator):
-    assert 0 == seqnumber_generator.get()['SEQ']
-    assert 1 == seqnumber_generator.new()
-    assert 1 == seqnumber_generator.get()['SEQ']
-    assert 2 == seqnumber_generator.new()
-    assert 2 == seqnumber_generator.get()['SEQ']
-    assert 3 == seqnumber_generator.new()
-    assert seqnumber_generator.get()['SEQ'] == 3
-
-
-def test_sequential_number_rollback(seqnumber_generator):
-    assert 0 == seqnumber_generator.get()['SEQ']
-    assert 1 == seqnumber_generator.new()
-    assert 1 == seqnumber_generator.get()['SEQ']
-    assert 2 == seqnumber_generator.new()
-    assert 2 == seqnumber_generator.get()['SEQ']
-    assert 3 == seqnumber_generator.new()
-    seqnumber_generator.rollback()
+    assert seqnumber_generator.get()['SEQ'] == 0
+    assert seqnumber_generator.get()['SEQ'] == 0
+    assert seqnumber_generator.new() == 1
+    assert seqnumber_generator.get()['SEQ'] == 1
+    assert seqnumber_generator.new() == 2
     assert seqnumber_generator.get()['SEQ'] == 2
+    assert seqnumber_generator.new() == 3
+    assert seqnumber_generator.get()['SEQ'] == 3

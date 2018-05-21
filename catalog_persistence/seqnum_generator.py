@@ -1,11 +1,5 @@
-from datetime import datetime
-
 
 from catalog_persistence.databases import DocumentNotFound
-
-
-class SeqNumRecordNotFound(Exception):
-    pass
 
 
 class SeqNumGenerator:
@@ -27,12 +21,6 @@ class SeqNumGenerator:
         self._update(record)
         return record['SEQ']
 
-    def rollback(self):
-        record = self.get()
-        record['SEQ'] -= 1
-        self._update(record)
-        return record['SEQ']
-
     def get(self):
         """
         Obtém o registro de um número sequencial.
@@ -40,18 +28,12 @@ class SeqNumGenerator:
 
         Retorno:
         registro de um número sequencial registrado na base de dados
-
-        Erro:
-        SeqNumRecordNotFound: registro não encontrado na base de dados.
         """
         try:
             record = self._read()
         except DocumentNotFound:
             self._create({'SEQ': 0})
-        try:
             record = self._read()
-        except DocumentNotFound:
-            raise SeqNumRecordNotFound
         return record
 
     def _read(self):
@@ -73,9 +55,6 @@ class SeqNumGenerator:
         Params:
         record: registro de número sequencial
         """
-        record.update({
-            'created': str(datetime.utcnow().timestamp())
-        })
         self.db_manager.create(self.seqnum_label, record)
 
     def _update(self, record):
@@ -88,7 +67,4 @@ class SeqNumGenerator:
         Erro:
         DocumentNotFound: registro não encontrado na base de dados.
         """
-        record.update({
-            'updated': str(datetime.utcnow().timestamp())
-        })
         self.db_manager.update(self.seqnum_label, record)

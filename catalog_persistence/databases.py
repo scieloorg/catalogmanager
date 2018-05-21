@@ -4,6 +4,12 @@ import abc
 import couchdb
 
 
+class UpdateFailure(Exception):
+
+    def __init__(self, message):
+        self.message = message
+
+
 class DocumentNotFound(Exception):
     pass
 
@@ -49,7 +55,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     def add_attachment_properties_to_document_record(self,
-                                                     document_id,
+                                                     document_record,
                                                      file_id,
                                                      file_properties):
         """
@@ -62,19 +68,8 @@ class BaseDBManager(metaclass=abc.ABCMeta):
             for k, v in file_properties.items()
             if k not in ['content', 'filename']
         }
-        document = self.read(document_id)
-        document_record = {
-            'document_id': document['document_id'],
-            'document_type': document['document_type'],
-            'content': document['content'],
-            'created_date': document['created_date'],
-        }
-        properties = document.get(self._attachments_properties_key, {})
-        if file_id not in properties.keys():
-            properties[file_id] = {}
-
-        properties[file_id].update(
-            _file_properties)
+        properties = document_record.get(self._attachments_properties_key, {})
+        properties[file_id] = _file_properties
 
         document_record.update(
             {
@@ -82,7 +77,6 @@ class BaseDBManager(metaclass=abc.ABCMeta):
                 properties
             }
         )
-        return document_record
 
     def get_attachment_properties(self, id, file_id):
         doc = self.read(id)
@@ -108,17 +102,23 @@ class InMemoryDBManager(BaseDBManager):
         self._database = {}
 
     def create(self, id, document):
+        document['revision'] = 1
         self.database.update({id: document})
 
     def read(self, id):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
+        doc['document_rev'] = doc['revision']
         return doc
 
     def update(self, id, document):
         _document = self.read(id)
+        if _document.get('revision') != document.get('document_rev'):
+            raise UpdateFailure(
+                'You are trying to update a record which data is out of date')
         _document.update(document)
+        _document['revision'] += 1
         self.database.update({id: _document})
 
     def delete(self, id):
@@ -217,6 +217,7 @@ class CouchDBManager(BaseDBManager):
     def read(self, id):
         try:
             doc = dict(self.database[id])
+            doc['document_rev'] = doc['_rev']
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         return doc
@@ -228,6 +229,10 @@ class CouchDBManager(BaseDBManager):
         para que os dados dele sejam atualizados com o registro informado.
         """
         doc = self.read(id)
+        if doc.get('_rev') != document.get('document_rev'):
+            raise UpdateFailure(
+                'You are trying to update a record which data is out of date')
+
         doc.update(document)
         self.database[id] = doc
 
