@@ -9,8 +9,7 @@ from catalog_persistence.databases import (
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.models import RecordType
-from catalog_persistence.services import DatabaseService, ChangeType
+from catalog_persistence.services import DatabaseService
 
 
 @pytest.yield_fixture
@@ -93,7 +92,7 @@ def test_changes_records(request):
 
 @pytest.fixture
 def test_documents_records(request):
-    fields_values = ('SEQ{:0>17}', 'field_{}')
+    fields_values = ('{:0>17}', 'field_{}')
     return tuple(
         {
             'document_id': fields_values[0].format(sequential),
@@ -113,7 +112,7 @@ def no_filter_all(request, test_documents_records):
 
 @pytest.fixture
 def filter_greater_than_result(request, test_documents_records):
-    initial_id = 'SEQ{:0>17}'.format(5)
+    initial_id = '{:0>17}'.format(5)
     find_criteria = {
         'filter': {
             'document_id': [
@@ -130,14 +129,14 @@ def filter_greater_than_result(request, test_documents_records):
             for field in ['document_id', 'field']
         }
         for document_record in test_documents_records
-        if document_record['document_id'] > initial_id
+        if initial_id < document_record['document_id']
     )
     return (find_criteria, expected)
 
 
 @pytest.fixture
 def filter_limit_result(request, test_documents_records):
-    limit_id = 'SEQ{:0>17}'.format(5)
+    limit_id = '{:0>17}'.format(5)
     find_criteria = {
         'filter': {},
         'fields': ['document_id', 'field'],

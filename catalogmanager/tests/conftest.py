@@ -178,7 +178,7 @@ def couchdb_receive_package(dbserver_service, test_package_A):
 def list_changes_expected():
     return [
         {
-            "change_id": "SEQ{}".format(id),
+            "change_id": "{}".format(id),
             "document_id": "ID-{}".format(id),
             "document_type": "ARTICLE",
             "type": "CREATE",

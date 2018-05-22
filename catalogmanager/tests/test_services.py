@@ -208,7 +208,7 @@ def test_list_changes_returns_changes_from_database_service(
 ):
     mocked_list_changes.return_value = list_changes_expected
     change_services = ChangeService(change_service[1])
-    changes = change_services.list_changes('SEQ1', 10)
-    mocked_list_changes.assert_called_once_with(last_sequence='SEQ1',
+    changes = change_services.list_changes('1', 10)
+    mocked_list_changes.assert_called_once_with(last_sequence='1',
                                                 limit=10)
     assert changes == list_changes_expected

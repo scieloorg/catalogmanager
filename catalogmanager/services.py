@@ -5,7 +5,7 @@ from catalog_persistence.models import (
         RecordType,
     )
 from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService, SortOrder
+from catalog_persistence.services import DatabaseService
 from .models.article_model import (
     ArticleDocument,
 )

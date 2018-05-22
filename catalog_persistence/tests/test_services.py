@@ -83,7 +83,7 @@ def test_list_changes_returns_db_manager_find_limit(inmemory_db_setup,
     limit = 5
     check_list = inmemory_db_setup.list_changes(last_sequence=last_sequence,
                                                 limit=limit)
-    assert len(check_list) == len(test_changes_records[last_record + 1:])
+    assert len(check_list) == limit
     for check_item, expected_item in \
             zip(check_list, test_changes_records[last_record + 1:limit + 1]):
         assert check_item['change_id'] == expected_item['change_id']

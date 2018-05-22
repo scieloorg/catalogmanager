@@ -150,25 +150,43 @@ class InMemoryDBManager(BaseDBManager):
             Ex.: ['name']
         sort: lista de dict com nome de campo e sua ordenacao.
             Ex.: [{'name': 'asc'}]
-        limit: (Opcional) Número máximo de registros da lista.
+        limit: (Opcional) Número máximo de registros a retornar.
 
         Retorno:
         Lista de registros de documento registrados na base de dados
         """
-        def match_doc(doc, field_name, field_filter):
-            if isinstance(field_filter, list):
-                result = [
-                    getattr(operator, field_operator.value)(
-                        doc.get(field_name),
-                        filter if filter else ''
-                    )
-                    for field_operator, filter in field_filter
-                ]
-                return all(result)
-            else:
-                if doc.get(field_name) == field_filter:
-                    return True
-            return False
+        def match_doc(doc, filter):
+            """
+            Verifica se doc atende os critérios de seleção de filter.
+
+            :param doc: registro de documento da base de dados.
+            :type doc: dict.
+            :param filter: chaves/campos para aplicação do filtro com valor que
+                corresponde ao filtro a ser verificado no doc. Esse filtro pode
+                ser do tipo str ou list, onde o list contém uma tupla com
+                operação do filtro e valor do filtro a ser aplicado.
+                Ex.: {'type': 'ART', 'id': [(QueryOperator.EQUAL, 1000)]}
+            :type filter: dict.
+
+            :returns: True se documento atende a todos os critérios do filtro.
+                Caso contrário, False.
+            :rtype: bool.
+            """
+            result = []
+            for field_name, field_filter in filter.items():
+                if isinstance(filter, dict):
+                    filter_result = [
+                        getattr(operator, field_operator.value)(
+                            doc.get(field_name),
+                            filter_value if filter_value else ''
+                        )
+                        for field_operator, filter_value in field_filter
+                    ]
+                    result.extend(filter_result)
+                else:
+                    result.append(doc.get(field_name) == field_filter)
+
+            return all(result)
 
         if len(filter) == 0:
             documents = [doc for i, doc in self.database.items()]
@@ -177,15 +195,14 @@ class InMemoryDBManager(BaseDBManager):
             return documents
         results = []
         for id, doc in self.database.items():
-            for field_name, field_filter in filter.items():
-                if match_doc(doc, field_name, field_filter):
-                    if fields:
-                        d = {f: doc.get(f) for f in fields}
-                        results.append(d)
-                    else:
-                        results.append(doc)
-                    if limit and len(results) > limit:
-                        break
+            if match_doc(doc, filter):
+                if fields:
+                    d = {f: doc.get(f) for f in fields}
+                    results.append(d)
+                else:
+                    results.append(doc)
+                if limit and len(results) >= limit:
+                    break
         return sort_results(results, sort)
 
     def put_attachment(self, id, file_id, content, content_properties):
