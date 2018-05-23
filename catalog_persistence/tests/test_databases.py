@@ -504,3 +504,21 @@ def test_get_attachment_properties(setup, database_service, xml_test):
             article_record['document_id'],
             'href_file'
         )
+
+
+def test_find_documents_by_selected_field_returns_according_to_filter(
+    setup,
+    database_service,
+    test_documents_records,
+    find_criteria_result
+):
+    find_args, expected = find_criteria_result
+    for document_record in test_documents_records:
+        database_service.db_manager.create(document_record['document_id'],
+                                           document_record)
+
+    check_list = database_service.db_manager.find(**find_args)
+    assert isinstance(check_list[0], dict)
+    assert len(check_list) == len(expected)
+    for check_document, expected_document in zip(check_list, expected):
+        assert check_document == expected_document
