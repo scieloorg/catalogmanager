@@ -97,8 +97,8 @@ def functional_config(request):
 @pytest.fixture
 def change_service(functional_config):
     return (
-        InMemoryDBManager(database_name='test1'),
-        InMemoryDBManager(database_name='test2')
+        InMemoryDBManager(database_name='articles'),
+        InMemoryDBManager(database_name='changes')
     )
 
 
@@ -128,8 +128,8 @@ def setup(request, functional_config, change_service):
 def inmemory_receive_package(change_service, test_package_A):
     article_manager = ArticleManager(change_service[0], change_service[1])
     return article_manager.receive_package(id='ID',
-                                            xml_file=test_package_A[0],
-                                            files=test_package_A[1:])
+                                           xml_file=test_package_A[0],
+                                           files=test_package_A[1:])
 
 
 @pytest.fixture
@@ -170,5 +170,18 @@ def couchdb_receive_package(dbserver_service, test_package_A):
         dbserver_service[1]
     )
     return article_manager.receive_package(id='ID',
-                                            xml_file=test_package_A[0],
-                                            files=test_package_A[1:])
+                                           xml_file=test_package_A[0],
+                                           files=test_package_A[1:])
+
+
+@pytest.fixture
+def list_changes_expected():
+    return [
+        {
+            "change_id": "{}".format(id),
+            "document_id": "ID-{}".format(id),
+            "document_type": "ARTICLE",
+            "type": "CREATE",
+        }
+        for id in range(123457, 123466)
+    ]

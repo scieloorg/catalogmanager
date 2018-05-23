@@ -12,7 +12,7 @@ requires = [
     'cornice>=3.4.0',
 ]
 
-test_requires = ['webtest', 'pytest', 'pytest-cov']
+test_requires = ['webtest', 'pytest', 'pytest-cov', 'pytest-lazy-fixture']
 setup_requires = ['pytest-runner']
 
 setup(

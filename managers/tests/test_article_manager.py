@@ -28,7 +28,7 @@ def test_receive_xml_file(change_service, test_package_A,
 
     expected_assets = test_packA_filenames[1:]
     article_manager.receive_xml_file(id='ID',
-                                      xml_file=test_package_A[0])
+                                     xml_file=test_package_A[0])
     got = article_manager.article_db_service.read('ID')
     assert got['content']['xml'] == expected['content']['xml']
     assert sorted(got['content'].get('assets')) == sorted(expected_assets)
@@ -173,8 +173,8 @@ def test_get_asset_file_not_found(mocked_get_attachment,
 def test_get_asset_file(change_service, test_package_A, test_packA_filenames):
     article_manager = ArticleManager(change_service[0], change_service[1])
     article_manager.receive_package(id='ID',
-                                     xml_file=test_package_A[0],
-                                     files=test_package_A[1:])
+                                    xml_file=test_package_A[0],
+                                    files=test_package_A[1:])
     for file in test_package_A[1:]:
         content_type, content = article_manager.get_asset_file(
             'ID', file.name)
@@ -185,8 +185,8 @@ def test_get_asset_files(change_service, test_package_A):
     files = test_package_A[1:]
     article_manager = ArticleManager(change_service[0], change_service[1])
     article_manager.receive_package(id='ID',
-                                     xml_file=test_package_A[0],
-                                     files=test_package_A[1:])
+                                    xml_file=test_package_A[0],
+                                    files=test_package_A[1:])
     items, msg = article_manager.get_asset_files('ID')
     asset_contents = [
         asset_data[1]

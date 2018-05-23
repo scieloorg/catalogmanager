@@ -42,8 +42,7 @@ def test_http_get_article_not_found(mocked_get_article_data, testapp):
         managers.article_manager.ArticleManagerException(
             message=error_msg
         )
-    result = testapp.get('/articles/{}'.format(article_id),
-            expect_errors=True)
+    result = testapp.get('/articles/{}'.format(article_id), expect_errors=True)
     assert result.status == '404 Not Found'
 
 
@@ -78,8 +77,7 @@ def test_http_get_xml_file_calls_get_article_file(mocked_get_article_file,
     #natureza -- teste de envio de mensagem do objeto sob teste para uma
     #das suas dependências. O WebTest tem a finalidade de realizar testes
     #funcionais em aplicações WSGI.
-    testapp.get('/articles/{}/xml'.format(article_id),
-            expect_errors=True)
+    testapp.get('/articles/{}/xml'.format(article_id), expect_errors=True)
 
     mocked_get_article_file.assert_called_once_with(
         article_id=article_id,
@@ -96,7 +94,7 @@ def test_http_get_xml_file_article_not_found(mocked_get_article_file, testapp):
             message=error_msg
         )
     result = testapp.get('/articles/{}/xml'.format(article_id),
-            expect_errors=True)
+                         expect_errors=True)
     assert result.status == '404 Not Found'
 
 
@@ -109,7 +107,7 @@ def test_http_get_xml_file_not_found(mocked_get_article_file, testapp):
             message=error_msg
         )
     result = testapp.get('/articles/{}/xml'.format(article_id),
-            expect_errors=True)
+                         expect_errors=True)
     assert result.status == '404 Not Found'
 
 
@@ -339,7 +337,7 @@ def test_http_article_put_article_with_assets(mocked_put_article,
                                               testapp,
                                               test_xml_file,
                                               test_article_files):
-    #XXX aqui deveria ser um teste funcional simples, sem qualquer dublê de 
+    #XXX aqui deveria ser um teste funcional simples, sem qualquer dublê de
     #testes (mocks e afins).
     article_id = 'ID-post-article-123'
     expected_assets_files = []
@@ -406,7 +404,7 @@ def test_http_get_asset_file_not_found(mocked_get_asset_file,
             message=error_msg
         )
     result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id),
-            expect_errors=True)
+                         expect_errors=True)
     assert result.status == '404 Not Found'
 
 
