@@ -5,7 +5,6 @@ from ..xml.article_xml_tree import ArticleXMLTree
 
 class AssetDocument:
     """Metadados de um documento do tipo Ativo Digital.
-    
     Um Ativo Digital é um arquivo associado a um documento do tipo Artigo
     por meio de uma referência interna na estrutura da sua representação em
     XML.
@@ -76,8 +75,7 @@ class ArticleDocument:
         #XXX o atributo não é definido até que :meth:`xml_file` seja 
         #executado definindo um documento Artigo, i.e., a API do objeto
         #varia de acordo com o seu ciclo de vida.
-        self.xml_tree = ArticleXMLTree()   
-        self.xml_tree.content = self._xml_file.content
+        self.xml_tree = ArticleXMLTree(self._xml_file.content)
         self.assets = {
             name: AssetDocument(node)
             for name, node in self.xml_tree.asset_nodes.items()

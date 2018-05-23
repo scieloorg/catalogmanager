@@ -43,7 +43,7 @@ class XMLTree:
         return (r, message)
 
     def compare(self, xml_content):
-        return self.content == xml_content
+        return self.content == XMLTree(xml_content).content
 
     @property
     def pretty(self):

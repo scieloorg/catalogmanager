@@ -149,8 +149,7 @@ def test_get_article_file(setup,
     )
     article_check = article_services.get_article_file('ID')
     assert article_check is not None
-    xml_tree = XMLTree()
-    xml_tree.content = test_package_A[0].content
+    xml_tree = XMLTree(test_package_A[0].content)
     assert xml_tree.compare(article_check)
 
 

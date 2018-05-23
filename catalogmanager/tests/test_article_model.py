@@ -20,10 +20,9 @@ def test_article(test_package_A, test_packA_filenames):
     assert article.xml_tree.xml_error is None
     assert article.get_record_content() == expected
     assert article.xml_file.content == xml_file.content
-    xml_from_file = XMLTree()
-    xml_from_file.content = article.xml_file.content
-    xml_from_tree = XMLTree()
-    xml_from_tree.content = article.xml_tree.content
+
+    xml_from_file = XMLTree(article.xml_file.content)
+    xml_from_tree = XMLTree(article.xml_tree.content)
     assert xml_from_file.content == xml_from_tree.content
 
 

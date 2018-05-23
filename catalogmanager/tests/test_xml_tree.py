@@ -101,6 +101,12 @@ def test_otimized_preserva_tab_linebreak_em_elementos_que_contenham_texto2():
     otimize(s_xml, s_expected)
 
 
+def test_otimized_estilos():
+    s_xml = '<article><b>Bold</b> <i>itálico</i></article>'
+    s_expected = '<article><b>Bold</b><i>itálico</i></article>'
+    otimize(s_xml, s_expected)
+
+
 def test_otimized_elimina_tab_linebreak_em_elementos_que_nao_contem_texto():
     s_xml = """
     <article>            \n\t   
