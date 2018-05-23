@@ -13,13 +13,28 @@ def test_add_article_register_change(testapp, test_package_A):
 
     # Um documento é registrado no módulo de persistencia. Ex: Artigo
     xml_file_path, assets_files = test_package_A[0], test_package_A[1:]
+    changes_expected = {
+        'results': [],
+        'latest': 1
+    }
     assets_field = []
     for article_file in assets_files:
+        article_filename = os.path.basename(article_file)
         with open(article_file, 'rb') as fb:
             file_content = fb.read()
             assets_field.append(('asset_field',
-                                 os.path.basename(article_file),
+                                 article_filename,
                                  file_content))
+            latest = int(changes_expected['latest']) + 1
+            changes_expected['results'].append(
+                {
+                    'change_id': latest,
+                    'document_id': article_id,
+                    'document_type': 'ART',
+                    'type': 'UPDATE'
+                }
+            )
+            changes_expected['latest'] = latest
     params = OrderedDict([
         ("article_id", article_id),
         ("xml_file", webtest.forms.Upload(xml_file_path))
@@ -30,6 +45,13 @@ def test_add_article_register_change(testapp, test_package_A):
                          content_type='multipart/form-data')
     assert result.status_code == 201
 
+    changes_expected['results'].insert(0,
+                                       {
+                                           'change_id': 1,
+                                           'document_id': article_id,
+                                           'document_type': 'ART',
+                                           'type': 'CREATE'
+                                       })
     # Checa se é possível recuperar o registro do documento pelo id
     result = testapp.get(url)
     assert result.status_code == 200
@@ -61,3 +83,25 @@ def test_add_article_register_change(testapp, test_package_A):
     ]
     for expected_href in expected_hrefs:
         assert expected_href in xml_nodes
+
+    # Deve ser possível recuperar os registros de mudanças do documento de
+    # acordo com os parâmetros informados no serviço
+    last_sequence = ''
+    limit = 10
+    result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
+                                                             limit))
+    assert result.status_code == 200
+    assert result.json is not None
+    assert len(result.json) > len(changes_expected['results'])
+    for resp_result, expected in zip(result.json, changes_expected['results']):
+        assert resp_result['document_id'] == expected['document_id']
+        assert resp_result['document_type'] == expected['document_type']
+        assert resp_result['type'] == expected['type']
+
+    # Sequencial das mudanças ainda não implementado
+    # last_sequence = result.json[-1]['change_id']
+    # result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
+    #                                                          limit))
+    # assert result.status_code == 200
+    # assert result.json is not None
+    # assert len(result.json) == 0
