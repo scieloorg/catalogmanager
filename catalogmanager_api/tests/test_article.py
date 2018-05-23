@@ -39,7 +39,7 @@ def test_http_get_article_not_found(mocked_get_article_data, testapp):
     article_id = 'ID123456'
     error_msg = 'Article {} not found'.format(article_id)
     mocked_get_article_data.side_effect = \
-        catalogmanager.article_services.ArticleServicesException(
+        catalogmanager.services.ArticleServicesException(
             message=error_msg
         )
     result = testapp.get('/articles/{}'.format(article_id),
@@ -92,7 +92,7 @@ def test_http_get_xml_file_article_not_found(mocked_get_article_file, testapp):
     article_id = 'ID123456'
     error_msg = 'Article {} not found'.format(article_id)
     mocked_get_article_file.side_effect = \
-        catalogmanager.article_services.ArticleServicesException(
+        catalogmanager.services.ArticleServicesException(
             message=error_msg
         )
     result = testapp.get('/articles/{}/xml'.format(article_id),
@@ -105,7 +105,7 @@ def test_http_get_xml_file_not_found(mocked_get_article_file, testapp):
     article_id = 'ID123456'
     error_msg = 'Missing XML file {}'.format(article_id)
     mocked_get_article_file.side_effect = \
-        catalogmanager.article_services.ArticleServicesException(
+        catalogmanager.services.ArticleServicesException(
             message=error_msg
         )
     result = testapp.get('/articles/{}/xml'.format(article_id),
@@ -300,7 +300,7 @@ def test_http_article_calls_put_article_service_error(mocked_put_article,
                                                       test_xml_file):
     article_id = 'ID-post-article-123'
     mocked_put_article.side_effect = \
-        catalogmanager.article_services.ArticleServicesException(
+        catalogmanager.services.ArticleServicesException(
             message='Missing XML file {}'.format(article_id)
         )
     params = OrderedDict([
@@ -402,7 +402,7 @@ def test_http_get_asset_file_not_found(mocked_get_asset_file,
     asset_id = 'a.jpg'
     error_msg = 'Asset {} (Article {}) not found'.format(asset_id, article_id)
     mocked_get_asset_file.side_effect = \
-        catalogmanager.article_services.ArticleServicesException(
+        catalogmanager.services.ArticleServicesException(
             message=error_msg
         )
     result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id),
