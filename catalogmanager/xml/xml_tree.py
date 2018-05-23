@@ -1,7 +1,10 @@
 # coding=utf-8
 
 from lxml import etree
-from io import BytesIO
+from io import (
+    BytesIO,
+    StringIO,
+)
 
 
 namespaces = {}
@@ -43,12 +46,18 @@ class XMLTree:
         return self.content == xml_content
 
     @property
-    def minified(self):
+    def pretty(self):
+        return etree.tostring(
+            self.tree.getroot(),
+            encoding='utf-8',
+            pretty_print=True)
+
+    @property
+    def otimized(self):
         parser = etree.XMLParser(remove_blank_text=True)
         content = self.content.decode('utf-8')
-        content = content.replace('\t', '').replace('\n', '')
         root = etree.XML(content, parser)
-        b = etree.tostring(root)
+        b = etree.tostring(root, encoding='utf-8')
         s = b.decode('utf-8')
         while ' '*2 in s:
             s = s.replace(' '*2, ' ')
