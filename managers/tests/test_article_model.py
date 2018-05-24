@@ -1,8 +1,8 @@
 
-from catalogmanager.models.article_model import (
+from managers.models.article_model import (
     ArticleDocument,
 )
-from catalogmanager.xml.xml_tree import (
+from managers.xml.xml_tree import (
     XMLTree,
 )
 

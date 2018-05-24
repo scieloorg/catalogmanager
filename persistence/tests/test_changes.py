@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import uuid4
 
-from catalog_persistence.services import ChangeType
-from catalog_persistence.models import get_record, RecordType
+from persistence.services import ChangeType
+from persistence.models import get_record, RecordType
 
 
 def get_article_record(content={'Test': 'ChangeRecord'}):

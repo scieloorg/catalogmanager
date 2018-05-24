@@ -10,7 +10,7 @@ class AssetDocument:
     XML.
 
     ``asset_node`` deve ser uma instância de
-    :class:`catalogmanager.xml.article_xml_tree.HRefNode`.
+    :class:`managers.xml.article_xml_tree.HRefNode`.
     """
     def __init__(self, asset_node):
         #XXX :attr:`.file` vaza encapsulamento, i.e., seu estado não é
@@ -57,7 +57,7 @@ class ArticleDocument:
     @property
     def xml_file(self):
         """Acessa ou define o documento Artigo em XML, representado por uma
-        instância de :class:`catalogmanager.models.file.File`. A definição de
+        instância de :class:`managers.models.file.File`. A definição de
         um novo documento Artigo resultará na identificação dos seus ativos,
         i.e., o valor do atributo :attr:`.assets` será modificado.
 
