@@ -2,7 +2,7 @@
 from cornice.resource import resource
 from pyramid.response import Response
 
-import catalogmanager
+import managers
 
 
 @resource(collection_path='/changes', path='/changes/{id}', renderer='json')
@@ -16,7 +16,7 @@ class ChangeAPI:
         limit = 0
         if self.request.GET.get('limit'):
             limit = int(self.request.GET['limit'])
-        changes = catalogmanager.list_changes(
+        changes = managers.list_changes(
             last_sequence=self.request.GET.get('since', ''),
             limit=limit,
             **self.request.db_settings

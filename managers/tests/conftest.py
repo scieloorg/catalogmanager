@@ -2,13 +2,13 @@ import os
 import pytest
 from pyramid import testing
 
-from catalogmanager.services import ArticleServices
-from catalogmanager.models.file import File
-from catalog_persistence.databases import (
+from managers.article_manager import ArticleManager
+from managers.models.file import File
+from persistence.databases import (
     InMemoryDBManager,
     CouchDBManager
 )
-from catalog_persistence.services import DatabaseService
+from persistence.services import DatabaseService
 
 
 @pytest.fixture(scope="module")
@@ -126,10 +126,10 @@ def setup(request, functional_config, change_service):
 
 @pytest.fixture
 def inmemory_receive_package(change_service, test_package_A):
-    article_services = ArticleServices(change_service[0], change_service[1])
-    return article_services.receive_package(id='ID',
-                                            xml_file=test_package_A[0],
-                                            files=test_package_A[1:])
+    article_manager = ArticleManager(change_service[0], change_service[1])
+    return article_manager.receive_package(id='ID',
+                                           xml_file=test_package_A[0],
+                                           files=test_package_A[1:])
 
 
 @pytest.fixture
@@ -165,13 +165,13 @@ def dbserver_service(functional_config, database_config):
 
 @pytest.fixture
 def couchdb_receive_package(dbserver_service, test_package_A):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_package(id='ID',
-                                            xml_file=test_package_A[0],
-                                            files=test_package_A[1:])
+    return article_manager.receive_package(id='ID',
+                                           xml_file=test_package_A[0],
+                                           files=test_package_A[1:])
 
 
 @pytest.fixture

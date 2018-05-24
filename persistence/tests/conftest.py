@@ -4,12 +4,12 @@ from random import randint
 from pyramid import testing
 import pytest
 
-from catalog_persistence.databases import (
+from persistence.databases import (
     QueryOperator,
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.services import DatabaseService
+from persistence.services import DatabaseService
 
 
 @pytest.yield_fixture
