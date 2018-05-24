@@ -1,7 +1,10 @@
 # coding=utf-8
 
 from lxml import etree
-from io import BytesIO
+from io import (
+    BytesIO,
+    StringIO,
+)
 
 
 namespaces = {}
@@ -15,14 +18,14 @@ for namespace_id, namespace_link in namespaces.items():
 
 class XMLTree:
 
-    def __init__(self):
+    def __init__(self, xml_content):
         self.tree = None
         self.xml_error = None
+        self.content = xml_content
 
     @property
     def content(self):
-        if self.tree is not None:
-            return etree.tostring(self.tree.getroot(), encoding='utf-8')
+        return self.otimized
 
     @content.setter
     def content(self, xml_content):
@@ -39,4 +42,28 @@ class XMLTree:
         return (r, message)
 
     def compare(self, xml_content):
-        return self.content == xml_content
+        return self.content == XMLTree(xml_content).content
+
+    @property
+    def tostring(self):
+        if self.tree is not None:
+            return etree.tostring(self.tree.getroot(), encoding='utf-8')
+
+    @property
+    def pretty(self):
+        return etree.tostring(
+            self.tree.getroot(),
+            encoding='utf-8',
+            pretty_print=True)
+
+    @property
+    def otimized(self):
+        parser = etree.XMLParser(remove_blank_text=True)
+        content = self.tostring
+        if content is not None:
+            root = etree.XML(content.decode('utf-8'), parser)
+            b = etree.tostring(root, encoding='utf-8')
+            s = b.decode('utf-8')
+            while ' '*2 in s:
+                s = s.replace(' '*2, ' ')
+            return s.encode('utf-8')

@@ -138,8 +138,8 @@ def set_assets_public_url(article_id, xml_content, assets_filenames,
 
     :returns: conteúdo do XML atualizado
     """
-    article = ArticleDocument(article_id)
-    article.xml_file = File(file_name="xml_file.xml", content=xml_content)
+    xml_file = File(file_name="xml_file.xml", content=xml_content)
+    article = ArticleDocument(article_id, xml_file)
     for name in article.assets:
         if name in assets_filenames:
             article.assets[name].href = public_url.format(article_id,
