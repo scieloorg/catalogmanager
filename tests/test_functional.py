@@ -98,10 +98,9 @@ def test_add_article_register_change(testapp, test_package_A):
         assert resp_result['document_type'] == expected['document_type']
         assert resp_result['type'] == expected['type']
 
-    # Sequencial das mudanças ainda não implementado
-    # last_sequence = result.json[-1]['change_id']
-    # result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
-    #                                                          limit))
-    # assert result.status_code == 200
-    # assert result.json is not None
-    # assert len(result.json) == 0
+    last_sequence = result.json[-1]['change_id']
+    result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
+                                                             limit))
+    assert result.status_code == 200
+    assert result.json is not None
+    assert len(result.json) == 0
