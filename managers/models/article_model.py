@@ -17,8 +17,6 @@ class AssetDocument:
         #gerenciado pela instância mas pelo seu cliente.
         self.file = None
         self.node = asset_node
-        #XXX :attr:`.name` e :attr:`.href` perdem integridade após atribuição
-        #em :attr:`.href`.
         self.name = asset_node.href
 
     @property
@@ -38,21 +36,18 @@ class AssetDocument:
 class ArticleDocument:
     """Metadados de um documento do tipo Artigo.
 
-    Os metadados contam com uma referência ao Artigo codificado em XML e 
+    Os metadados contam com uma referência ao Artigo codificado em XML e
     referências aos seus ativos digitais.
 
     Exemplo de uso:
 
-        #XXX note que a inicialização da instância não é feita por completo no
-        #momento devido.
-
-        >>> doc = ArticleDocument('art01')
-        >>> doc.xml_file = <instância de File>  
+        >>> doc = ArticleDocument('art01', <instância de File>)
     """
-    def __init__(self, article_id):
+    def __init__(self, article_id, xml_file):
         self.id = article_id
         self.assets = {}
         self.unexpected_files_list = []
+        self.xml_file = xml_file
 
     @property
     def xml_file(self):
@@ -61,7 +56,7 @@ class ArticleDocument:
         um novo documento Artigo resultará na identificação dos seus ativos,
         i.e., o valor do atributo :attr:`.assets` será modificado.
 
-        Adicionalmente, a definição de um novo documento Artigo causará a 
+        Adicionalmente, a definição de um novo documento Artigo causará a
         definição do atributo :attr:`.xml_tree`.
 
         O acesso ao documento Artigo antes que este seja inicializado resultará
@@ -72,9 +67,6 @@ class ArticleDocument:
     @xml_file.setter
     def xml_file(self, xml_file):
         self._xml_file = xml_file
-        #XXX o atributo não é definido até que :meth:`xml_file` seja 
-        #executado definindo um documento Artigo, i.e., a API do objeto
-        #varia de acordo com o seu ciclo de vida.
         self.xml_tree = ArticleXMLTree(self._xml_file.content)
         self.assets = {
             name: AssetDocument(node)
@@ -97,11 +89,11 @@ class ArticleDocument:
         """Associa o ativo ``file`` aos metadados de um Artigo, sobrescrevendo
         valores associados anteriormente.
 
-        Retorna instância de :class:`AssetDocument` no caso de sucesso, ou 
-        ``None`` caso contrário. Caso o valor retornado seja ``None`` você 
+        Retorna instância de :class:`AssetDocument` no caso de sucesso, ou
+        ``None`` caso contrário. Caso o valor retornado seja ``None`` você
         poderá inspecionar o atributo :attr:`.unexpected_files_list` para
         saber se trata-se de um ativo desconhecido pelo Artigo ou se trata-se
-        de um artigo que não possui o atributo ``name``.                  
+        de um artigo que não possui o atributo ``name``.
         """
         name = file.name
         if name:

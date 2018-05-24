@@ -25,8 +25,7 @@ class XMLTree:
 
     @property
     def content(self):
-        if self.tree is not None:
-            return etree.tostring(self.tree.getroot(), encoding='utf-8')
+        return self.otimized
 
     @content.setter
     def content(self, xml_content):
@@ -46,6 +45,11 @@ class XMLTree:
         return self.content == XMLTree(xml_content).content
 
     @property
+    def tostring(self):
+        if self.tree is not None:
+            return etree.tostring(self.tree.getroot(), encoding='utf-8')
+
+    @property
     def pretty(self):
         return etree.tostring(
             self.tree.getroot(),
@@ -55,10 +59,11 @@ class XMLTree:
     @property
     def otimized(self):
         parser = etree.XMLParser(remove_blank_text=True)
-        content = self.content.decode('utf-8')
-        root = etree.XML(content, parser)
-        b = etree.tostring(root, encoding='utf-8')
-        s = b.decode('utf-8')
-        while ' '*2 in s:
-            s = s.replace(' '*2, ' ')
-        return s.encode('utf-8')
+        content = self.tostring
+        if content is not None:
+            root = etree.XML(content.decode('utf-8'), parser)
+            b = etree.tostring(root, encoding='utf-8')
+            s = b.decode('utf-8')
+            while ' '*2 in s:
+                s = s.replace(' '*2, ' ')
+            return s.encode('utf-8')
