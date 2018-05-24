@@ -2,16 +2,16 @@ from unittest.mock import patch
 
 from pyramid import testing
 
-from catalogmanager_api.views.change import ChangeAPI
+from api.views.change import ChangeAPI
 
 
-@patch('catalogmanager.list_changes')
+@patch('managers.list_changes')
 def test_change_api_collection_post_calls_list_changes(mocked_list_changes,
                                                        db_settings,
                                                        testapp):
     request = testing.DummyRequest()
     request.GET = {
-        'since': 'SEQ123456',
+        'since': '123456',
         'limit': 100,
     }
     request.db_settings = db_settings
@@ -24,13 +24,13 @@ def test_change_api_collection_post_calls_list_changes(mocked_list_changes,
     )
 
 
-@patch('catalogmanager.list_changes')
+@patch('managers.list_changes')
 def test_change_api_collection_post_return_changes_list(mocked_list_changes,
                                                         db_settings,
                                                         testapp):
     expected = [
         {
-            "change_id": "SEQ{}".format(id),
+            "change_id": "{}".format(id),
             "document_id": "ID-{}".format(id),
             "document_type": "ART",
             "type": "CREATE"
@@ -40,7 +40,7 @@ def test_change_api_collection_post_return_changes_list(mocked_list_changes,
     mocked_list_changes.return_value = expected
     request = testing.DummyRequest()
     request.GET = {
-        'since': 'SEQ123456',
+        'since': '123456',
         'limit': 100,
     }
     request.db_settings = db_settings

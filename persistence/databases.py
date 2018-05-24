@@ -7,6 +7,12 @@ from itertools import islice
 import couchdb
 
 
+class UpdateFailure(Exception):
+
+    def __init__(self, message):
+        self.message = message
+
+
 class DocumentNotFound(Exception):
     pass
 
@@ -60,7 +66,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     def add_attachment_properties_to_document_record(self,
-                                                     document_id,
+                                                     document_record,
                                                      file_id,
                                                      file_properties):
         """
@@ -73,19 +79,8 @@ class BaseDBManager(metaclass=abc.ABCMeta):
             for k, v in file_properties.items()
             if k not in ['content', 'filename']
         }
-        document = self.read(document_id)
-        document_record = {
-            'document_id': document['document_id'],
-            'document_type': document['document_type'],
-            'content': document['content'],
-            'created_date': document['created_date'],
-        }
-        properties = document.get(self._attachments_properties_key, {})
-        if file_id not in properties.keys():
-            properties[file_id] = {}
-
-        properties[file_id].update(
-            _file_properties)
+        properties = document_record.get(self._attachments_properties_key, {})
+        properties[file_id] = _file_properties
 
         document_record.update(
             {
@@ -93,7 +88,6 @@ class BaseDBManager(metaclass=abc.ABCMeta):
                 properties
             }
         )
-        return document_record
 
     def get_attachment_properties(self, id, file_id):
         doc = self.read(id)
@@ -119,17 +113,23 @@ class InMemoryDBManager(BaseDBManager):
         self._database = {}
 
     def create(self, id, document):
+        document['revision'] = 1
         self.database.update({id: document})
 
     def read(self, id):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
+        doc['document_rev'] = doc['revision']
         return doc
 
     def update(self, id, document):
         _document = self.read(id)
+        if _document.get('revision') != document.get('document_rev'):
+            raise UpdateFailure(
+                'You are trying to update a record which data is out of date')
         _document.update(document)
+        _document['revision'] += 1
         self.database.update({id: _document})
 
     def delete(self, id):
@@ -139,8 +139,6 @@ class InMemoryDBManager(BaseDBManager):
     def find(self, filter, fields, sort, limit=0):
         """
         Busca registros de documento por criterios de selecao na base de dados.
-        # BUG: O sort está sendo considerado somente se existir critério em
-        filter.
 
         Params:
         filter: criterio para selecionar campo com determinados valores ou
@@ -150,25 +148,43 @@ class InMemoryDBManager(BaseDBManager):
             Ex.: ['name']
         sort: lista de dict com nome de campo e sua ordenacao.
             Ex.: [{'name': 'asc'}]
-        limit: (Opcional) Número máximo de registros da lista.
+        limit: (Opcional) Número máximo de registros a retornar.
 
         Retorno:
         Lista de registros de documento registrados na base de dados
         """
-        def match_doc(doc, field_name, field_filter):
-            if isinstance(field_filter, list):
-                result = [
-                    getattr(operator, field_operator.value)(
-                        doc.get(field_name),
-                        filter if filter else ''
-                    )
-                    for field_operator, filter in field_filter
-                ]
-                return all(result)
-            else:
-                if doc.get(field_name) == field_filter:
-                    return True
-            return False
+        def match_doc(doc, filter):
+            """
+            Verifica se doc atende os critérios de seleção de filter.
+
+            :param doc: registro de documento da base de dados.
+            :type doc: dict.
+            :param filter: chaves/campos para aplicação do filtro com valor que
+                corresponde ao filtro a ser verificado no doc. Esse filtro pode
+                ser do tipo str ou list, onde o list contém uma tupla com
+                operação do filtro e valor do filtro a ser aplicado.
+                Ex.: {'type': 'ART', 'id': [(QueryOperator.EQUAL, 1000)]}
+            :type filter: dict.
+
+            :returns: True se documento atende a todos os critérios do filtro.
+                Caso contrário, False.
+            :rtype: bool.
+            """
+            result = []
+            for field_name, field_filter in filter.items():
+                if isinstance(filter, dict):
+                    filter_result = [
+                        getattr(operator, field_operator.value)(
+                            doc.get(field_name),
+                            filter_value if filter_value else ''
+                        )
+                        for field_operator, filter_value in field_filter
+                    ]
+                    result.extend(filter_result)
+                else:
+                    result.append(doc.get(field_name) == field_filter)
+
+            return all(result)
 
         if len(filter) == 0:
             results = list(
@@ -178,15 +194,14 @@ class InMemoryDBManager(BaseDBManager):
         else:
             results = []
             for doc in self.database.values():
-                for field_name, field_filter in filter.items():
-                    if match_doc(doc, field_name, field_filter):
-                        if fields:
-                            d = {f: doc.get(f) for f in fields}
-                            results.append(d)
-                        else:
-                            results.append(doc)
-                        if limit and len(results) > limit:
-                            break
+                if match_doc(doc, filter):
+                    if fields:
+                        d = {f: doc.get(f) for f in fields}
+                        results.append(d)
+                    else:
+                        results.append(doc)
+                    if limit and len(results) >= limit:
+                        break
         return sort_results(results, sort)
 
     def put_attachment(self, id, file_id, content, content_properties):
@@ -253,6 +268,7 @@ class CouchDBManager(BaseDBManager):
     def read(self, id):
         try:
             doc = dict(self.database[id])
+            doc['document_rev'] = doc['_rev']
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         return doc
@@ -264,6 +280,10 @@ class CouchDBManager(BaseDBManager):
         para que os dados dele sejam atualizados com o registro informado.
         """
         doc = self.read(id)
+        if doc.get('_rev') != document.get('document_rev'):
+            raise UpdateFailure(
+                'You are trying to update a record which data is out of date')
+
         doc.update(document)
         self.database[id] = doc
 

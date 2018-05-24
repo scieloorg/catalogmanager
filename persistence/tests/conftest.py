@@ -4,12 +4,18 @@ from random import randint
 from pyramid import testing
 import pytest
 
-from catalog_persistence.databases import (
+from persistence.databases import (
     QueryOperator,
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.services import DatabaseService, SortOrder
+
+from persistence.services import (
+    DatabaseService,
+    ChangesService,
+    SortOrder
+)
+from persistence.seqnum_generator import SeqNumGenerator
 
 
 @pytest.yield_fixture
@@ -43,34 +49,70 @@ def change_db_settings():
     }
 
 
+@pytest.fixture
+def seqnum_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'seqnum',
+    }
+
+
 @pytest.fixture(params=[
     CouchDBManager,
     InMemoryDBManager
 ])
-def database_service(request, article_db_settings, change_db_settings):
-    return DatabaseService(
-        request.param(**article_db_settings),
-        request.param(**change_db_settings)
+def seqnumber_generator(request, seqnum_db_settings):
+    s = SeqNumGenerator(
+        request.param(**seqnum_db_settings),
+        'CHANGE'
     )
 
-
-@pytest.fixture
-def setup(request, persistence_config, database_service):
     def fin():
-        database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
+        s.db_manager.drop_database()
+
     request.addfinalizer(fin)
+    return s
+
+
+@pytest.fixture(params=[
+    CouchDBManager,
+    InMemoryDBManager
+])
+def database_service(request, article_db_settings, change_db_settings,
+                     seqnumber_generator):
+    DBManager = request.param
+    db_service = DatabaseService(
+        DBManager(**article_db_settings),
+        ChangesService(
+            DBManager(**change_db_settings),
+            seqnumber_generator
+        )
+    )
+
+    def fin():
+        db_service.db_manager.drop_database()
+        db_service.changes_service.changes_db_manager.drop_database()
+    request.addfinalizer(fin)
+    return db_service
 
 
 @pytest.fixture
-def inmemory_db_setup(request, persistence_config):
+def inmemory_db_setup(request, persistence_config, change_db_settings):
     inmemory_db_service = DatabaseService(
         InMemoryDBManager(database_name='articles'),
-        InMemoryDBManager(database_name='changes')
+        ChangesService(
+            InMemoryDBManager(database_name='changes'),
+            SeqNumGenerator(
+                InMemoryDBManager(database_name='seqnum'),
+                'CHANGE'
+            )
+        )
     )
 
     def fin():
-        inmemory_db_service.changes_db_manager.drop_database()
+        inmemory_db_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
     return inmemory_db_service
 
@@ -92,7 +134,7 @@ def test_changes_records(request):
 
 @pytest.fixture
 def test_documents_records(request):
-    fields_values = ('SEQ{:0>17}', 'field_{}')
+    fields_values = ('{:0>17}', 'field_{}')
     return tuple(
         {
             'document_id': fields_values[0].format(sequential),
@@ -112,7 +154,7 @@ def no_filter_all(request, test_documents_records):
 
 @pytest.fixture
 def filter_greater_than_result(request, test_documents_records):
-    initial_id = 'SEQ{:0>17}'.format(5)
+    initial_id = '{:0>17}'.format(5)
     find_criteria = {
         'filter': {
             'document_id': [
@@ -129,14 +171,14 @@ def filter_greater_than_result(request, test_documents_records):
             for field in ['document_id', 'field']
         }
         for document_record in test_documents_records
-        if document_record['document_id'] > initial_id
+        if initial_id < document_record['document_id']
     )
     return (find_criteria, expected)
 
 
 @pytest.fixture
 def filter_limit_result(request, test_documents_records):
-    limit_id = 'SEQ{:0>17}'.format(5)
+    limit_id = '{:0>17}'.format(5)
     find_criteria = {
         'filter': {},
         'fields': ['document_id', 'field'],
@@ -156,7 +198,7 @@ def filter_limit_result(request, test_documents_records):
 
 @pytest.fixture
 def filter_greater_than_orded_by_result(request, test_documents_records):
-    initial_id = 'SEQ{:0>17}'.format(5)
+    initial_id = '{:0>17}'.format(5)
     find_criteria = {
         'filter': {
             'document_id': [

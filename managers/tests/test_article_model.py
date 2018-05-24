@@ -1,35 +1,28 @@
 
-from catalogmanager.models.article_model import (
+from managers.models.article_model import (
     ArticleDocument,
 )
-from catalogmanager.xml.xml_tree import (
+from managers.xml.xml_tree import (
     XMLTree,
 )
 
 
 def test_article(test_package_A, test_packA_filenames):
-    article = ArticleDocument('ID')
-    xml_file = test_package_A[0]
-    article.xml_file = xml_file
+    article = ArticleDocument('ID', test_package_A[0])
     article.update_asset_files(test_package_A[1:])
     expected = {
         'assets': [asset for asset in test_packA_filenames[1:]],
         'xml': test_packA_filenames[0],
     }
     assert article.xml_file.name == test_packA_filenames[0]
+    assert article.xml_file.content == test_package_A[0].content
     assert article.xml_tree.xml_error is None
+    assert article.xml_tree.compare(test_package_A[0].content)
     assert article.get_record_content() == expected
-    assert article.xml_file.content == xml_file.content
-    xml_from_file = XMLTree()
-    xml_from_file.content = article.xml_file.content
-    xml_from_tree = XMLTree()
-    xml_from_tree.content = article.xml_tree.content
-    assert xml_from_file.content == xml_from_tree.content
 
 
 def test_missing_files_list(test_package_B):
-    article = ArticleDocument('ID')
-    article.xml_file = test_package_B[0]
+    article = ArticleDocument('ID', test_package_B[0])
     article.update_asset_files(test_package_B[1:])
 
     assert len(article.assets) == 3
@@ -47,8 +40,7 @@ def test_missing_files_list(test_package_B):
 
 
 def test_unexpected_files_list(test_package_C, test_packC_filenames):
-    article = ArticleDocument('ID')
-    article.xml_file = test_package_C[0]
+    article = ArticleDocument('ID', test_package_C[0])
     article.update_asset_files(test_package_C[1:])
 
     assert len(article.assets) == 2
@@ -67,8 +59,7 @@ def test_unexpected_files_list(test_package_C, test_packC_filenames):
 def test_update_href(test_package_A, test_packA_filenames):
     new_href = 'novo href'
     filename = '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    article = ArticleDocument('ID')
-    article.xml_file = test_package_A[0]
+    article = ArticleDocument('ID', test_package_A[0])
     article.update_asset_files(test_package_A[1:])
     content = article.xml_tree.content
     asset = article.assets.get(filename)

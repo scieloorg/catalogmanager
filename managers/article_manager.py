@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from catalog_persistence.models import (
+from persistence.models import (
         get_record,
         RecordType,
     )
-from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService, SortOrder
+from persistence.databases import DocumentNotFound
+from persistence.services import DatabaseService
 from .models.article_model import (
     ArticleDocument,
 )
@@ -15,21 +15,21 @@ from .models.file import File
 Record = get_record
 
 
-class ArticleServicesException(Exception):
+class ArticleManagerException(Exception):
 
     def __init__(self, message):
         self.message = message
 
 
-class ArticleServicesMissingAssetFileException(Exception):
+class ArticleManagerMissingAssetFileException(Exception):
     pass
 
 
-class ArticleServices:
+class ArticleManager:
 
-    def __init__(self, articles_db_manager, changes_db_manager):
+    def __init__(self, articles_db_manager, changes_services):
         self.article_db_service = DatabaseService(
-            articles_db_manager, changes_db_manager)
+            articles_db_manager, changes_services)
 
     def receive_package(self, id, xml_file, files=None):
         article = self.receive_xml_file(id, xml_file)
@@ -37,8 +37,7 @@ class ArticleServices:
         return article.unexpected_files_list, article.missing_files_list
 
     def receive_xml_file(self, id, xml_file):
-        article = ArticleDocument(id)
-        article.xml_file = xml_file
+        article = ArticleDocument(id, xml_file)
 
         article_record = Record(
             document_id=article.id,
@@ -77,24 +76,23 @@ class ArticleServices:
             article_record = self.article_db_service.read(article_id)
             return article_record
         except DocumentNotFound:
-            raise ArticleServicesException(
+            raise ArticleManagerException(
                 'ArticleDocument {} not found'.format(article_id)
             )
 
     def get_article_file(self, article_id):
         article_record = self.get_article_data(article_id)
-        article = ArticleDocument(article_id)
         try:
             attachment = self.article_db_service.get_attachment(
                 document_id=article_id,
                 file_id=article_record['content']['xml']
             )
-            article.xml_file = File(file_name=article_record['content']['xml'],
-                                    content=attachment)
-            return article.xml_file.content
+            xml_file = File(file_name=article_record['content']['xml'],
+                            content=attachment)
+            return xml_file.content
         except DocumentNotFound:
-            raise ArticleServicesException(
-                'Missing XML file {}'.format(article_id)
+            raise ArticleManagerException(
+                'XML file {} not found'.format(article_id)
             )
 
     def get_asset_files(self, article_id):
@@ -105,7 +103,7 @@ class ArticleServices:
         for file_id in assets:
             try:
                 asset_files[file_id] = self.get_asset_file(article_id, file_id)
-            except ArticleServicesException:
+            except ArticleManagerException:
                 missing.append(file_id)
         return asset_files, missing
 
@@ -125,18 +123,7 @@ class ArticleServices:
             )
             return content_type, content
         except DocumentNotFound:
-            raise ArticleServicesException(
+            raise ArticleManagerException(
                 'AssetDocument file {} (ArticleDocument {}) not found.'.format(
                     asset_id, article_id)
             )
-
-
-class ChangeService:
-
-    def __init__(self, changes_db_manager):
-        self.change_db_service = DatabaseService(None, changes_db_manager)
-
-    def list_changes(self, last_sequence, limit):
-        return self.change_db_service.list_changes(
-            last_sequence=last_sequence,
-            limit=limit)

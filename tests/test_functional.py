@@ -28,7 +28,7 @@ def test_add_article_register_change(testapp, test_package_A):
             latest = int(changes_expected['latest']) + 1
             changes_expected['results'].append(
                 {
-                    'change_id': '{:0>17}'.format(latest),
+                    'change_id': latest,
                     'document_id': article_id,
                     'document_type': 'ART',
                     'type': 'UPDATE'
@@ -47,7 +47,7 @@ def test_add_article_register_change(testapp, test_package_A):
 
     changes_expected['results'].insert(0,
                                        {
-                                           'change_id': '1'.zfill(20),
+                                           'change_id': 1,
                                            'document_id': article_id,
                                            'document_type': 'ART',
                                            'type': 'CREATE'
