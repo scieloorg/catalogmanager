@@ -1,13 +1,33 @@
-from catalogmanager.article_services import (
-    ArticleServices
-)
+
+from catalog_persistence.databases import CouchDBManager
 from catalogmanager.models.article_model import ArticleDocument
 from catalogmanager.models.file import File
-from catalog_persistence.databases import CouchDBManager
 from catalog_persistence.services import (
     ChangesService
 )
 from catalog_persistence.seqnum_generator import SeqNumGenerator
+from catalogmanager.services import ArticleServices, ChangeService
+
+
+def _get_changes_dbmanager(database_config_copy):
+    changes_database_config = database_config_copy
+    changes_database_config['database_name'] = "changes"
+    return CouchDBManager(**changes_database_config)
+
+
+def _get_changes_services(db_settings):
+    database_config = db_settings
+
+    changes_seqnum_database_config = database_config.copy()
+    changes_seqnum_database_config['database_name'] = "changes_seqnum"
+
+    return ChangesService(
+        _get_changes_dbmanager(database_config.copy()),
+        SeqNumGenerator(
+            CouchDBManager(**changes_seqnum_database_config),
+            'CHANGES_SEQ'
+        )
+    )
 
 
 def _get_article_service(**db_settings):
@@ -15,30 +35,16 @@ def _get_article_service(**db_settings):
     articles_database_config = database_config.copy()
     articles_database_config['database_name'] = "articles"
 
-    changes_seqnum_database_config = database_config.copy()
-    changes_seqnum_database_config['database_name'] = "changes_seqnum"
-
-    changes_database_config = database_config.copy()
-    changes_database_config['database_name'] = "changes"
-
-    changes_service = ChangesService(
-        CouchDBManager(**changes_database_config),
-        SeqNumGenerator(
-            CouchDBManager(**changes_seqnum_database_config),
-            'CHANGES_SEQ'
-        )
-    )
-
     return ArticleServices(
         CouchDBManager(**articles_database_config),
-        changes_service
+        _get_changes_services(db_settings)
     )
 
 
 def create_file(filename, content):
     """
-    Cria instancia de objeto File que será usado para o tratamento dos dados do
-    documento a ser persistido
+    Cria instancia de objeto File que será usado para o tratamento dos
+    dados do documento a ser persistido
 
     Params:
     filename: nome do arquivo a ser manipulado
@@ -58,8 +64,9 @@ def put_article(article_id, xml_file, assets_files=[], **db_settings):
     :param article_id: ID do Documento do tipo Artigo, para identificação
         referencial
     :param xml_file: objeto File com nome e conteúdo do XML
-    :param assets_files: lista de objetos File contendo os arquivos dos ativos
-        digitais do Artigo, cada um com nome e seu respectivo conteúdo
+    :param assets_files: lista de objetos File contendo os arquivos dos
+        ativos digitais do Artigo, cada um com nome e seu respectivo
+        conteúdo
     :param db_settings: dicionário com as configurações do banco de dados.
         Deve conter:
         - database_uri: URI do banco de dados (host:porta)
@@ -68,8 +75,8 @@ def put_article(article_id, xml_file, assets_files=[], **db_settings):
 
     :returns: lista com os nomes dos arquivos de ativos digitais não
         referenciados no XML e lista com os nomes dos arquivos de ativos
-        digitais referenciados no XML e que não constam na lista de arquivos de
-        ativos digitais informada
+        digitais referenciados no XML e que não constam na lista de
+        arquivos de ativos digitais informada
     :rtype: tuple(list(), list())
     """
     article_services = _get_article_service(**db_settings)
@@ -137,14 +144,14 @@ def get_asset_file(article_id, asset_id, **db_settings):
 def set_assets_public_url(article_id, xml_content, assets_filenames,
                           public_url):
     """
-    Atualiza hrefs dos ativos digitais com a URL pública no conteúdo do XML
-    informado, tornando-os acessíveis via interface da API
+    Atualiza hrefs dos ativos digitais com a URL pública no conteúdo do
+    XML informado, tornando-os acessíveis via interface da API
 
     :param article_id: ID do Documento do tipo Artigo, para identificação
         referencial
     :param xml_content: conteúdo XML a ser atualizado
-    :param assets_filenames: nome de identificação dos ativos digitais contidos
-        no XML
+    :param assets_filenames: nome de identificação dos ativos digitais
+        contidos no XML
     :param public_url: base da URL pública a ser colocada nos hrefs
 
     :returns: conteúdo do XML atualizado
@@ -153,5 +160,29 @@ def set_assets_public_url(article_id, xml_content, assets_filenames,
     article.xml_file = File(file_name="xml_file.xml", content=xml_content)
     for name in article.assets:
         if name in assets_filenames:
-            article.assets[name].href = public_url.format(article_id, name)
+            article.assets[name].href = public_url.format(article_id,
+                                                          name)
     return article.xml_tree.content
+
+
+def list_changes(last_sequence, limit, **db_settings):
+    """
+    Retorna lista de todas as mudanças a partir de sequencial informado,
+    na ordem em que ocorreram, limitadas ao parâmetro de limite informado.
+
+    :param last_sequence: sequencial de mudança, que deve ser a referência
+        para a busca dos sequenciais a serem listados.
+    :param limit: limite máximo de registros de mudança que devem ser
+        listados.
+    :param db_settings: dicionário com as configurações do banco de dados.
+        Deve conter:
+        - database_uri: URI do banco de dados (host:porta)
+        - database_username: usuário do banco de dados
+        - database_password: senha do banco de dados
+
+    :returns: lista de mundanças
+    :rtype: list()
+    """
+    change_service = ChangeService(_get_changes_services(db_settings.copy()))
+    return change_service.list_changes(last_sequence=last_sequence,
+                                       limit=limit)

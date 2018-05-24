@@ -47,7 +47,7 @@ class Article:
                 assets_files=assets_files,
                 **self.request.db_settings
             )
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             #XXX a exceção tratada aqui está sinalizando uma miríade de
             #situações excepcionais, que abarca erro de dado fornecido pelo
             #usuário, erro no servidor, e recursos não encontrados.
@@ -63,7 +63,7 @@ class Article:
                 **self.request.db_settings
             )
             return article_data
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             raise HTTPNotFound(detail=e.message)
 
 
@@ -95,7 +95,7 @@ class ArticleXML:
                 )
             return Response(content_type='application/xml',
                             body_file=io.BytesIO(xml_file_content))
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             raise HTTPNotFound(detail=e.message)
 
 
@@ -115,5 +115,5 @@ class ArticleAsset:
                 **self.request.db_settings
             )
             return Response(content_type=content_type, body=content)
-        except catalogmanager.article_services.ArticleServicesException as e:
+        except catalogmanager.services.ArticleServicesException as e:
             raise HTTPNotFound(detail=e.message)

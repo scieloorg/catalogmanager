@@ -2,7 +2,7 @@ import os
 import pytest
 from pyramid import testing
 
-from catalogmanager.article_services import ArticleServices
+from catalogmanager.services import ArticleServices
 from catalogmanager.models.file import File
 from catalog_persistence.seqnum_generator import SeqNumGenerator
 from catalog_persistence.databases import (
@@ -95,6 +95,14 @@ def package_files(datafiles):
 def functional_config(request):
     yield testing.setUp()
     testing.tearDown()
+
+
+@pytest.fixture
+def change_service(functional_config):
+    return (
+        InMemoryDBManager(database_name='articles'),
+        InMemoryDBManager(database_name='changes')
+    )
 
 
 @pytest.fixture
@@ -201,3 +209,16 @@ def couchdb_receive_package(dbserver_service, test_package_A):
     return article_services.receive_package(id='ID',
                                             xml_file=test_package_A[0],
                                             files=test_package_A[1:])
+
+
+@pytest.fixture
+def list_changes_expected():
+    return [
+        {
+            "change_id": "{}".format(id),
+            "document_id": "ID-{}".format(id),
+            "document_type": "ARTICLE",
+            "type": "CREATE",
+        }
+        for id in range(123457, 123466)
+    ]

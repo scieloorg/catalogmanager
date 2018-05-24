@@ -2,11 +2,18 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4
 
+from .databases import QueryOperator
+
 
 class ChangeType(Enum):
     CREATE = 'C'
     UPDATE = 'U'
     DELETE = 'D'
+
+
+class SortOrder(Enum):
+    ASC = 'asc'
+    DESC = 'desc'
 
 
 class ChangesService:
@@ -213,3 +220,44 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         return self.db_manager.get_attachment_properties(document_id, file_id)
+
+    def list_changes(self, last_sequence, limit):
+        """
+        Busca registros de mudança a partir do sequencial informado e retorna
+        a lista com, no máximo, o limite informado.
+
+        Params:
+        :param last_sequence: sequencial de mudança, que deve ser a referência
+            para a busca dos sequenciais a serem listados.
+        :param limit: limite máximo de registros de mudança que devem ser
+            listados.
+
+        Retorno:
+        Lista de registros de mudança
+        """
+        def convert_change_type(change):
+            change.update({'type': ChangeType(change['type']).name})
+            return change
+
+        fields = [
+            'change_id',
+            'document_id',
+            'document_type',
+            'type',
+            'created_date'
+        ]
+        filter = {
+            'change_id': [
+                (QueryOperator.GREATER_THAN, last_sequence)
+            ]
+        }
+        sort = [{'created_date': SortOrder.ASC.value}]
+        changes = self.changes_service.changes_db_manager.find(
+                                               fields=fields,
+                                               limit=limit,
+                                               filter=filter,
+                                               sort=sort)
+        return [
+            convert_change_type(change)
+            for change in changes
+        ]

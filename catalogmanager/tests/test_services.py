@@ -5,9 +5,10 @@ import pytest
 from catalog_persistence.databases import DocumentNotFound
 from catalog_persistence.services import DatabaseService
 from catalog_persistence.models import RecordType
-from catalogmanager.article_services import (
+from catalogmanager.services import (
     ArticleServices,
-    ArticleServicesException
+    ArticleServicesException,
+    ChangeService
 )
 from catalogmanager.xml.xml_tree import (
     XMLTree
@@ -206,3 +207,17 @@ def test_get_asset_files(databaseservice_params, test_package_A):
     assert len(msg) == 0
     for asset in files:
         assert asset.content in asset_contents
+
+
+@patch.object(DatabaseService, 'list_changes')
+def test_list_changes_returns_changes_from_database_service(
+    mocked_list_changes,
+    change_service,
+    list_changes_expected
+):
+    mocked_list_changes.return_value = list_changes_expected
+    change_services = ChangeService(change_service[1])
+    changes = change_services.list_changes('1', 10)
+    mocked_list_changes.assert_called_once_with(last_sequence='1',
+                                                limit=10)
+    assert changes == list_changes_expected

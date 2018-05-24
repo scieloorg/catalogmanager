@@ -1,5 +1,8 @@
 import io
 import abc
+import operator
+from enum import Enum
+from itertools import islice
 
 import couchdb
 
@@ -12,6 +15,14 @@ class UpdateFailure(Exception):
 
 class DocumentNotFound(Exception):
     pass
+
+
+class QueryOperator(Enum):
+    GREATER_THAN = 'gt'
+    GREATER_THAN_EQUAL = 'ge'
+    LESS_THAN = 'lt'
+    LESS_THAN_EQUAL = 'le'
+    NOT_EQUAL = 'ne'
 
 
 class BaseDBManager(metaclass=abc.ABCMeta):
@@ -39,7 +50,7 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         return NotImplemented
 
     @abc.abstractmethod
-    def find(self) -> list:
+    def find(self, filter, fields, sort, limit=0) -> list:
         return NotImplemented
 
     @abc.abstractmethod
@@ -125,32 +136,73 @@ class InMemoryDBManager(BaseDBManager):
         self.read(id)
         del self.database[id]
 
-    def find(self, selector, fields, sort):
+    def find(self, filter, fields, sort, limit=0):
         """
         Busca registros de documento por criterios de selecao na base de dados.
+        # BUG: O sort está sendo considerado somente se existir critério em
+        filter.
 
         Params:
-        selector: criterio para selecionar campo com determinados valores
-            Ex.: {'type': 'ART'}
-        fields: lista de campos para retornar. Ex.: ['name']
-        sort: lista de dict com nome de campo e sua ordenacao.[{'name': 'asc'}]
+        filter: criterio para selecionar campo com determinados valores ou
+            vazio para todos
+            Ex.: {'type': 'ART', 'id': [(QueryOperator.EQUAL, 1000)]}
+        fields: lista de campos para retornar ou vazio para todos.
+            Ex.: ['name']
+        sort: lista de dict com nome de campo e sua ordenacao.
+            Ex.: [{'name': 'asc'}]
+        limit: (Opcional) Número máximo de registros a retornar.
 
         Retorno:
         Lista de registros de documento registrados na base de dados
         """
-        if len(selector) == 0:
-            return [doc for i, doc in self.database.items()]
+        def match_doc(doc, filter):
+            """
+            Verifica se doc atende os critérios de seleção de filter.
+
+            :param doc: registro de documento da base de dados.
+            :type doc: dict.
+            :param filter: chaves/campos para aplicação do filtro com valor que
+                corresponde ao filtro a ser verificado no doc. Esse filtro pode
+                ser do tipo str ou list, onde o list contém uma tupla com
+                operação do filtro e valor do filtro a ser aplicado.
+                Ex.: {'type': 'ART', 'id': [(QueryOperator.EQUAL, 1000)]}
+            :type filter: dict.
+
+            :returns: True se documento atende a todos os critérios do filtro.
+                Caso contrário, False.
+            :rtype: bool.
+            """
+            result = []
+            for field_name, field_filter in filter.items():
+                if isinstance(filter, dict):
+                    filter_result = [
+                        getattr(operator, field_operator.value)(
+                            doc.get(field_name),
+                            filter_value if filter_value else ''
+                        )
+                        for field_operator, filter_value in field_filter
+                    ]
+                    result.extend(filter_result)
+                else:
+                    result.append(doc.get(field_name) == field_filter)
+
+            return all(result)
+
+        if len(filter) == 0:
+            documents = [doc for i, doc in self.database.items()]
+            if limit and len(documents) > limit:
+                return list(islice(documents, limit))
+            return documents
         results = []
         for id, doc in self.database.items():
-            match = True
-            for k, v in selector.items():
-                if not doc.get(k) == v:
-                    match = False
+            if match_doc(doc, filter):
+                if fields:
+                    d = {f: doc.get(f) for f in fields}
+                    results.append(d)
+                else:
+                    results.append(doc)
+                if limit and len(results) >= limit:
                     break
-            if match is True:
-                d = {f: doc.get(f) for f in fields}
-                d['_id'] = id
-                results.append(d)
         return sort_results(results, sort)
 
     def put_attachment(self, id, file_id, content, content_properties):
@@ -240,24 +292,58 @@ class CouchDBManager(BaseDBManager):
         doc = self.read(id)
         self.database.delete(doc)
 
-    def find(self, selector, fields, sort):
+    def find(self, filter, fields, sort, limit=0):
         """
         Busca registros de documento por criterios de selecao na base de dados.
+        # XXX: A biblioteca couchdb-python permite somente um critério de sele-
+        ção para cada campo de filter, o que não possibilita a criação de fil-
+        tro para selecionar campo com valor entre dois valores, por exemplo.
 
         Params:
-        selector: criterio para selecionar campo com determinados valores
-            Ex.: {'type': 'ART'}
-        fields: lista de campos para retornar. Ex.: ['name']
-        sort: lista de dict com nome de campo e sua ordenacao.[{'name': 'asc'}]
+        filter: criterio para selecionar campo com determinados valores ou
+            vazio para todos
+            Ex.: {'type': 'ART', 'id': [(QueryOperator.EQUAL, 1000)]}
+        fields: lista de campos para retornar ou vazio para todos.
+            Ex.: ['name']
+        sort: lista de dict com nome de campo e sua ordenacao.
+            Ex.: [{'name': 'asc'}]
+        limit: (Opcional) Número máximo de registros da lista.
 
         Retorno:
         Lista de registros de documento registrados na base de dados
         """
+        def create_selector(filter):
+            for field_name, field_filter in filter.items():
+                if isinstance(field_filter, list):
+                    filter[field_name] = {
+                        '$' + field_criteria[0].value: field_criteria[1]
+                        for field_criteria in field_filter
+                    }
+            return filter
+
+        def check_sort_index(sort):
+            indexes = self.database.index()
+            __, __, indexes_data = indexes.resource.get_json()
+            found_index = [
+                index['def']['fields']
+                for index in indexes_data['indexes']
+                if index['def']['fields'] == sort
+            ]
+            if not found_index:
+                index_key = tuple(sort[0].keys())[0]
+                indexes[index_key, index_key] = sort
+
+        selector = create_selector(filter)
+        if sort and sort[0]:
+            check_sort_index(sort)
         selection_criteria = {
             'selector': selector,
             'fields': fields,
             'sort': sort,
         }
+        if limit > 0:
+            selection_criteria.update({'limit': limit})
+
         return [
             dict(document)
             for document in self.database.find(selection_criteria)
