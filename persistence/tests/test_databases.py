@@ -5,7 +5,10 @@ from datetime import datetime
 from uuid import uuid4
 
 from persistence.databases import DocumentNotFound, sort_results
-from persistence.services import DatabaseService, ChangeType
+from persistence.services import (
+    ChangesService,
+    DatabaseService,
+    ChangeType)
 from persistence.models import get_record, RecordType
 
 
@@ -33,7 +36,7 @@ def test_register_document(setup, database_service):
     assert article_check['created_date'] is not None
 
 
-@patch.object(DatabaseService, '_register_change')
+@patch.object(ChangesService, 'register_change')
 def test_register_document_register_change(mocked_register_change,
                                            setup,
                                            database_service):
@@ -93,7 +96,7 @@ def test_update_document(setup, database_service):
     assert record_check['updated_date'] is not None
 
 
-@patch.object(DatabaseService, '_register_change')
+@patch.object(ChangesService, 'register_change')
 def test_update_document_register_change(mocked_register_change,
                                          setup,
                                          database_service):
@@ -141,7 +144,7 @@ def test_delete_document(setup, database_service):
                   article_record['document_id'])
 
 
-@patch.object(DatabaseService, '_register_change')
+@patch.object(ChangesService, 'register_change')
 def test_delete_document_register_change(mocked_register_change,
                                          setup,
                                          database_service):
@@ -195,45 +198,6 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
     assert file_id in database_service.db_manager.list_attachments(
         article_record['document_id']
     )
-
-
-@patch.object(DatabaseService, 'update')
-def test_put_attachment_to_document_update(mocked_update,
-                                           setup,
-                                           database_service,
-                                           xml_test):
-    article_record = get_article_record({'Test': 'Test9'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-    attachment_id = "filename"
-    database_service.put_attachment(
-        document_id=article_record['document_id'],
-        file_id=attachment_id,
-        content=xml_test.encode('utf-8'),
-        file_properties={
-            'content_type': "text/xml",
-            'content_size': len(xml_test)
-        }
-    )
-    record = database_service.read(article_record['document_id'])
-    document_record = {
-        'document_id': record['document_id'],
-        'document_type': record['document_type'],
-        'content': record['content'],
-        'created_date': record['created_date'],
-        database_service.db_manager._attachments_properties_key:
-            {
-                attachment_id:
-                {
-                    'content_type': "text/xml",
-                    'content_size': len(xml_test)
-                }
-            }
-    }
-    mocked_update.assert_called_with(
-        article_record['document_id'], document_record)
 
 
 def test_put_attachment_to_document_update_dates(setup,
@@ -464,13 +428,13 @@ def test_add_attachment_properties(setup, database_service, xml_test):
         article_record
     )
 
-    document_record = database_service.db_manager \
+    database_service.db_manager \
         .add_attachment_properties_to_document_record(
-            article_record['document_id'],
+            article_record,
             'file1',
             file_properties1
         )
-    assert expected[key] == document_record[key]
+    assert expected[key] == article_record[key]
 
 
 def test_get_attachment_properties(setup, database_service, xml_test):
@@ -521,4 +485,15 @@ def test_find_documents_by_selected_field_returns_according_to_filter(
     assert isinstance(check_list[0], dict)
     assert len(check_list) == len(expected)
     for check_document, expected_document in zip(check_list, expected):
-        assert check_document == expected_document
+        compare_documents(check_document, expected_document)
+
+
+def compare_documents(document, expected):
+    if document == expected:
+        assert document == expected
+    elif len(document) == len(expected) + 1:
+        # para ignorar "revision"
+        for k in expected.keys():
+            assert document[k] == expected[k]
+    else:
+        assert document == expected

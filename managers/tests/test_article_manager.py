@@ -14,9 +14,11 @@ from managers.xml.xml_tree import (
 )
 
 
-def test_receive_xml_file(change_service, test_package_A,
+def test_receive_xml_file(databaseservice_params, test_package_A,
                           test_packA_filenames):
-    article_manager = ArticleManager(change_service[0], change_service[1])
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1])
     expected = {
         'attachments': [test_packA_filenames[0]],
         'content': {
@@ -35,8 +37,10 @@ def test_receive_xml_file(change_service, test_package_A,
     assert sorted(got['attachments']) == sorted(expected['attachments'])
 
 
-def test_receive_package(change_service, test_package_A):
-    article_manager = ArticleManager(change_service[0], change_service[1])
+def test_receive_package(databaseservice_params, test_package_A):
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1])
     unexpected, missing = article_manager.receive_package(
         id='ID',
         xml_file=test_package_A[0],
@@ -49,13 +53,13 @@ def test_receive_package(change_service, test_package_A):
 @patch.object(DatabaseService, 'read')
 def test_get_article_in_database(mocked_dataservices_read,
                                  setup,
-                                 change_service,
+                                 databaseservice_params,
                                  inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     article_check = article_manager.get_article_data(article_id)
     assert article_check is not None
@@ -66,13 +70,14 @@ def test_get_article_in_database(mocked_dataservices_read,
 @patch.object(DatabaseService, 'read', side_effect=DocumentNotFound)
 def test_get_article_in_database_not_found(mocked_dataservices_read,
                                            setup,
-                                           change_service,
+                                           databaseservice_params,
                                            inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
+
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     pytest.raises(
         ArticleManagerException,
@@ -82,11 +87,11 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
 
 
 def test_get_article_record(setup,
-                            change_service,
+                            databaseservice_params,
                             inmemory_receive_package):
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     article_id = 'ID'
     article_check = article_manager.get_article_data(article_id)
@@ -105,15 +110,15 @@ def test_get_article_record(setup,
 @patch.object(DatabaseService, 'get_attachment')
 def test_get_article_file_in_database(mocked_get_attachment,
                                       setup,
-                                      change_service,
+                                      databaseservice_params,
                                       inmemory_receive_package,
                                       xml_test,
                                       test_packA_filenames):
     mocked_get_attachment.return_value = xml_test.encode('utf-8')
     article_id = 'ID'
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     article_manager.get_article_file(article_id)
     mocked_get_attachment.assert_called_with(
@@ -125,11 +130,11 @@ def test_get_article_file_in_database(mocked_get_attachment,
 @patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)
 def test_get_article_file_not_found(mocked_get_attachment,
                                     setup,
-                                    change_service,
+                                    databaseservice_params,
                                     inmemory_receive_package):
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     pytest.raises(
         ArticleManagerException,
@@ -139,12 +144,12 @@ def test_get_article_file_not_found(mocked_get_attachment,
 
 
 def test_get_article_file(setup,
-                          change_service,
+                          databaseservice_params,
                           inmemory_receive_package,
                           test_package_A):
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     article_check = article_manager.get_article_file('ID')
     assert article_check is not None
@@ -155,11 +160,11 @@ def test_get_article_file(setup,
 @patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)
 def test_get_asset_file_not_found(mocked_get_attachment,
                                   setup,
-                                  change_service,
+                                  databaseservice_params,
                                   inmemory_receive_package):
     article_manager = ArticleManager(
-        change_service[0],
-        change_service[1]
+        databaseservice_params[0],
+        databaseservice_params[1]
     )
     pytest.raises(
         ArticleManagerException,
@@ -169,8 +174,12 @@ def test_get_asset_file_not_found(mocked_get_attachment,
     )
 
 
-def test_get_asset_file(change_service, test_package_A, test_packA_filenames):
-    article_manager = ArticleManager(change_service[0], change_service[1])
+def test_get_asset_file(databaseservice_params,
+                        test_package_A,
+                        test_packA_filenames):
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1])
     article_manager.receive_package(id='ID',
                                     xml_file=test_package_A[0],
                                     files=test_package_A[1:])
@@ -180,13 +189,16 @@ def test_get_asset_file(change_service, test_package_A, test_packA_filenames):
         assert file.content == content
 
 
-def test_get_asset_files(change_service, test_package_A):
+def test_get_asset_files(databaseservice_params, test_package_A):
     files = test_package_A[1:]
-    article_manager = ArticleManager(change_service[0], change_service[1])
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1])
     article_manager.receive_package(id='ID',
                                     xml_file=test_package_A[0],
                                     files=test_package_A[1:])
     items, msg = article_manager.get_asset_files('ID')
+
     asset_contents = [
         asset_data[1]
         for name, asset_data in items.items()
