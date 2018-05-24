@@ -2,13 +2,14 @@ import os
 import pytest
 from pyramid import testing
 
-from catalogmanager.services import ArticleServices
-from catalogmanager.models.file import File
-from catalog_persistence.seqnum_generator import SeqNumGenerator
-from catalog_persistence.databases import (
+from managers.article_manager import ArticleManager
+from managers.models.file import File
+from persistence.seqnum_generator import SeqNumGenerator
+from persistence.databases import (
     InMemoryDBManager,
+    CouchDBManager,
 )
-from catalog_persistence.services import (
+from persistence.services import (
     DatabaseService,
     ChangesService,
 )
@@ -161,12 +162,12 @@ def setup(request, functional_config, databaseservice_params):
 
 @pytest.fixture
 def inmemory_receive_package(databaseservice_params, test_package_A):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1])
-    return article_services.receive_package(id='ID',
-                                            xml_file=test_package_A[0],
-                                            files=test_package_A[1:])
+    return article_manager.receive_package(id='ID',
+                                           xml_file=test_package_A[0],
+                                           files=test_package_A[1:])
 
 
 @pytest.fixture
@@ -194,21 +195,32 @@ def dbserver_service(functional_config, database_config):
     articles_database_config['database_name'] = "articles"
     changes_database_config = couchdb_config.copy()
     changes_database_config['database_name'] = "changes"
+    seqnum_database_config = couchdb_config.copy()
+    seqnum_database_config['database_name'] = "seqnum"
+
+    seqnumber_generator = SeqNumGenerator(
+        CouchDBManager(**seqnum_database_config),
+        'CHANGE'
+    )
+    changes_service = ChangesService(
+        CouchDBManager(**changes_database_config),
+        seqnumber_generator
+    )
     return (
         CouchDBManager(**articles_database_config),
-        CouchDBManager(**changes_database_config)
+        changes_service
     )
 
 
 @pytest.fixture
 def couchdb_receive_package(dbserver_service, test_package_A):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         dbserver_service[0],
         dbserver_service[1]
     )
-    return article_services.receive_package(id='ID',
-                                            xml_file=test_package_A[0],
-                                            files=test_package_A[1:])
+    return article_manager.receive_package(id='ID',
+                                           xml_file=test_package_A[0],
+                                           files=test_package_A[1:])
 
 
 @pytest.fixture

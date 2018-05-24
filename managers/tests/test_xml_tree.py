@@ -1,5 +1,5 @@
 
-from catalogmanager.xml.xml_tree import (
+from managers.xml.xml_tree import (
     XMLTree
 )
 

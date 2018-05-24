@@ -4,16 +4,17 @@ from random import randint
 from pyramid import testing
 import pytest
 
-from catalog_persistence.databases import (
+from persistence.databases import (
     QueryOperator,
     CouchDBManager,
     InMemoryDBManager,
 )
-from catalog_persistence.services import (
+
+from persistence.services import (
     DatabaseService,
     ChangesService,
 )
-from catalog_persistence.seqnum_generator import SeqNumGenerator
+from persistence.seqnum_generator import SeqNumGenerator
 
 
 @pytest.yield_fixture

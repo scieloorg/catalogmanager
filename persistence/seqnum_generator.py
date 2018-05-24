@@ -1,5 +1,5 @@
 
-from catalog_persistence.databases import DocumentNotFound
+from persistence.databases import DocumentNotFound
 
 
 class SeqNumGenerator:

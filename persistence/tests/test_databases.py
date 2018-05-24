@@ -4,12 +4,12 @@ import pytest
 from datetime import datetime
 from uuid import uuid4
 
-from catalog_persistence.databases import DocumentNotFound, sort_results
-from catalog_persistence.services import (
+from persistence.databases import DocumentNotFound, sort_results
+from persistence.services import (
     ChangesService,
-    ChangeType,
-)
-from catalog_persistence.models import get_record, RecordType
+    DatabaseService,
+    ChangeType)
+from persistence.models import get_record, RecordType
 
 
 def get_article_record(content={'Test': 'Test'}):

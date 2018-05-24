@@ -35,7 +35,7 @@ def notfound(request):
 def includeme(config):
     config.include("cornice")
     config.include('cornice_swagger')
-    config.scan("catalogmanager_api.views")
+    config.scan("api.views")
 
 
 def main(global_config, **settings):

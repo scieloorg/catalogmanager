@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-from catalog_persistence.databases import QueryOperator
-from catalog_persistence.services import ChangeType, SortOrder
+from persistence.databases import QueryOperator
+from persistence.services import ChangeType, SortOrder
 
 
 def test_list_changes_calls_db_manager_find(inmemory_db_setup,

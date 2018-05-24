@@ -6,7 +6,7 @@ import pytest
 from pyramid.paster import get_appsettings
 from webtest import TestApp
 
-from catalogmanager_api import main
+from api import main
 
 
 @pytest.fixture

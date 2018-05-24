@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import webtest
 from lxml import etree
-import catalogmanager
+import managers
 
 
 def _get_file_property(filename, content, size):
@@ -21,7 +21,7 @@ def test_http_get_home(testapp):
     assert result.body == b''
 
 
-@patch.object(catalogmanager, 'get_article_data')
+@patch.object(managers, 'get_article_data')
 def test_http_get_article_calls_get_article_data(mocked_get_article_data,
                                                  db_settings,
                                                  testapp):
@@ -34,20 +34,19 @@ def test_http_get_article_calls_get_article_data(mocked_get_article_data,
     )
 
 
-@patch.object(catalogmanager, 'get_article_data')
+@patch.object(managers, 'get_article_data')
 def test_http_get_article_not_found(mocked_get_article_data, testapp):
     article_id = 'ID123456'
     error_msg = 'Article {} not found'.format(article_id)
     mocked_get_article_data.side_effect = \
-        catalogmanager.services.ArticleServicesException(
+        managers.article_manager.ArticleManagerException(
             message=error_msg
         )
-    result = testapp.get('/articles/{}'.format(article_id),
-            expect_errors=True)
+    result = testapp.get('/articles/{}'.format(article_id), expect_errors=True)
     assert result.status == '404 Not Found'
 
 
-@patch.object(catalogmanager, 'get_article_data')
+@patch.object(managers, 'get_article_data')
 def test_http_get_article_succeeded(mocked_get_article_data, testapp):
     article_id = 'ID123456'
     expected = {
@@ -64,7 +63,7 @@ def test_http_get_article_succeeded(mocked_get_article_data, testapp):
     assert result.json == expected
 
 
-@patch.object(catalogmanager, 'get_article_file')
+@patch.object(managers, 'get_article_file')
 def test_http_get_xml_file_calls_get_article_file(mocked_get_article_file,
                                                   db_settings,
                                                   testapp,
@@ -78,8 +77,7 @@ def test_http_get_xml_file_calls_get_article_file(mocked_get_article_file,
     #natureza -- teste de envio de mensagem do objeto sob teste para uma
     #das suas dependências. O WebTest tem a finalidade de realizar testes
     #funcionais em aplicações WSGI.
-    testapp.get('/articles/{}/xml'.format(article_id),
-            expect_errors=True)
+    testapp.get('/articles/{}/xml'.format(article_id), expect_errors=True)
 
     mocked_get_article_file.assert_called_once_with(
         article_id=article_id,
@@ -87,34 +85,34 @@ def test_http_get_xml_file_calls_get_article_file(mocked_get_article_file,
     )
 
 
-@patch.object(catalogmanager, 'get_article_file')
+@patch.object(managers, 'get_article_file')
 def test_http_get_xml_file_article_not_found(mocked_get_article_file, testapp):
     article_id = 'ID123456'
     error_msg = 'Article {} not found'.format(article_id)
     mocked_get_article_file.side_effect = \
-        catalogmanager.services.ArticleServicesException(
+        managers.article_manager.ArticleManagerException(
             message=error_msg
         )
     result = testapp.get('/articles/{}/xml'.format(article_id),
-            expect_errors=True)
+                         expect_errors=True)
     assert result.status == '404 Not Found'
 
 
-@patch.object(catalogmanager, 'get_article_file')
+@patch.object(managers, 'get_article_file')
 def test_http_get_xml_file_not_found(mocked_get_article_file, testapp):
     article_id = 'ID123456'
     error_msg = 'Missing XML file {}'.format(article_id)
     mocked_get_article_file.side_effect = \
-        catalogmanager.services.ArticleServicesException(
+        managers.article_manager.ArticleManagerException(
             message=error_msg
         )
     result = testapp.get('/articles/{}/xml'.format(article_id),
-            expect_errors=True)
+                         expect_errors=True)
     assert result.status == '404 Not Found'
 
 
-@patch.object(catalogmanager, 'get_article_file')
-@patch.object(catalogmanager, 'get_article_data')
+@patch.object(managers, 'get_article_file')
+@patch.object(managers, 'get_article_data')
 def test_http_get_xml_file_calls_get_article_data(mocked_get_article_data,
                                                   mocked_get_article_file,
                                                   db_settings,
@@ -135,9 +133,9 @@ def test_http_get_xml_file_calls_get_article_data(mocked_get_article_data,
     )
 
 
-@patch.object(catalogmanager, 'get_article_file')
-@patch.object(catalogmanager, 'get_article_data')
-@patch.object(catalogmanager, 'set_assets_public_url')
+@patch.object(managers, 'get_article_file')
+@patch.object(managers, 'get_article_data')
+@patch.object(managers, 'set_assets_public_url')
 def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
     mocked_set_assets_public_url,
     mocked_get_article_data,
@@ -175,9 +173,9 @@ def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
     )
 
 
-@patch.object(catalogmanager, 'get_article_file')
-@patch.object(catalogmanager, 'get_article_data')
-@patch.object(catalogmanager, 'set_assets_public_url')
+@patch.object(managers, 'get_article_file')
+@patch.object(managers, 'get_article_data')
+@patch.object(managers, 'set_assets_public_url')
 def test_http_get_xml_file_doesnt_calls_set_assets_public_url_if_no_assets(
     mocked_set_assets_public_url,
     mocked_get_article_data,
@@ -197,8 +195,8 @@ def test_http_get_xml_file_doesnt_calls_set_assets_public_url_if_no_assets(
     assert not mocked_set_assets_public_url.called
 
 
-@patch.object(catalogmanager, 'get_article_file')
-@patch.object(catalogmanager, 'get_article_data')
+@patch.object(managers, 'get_article_file')
+@patch.object(managers, 'get_article_data')
 def test_http_get_xml_file_succeeded(mocked_get_article_data,
                                      mocked_get_article_file,
                                      testapp,
@@ -240,8 +238,8 @@ def test_http_get_xml_file_succeeded(mocked_get_article_data,
         assert expected_href in xml_nodes
 
 
-@patch.object(catalogmanager, 'create_file')
-@patch.object(catalogmanager, 'put_article')
+@patch.object(managers, 'create_file')
+@patch.object(managers, 'put_article')
 def test_http_article_calls_create_file(mocked_put_article,
                                         mocked_create_file,
                                         db_settings,
@@ -264,8 +262,8 @@ def test_http_article_calls_create_file(mocked_put_article,
     )
 
 
-@patch.object(catalogmanager, 'create_file')
-@patch.object(catalogmanager, 'put_article')
+@patch.object(managers, 'create_file')
+@patch.object(managers, 'put_article')
 def test_http_article_calls_put_article(mocked_put_article,
                                         mocked_create_file,
                                         db_settings,
@@ -294,13 +292,13 @@ def test_http_article_calls_put_article(mocked_put_article,
     )
 
 
-@patch.object(catalogmanager, 'put_article')
+@patch.object(managers, 'put_article')
 def test_http_article_calls_put_article_service_error(mocked_put_article,
                                                       testapp,
                                                       test_xml_file):
     article_id = 'ID-post-article-123'
     mocked_put_article.side_effect = \
-        catalogmanager.services.ArticleServicesException(
+        managers.article_manager.ArticleManagerException(
             message='Missing XML file {}'.format(article_id)
         )
     params = OrderedDict([
@@ -331,15 +329,15 @@ def test_http_article_put_article_succeeded(testapp,
     assert result.status == '201 Created'
 
 
-@patch.object(catalogmanager, 'create_file')
-@patch.object(catalogmanager, 'put_article')
+@patch.object(managers, 'create_file')
+@patch.object(managers, 'put_article')
 def test_http_article_put_article_with_assets(mocked_put_article,
                                               mocked_create_file,
                                               db_settings,
                                               testapp,
                                               test_xml_file,
                                               test_article_files):
-    #XXX aqui deveria ser um teste funcional simples, sem qualquer dublê de 
+    #XXX aqui deveria ser um teste funcional simples, sem qualquer dublê de
     #testes (mocks e afins).
     article_id = 'ID-post-article-123'
     expected_assets_files = []
@@ -378,7 +376,7 @@ def test_http_article_put_article_with_assets(mocked_put_article,
     )
 
 
-@patch.object(catalogmanager, 'get_asset_file')
+@patch.object(managers, 'get_asset_file')
 def test_http_get_asset_file_calls_get_asset_file(mocked_get_asset_file,
                                                   db_settings,
                                                   testapp):
@@ -395,22 +393,22 @@ def test_http_get_asset_file_calls_get_asset_file(mocked_get_asset_file,
     )
 
 
-@patch.object(catalogmanager, 'get_asset_file')
+@patch.object(managers, 'get_asset_file')
 def test_http_get_asset_file_not_found(mocked_get_asset_file,
                                        testapp):
     article_id = 'ID123456'
     asset_id = 'a.jpg'
     error_msg = 'Asset {} (Article {}) not found'.format(asset_id, article_id)
     mocked_get_asset_file.side_effect = \
-        catalogmanager.services.ArticleServicesException(
+        managers.article_manager.ArticleManagerException(
             message=error_msg
         )
     result = testapp.get('/articles/{}/assets/{}'.format(article_id, asset_id),
-            expect_errors=True)
+                         expect_errors=True)
     assert result.status == '404 Not Found'
 
 
-@patch.object(catalogmanager, 'get_asset_file')
+@patch.object(managers, 'get_asset_file')
 def test_http_get_asset_file_succeeded(mocked_get_asset_file,
                                        testapp,
                                        test_xml_file):

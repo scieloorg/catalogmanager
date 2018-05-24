@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 from pyramid import testing
 
-from catalogmanager_api.views.change import ChangeAPI
+from api.views.change import ChangeAPI
 
 
-@patch('catalogmanager.list_changes')
+@patch('managers.list_changes')
 def test_change_api_collection_post_calls_list_changes(mocked_list_changes,
                                                        db_settings,
                                                        testapp):
@@ -24,7 +24,7 @@ def test_change_api_collection_post_calls_list_changes(mocked_list_changes,
     )
 
 
-@patch('catalogmanager.list_changes')
+@patch('managers.list_changes')
 def test_change_api_collection_post_return_changes_list(mocked_list_changes,
                                                         db_settings,
                                                         testapp):

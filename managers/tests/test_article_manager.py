@@ -2,22 +2,21 @@ from unittest.mock import patch
 
 import pytest
 
-from catalog_persistence.databases import DocumentNotFound
-from catalog_persistence.services import DatabaseService
-from catalog_persistence.models import RecordType
-from catalogmanager.services import (
-    ArticleServices,
-    ArticleServicesException,
-    ChangeService
+from persistence.databases import DocumentNotFound
+from persistence.services import DatabaseService
+from persistence.models import RecordType
+from managers.article_manager import (
+    ArticleManager,
+    ArticleManagerException
 )
-from catalogmanager.xml.xml_tree import (
+from managers.xml.xml_tree import (
     XMLTree
 )
 
 
 def test_receive_xml_file(databaseservice_params, test_package_A,
                           test_packA_filenames):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1])
     expected = {
@@ -30,19 +29,19 @@ def test_receive_xml_file(databaseservice_params, test_package_A,
     }
 
     expected_assets = test_packA_filenames[1:]
-    article_services.receive_xml_file(id='ID',
-                                      xml_file=test_package_A[0])
-    got = article_services.article_db_service.read('ID')
+    article_manager.receive_xml_file(id='ID',
+                                     xml_file=test_package_A[0])
+    got = article_manager.article_db_service.read('ID')
     assert got['content']['xml'] == expected['content']['xml']
     assert sorted(got['content'].get('assets')) == sorted(expected_assets)
     assert sorted(got['attachments']) == sorted(expected['attachments'])
 
 
 def test_receive_package(databaseservice_params, test_package_A):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1])
-    unexpected, missing = article_services.receive_package(
+    unexpected, missing = article_manager.receive_package(
         id='ID',
         xml_file=test_package_A[0],
         files=test_package_A[1:]
@@ -58,11 +57,11 @@ def test_get_article_in_database(mocked_dataservices_read,
                                  inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
-    article_check = article_services.get_article_data(article_id)
+    article_check = article_manager.get_article_data(article_id)
     assert article_check is not None
     assert isinstance(article_check, dict)
     mocked_dataservices_read.assert_called_with(article_id)
@@ -75,13 +74,14 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
                                            inmemory_receive_package):
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
-    article_services = ArticleServices(
+
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
     pytest.raises(
-        ArticleServicesException,
-        article_services.get_article_data,
+        ArticleManagerException,
+        article_manager.get_article_data,
         article_id
     )
 
@@ -89,12 +89,12 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
 def test_get_article_record(setup,
                             databaseservice_params,
                             inmemory_receive_package):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
     article_id = 'ID'
-    article_check = article_services.get_article_data(article_id)
+    article_check = article_manager.get_article_data(article_id)
     assert article_check is not None
     assert isinstance(article_check, dict)
     assert article_check.get('document_id') == article_id
@@ -116,11 +116,11 @@ def test_get_article_file_in_database(mocked_get_attachment,
                                       test_packA_filenames):
     mocked_get_attachment.return_value = xml_test.encode('utf-8')
     article_id = 'ID'
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
-    article_services.get_article_file(article_id)
+    article_manager.get_article_file(article_id)
     mocked_get_attachment.assert_called_with(
         document_id=article_id,
         file_id=test_packA_filenames[0]
@@ -132,13 +132,13 @@ def test_get_article_file_not_found(mocked_get_attachment,
                                     setup,
                                     databaseservice_params,
                                     inmemory_receive_package):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
     pytest.raises(
-        ArticleServicesException,
-        article_services.get_article_file,
+        ArticleManagerException,
+        article_manager.get_article_file,
         'ID'
     )
 
@@ -147,11 +147,11 @@ def test_get_article_file(setup,
                           databaseservice_params,
                           inmemory_receive_package,
                           test_package_A):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
-    article_check = article_services.get_article_file('ID')
+    article_check = article_manager.get_article_file('ID')
     assert article_check is not None
     xml_tree = XMLTree()
     xml_tree.content = test_package_A[0].content
@@ -163,41 +163,43 @@ def test_get_asset_file_not_found(mocked_get_attachment,
                                   setup,
                                   databaseservice_params,
                                   inmemory_receive_package):
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
     pytest.raises(
-        ArticleServicesException,
-        article_services.get_asset_file,
+        ArticleManagerException,
+        article_manager.get_asset_file,
         'ID',
         'file_id'
     )
 
 
-def test_get_asset_file(
-        databaseservice_params, test_package_A, test_packA_filenames):
-    article_services = ArticleServices(
+def test_get_asset_file(databaseservice_params,
+                        test_package_A,
+                        test_packA_filenames):
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1])
-    article_services.receive_package(id='ID',
-                                     xml_file=test_package_A[0],
-                                     files=test_package_A[1:])
+    article_manager.receive_package(id='ID',
+                                    xml_file=test_package_A[0],
+                                    files=test_package_A[1:])
     for file in test_package_A[1:]:
-        content_type, content = article_services.get_asset_file(
+        content_type, content = article_manager.get_asset_file(
             'ID', file.name)
         assert file.content == content
 
 
 def test_get_asset_files(databaseservice_params, test_package_A):
     files = test_package_A[1:]
-    article_services = ArticleServices(
+    article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1])
-    article_services.receive_package(id='ID',
-                                     xml_file=test_package_A[0],
-                                     files=test_package_A[1:])
-    items, msg = article_services.get_asset_files('ID')
+    article_manager.receive_package(id='ID',
+                                    xml_file=test_package_A[0],
+                                    files=test_package_A[1:])
+    items, msg = article_manager.get_asset_files('ID')
+
     asset_contents = [
         asset_data[1]
         for name, asset_data in items.items()
@@ -207,17 +209,3 @@ def test_get_asset_files(databaseservice_params, test_package_A):
     assert len(msg) == 0
     for asset in files:
         assert asset.content in asset_contents
-
-
-@patch.object(DatabaseService, 'list_changes')
-def test_list_changes_returns_changes_from_database_service(
-    mocked_list_changes,
-    change_service,
-    list_changes_expected
-):
-    mocked_list_changes.return_value = list_changes_expected
-    change_services = ChangeService(change_service[1])
-    changes = change_services.list_changes('1', 10)
-    mocked_list_changes.assert_called_once_with(last_sequence='1',
-                                                limit=10)
-    assert changes == list_changes_expected

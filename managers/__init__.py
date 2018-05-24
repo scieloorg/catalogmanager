@@ -1,12 +1,12 @@
-
-from catalog_persistence.databases import CouchDBManager
-from catalogmanager.models.article_model import ArticleDocument
-from catalogmanager.models.file import File
-from catalog_persistence.services import (
-    ChangesService
+from managers.article_manager import ArticleManager
+from managers.models.article_model import ArticleDocument
+from managers.models.file import File
+from persistence.databases import CouchDBManager
+from persistence.services import (
+    DatabaseService,
+    ChangesService,
 )
-from catalog_persistence.seqnum_generator import SeqNumGenerator
-from catalogmanager.services import ArticleServices, ChangeService
+from persistence.seqnum_generator import SeqNumGenerator
 
 
 def _get_changes_dbmanager(database_config_copy):
@@ -30,12 +30,12 @@ def _get_changes_services(db_settings):
     )
 
 
-def _get_article_service(**db_settings):
+def _get_article_manager(**db_settings):
     database_config = db_settings
     articles_database_config = database_config.copy()
     articles_database_config['database_name'] = "articles"
 
-    return ArticleServices(
+    return ArticleManager(
         CouchDBManager(**articles_database_config),
         _get_changes_services(db_settings)
     )
@@ -51,7 +51,7 @@ def create_file(filename, content):
     content: conteúdo do arquivo
 
     Return:
-    Objeto File, que deverá ser informado nas funções do catalogmanager
+    Objeto File, que deverá ser informado nas funções do managers
     """
     return File(file_name=filename, content=content)
 
@@ -79,10 +79,10 @@ def put_article(article_id, xml_file, assets_files=[], **db_settings):
         arquivos de ativos digitais informada
     :rtype: tuple(list(), list())
     """
-    article_services = _get_article_service(**db_settings)
-    return article_services.receive_package(id=article_id,
-                                            xml_file=xml_file,
-                                            files=assets_files)
+    article_manager = _get_article_manager(**db_settings)
+    return article_manager.receive_package(id=article_id,
+                                           xml_file=xml_file,
+                                           files=assets_files)
 
 
 def get_article_data(article_id, **db_settings):
@@ -100,8 +100,8 @@ def get_article_data(article_id, **db_settings):
 
     :returns: dicionário com os metadados
     """
-    article_services = _get_article_service(**db_settings)
-    return article_services.get_article_data(article_id)
+    article_manager = _get_article_manager(**db_settings)
+    return article_manager.get_article_data(article_id)
 
 
 def get_article_file(article_id, **db_settings):
@@ -118,8 +118,8 @@ def get_article_file(article_id, **db_settings):
 
     :returns: Arquivo XML do Artigo
     """
-    article_services = _get_article_service(**db_settings)
-    return article_services.get_article_file(article_id)
+    article_manager = _get_article_manager(**db_settings)
+    return article_manager.get_article_file(article_id)
 
 
 def get_asset_file(article_id, asset_id, **db_settings):
@@ -137,8 +137,8 @@ def get_asset_file(article_id, asset_id, **db_settings):
 
     :returns: Arquivo de Ativo digital
     """
-    article_services = _get_article_service(**db_settings)
-    return article_services.get_asset_file(article_id, asset_id)
+    article_manager = _get_article_manager(**db_settings)
+    return article_manager.get_asset_file(article_id, asset_id)
 
 
 def set_assets_public_url(article_id, xml_content, assets_filenames,
@@ -183,6 +183,9 @@ def list_changes(last_sequence, limit, **db_settings):
     :returns: lista de mundanças
     :rtype: list()
     """
-    change_service = ChangeService(_get_changes_services(db_settings.copy()))
+    change_service = DatabaseService(
+        None,
+        _get_changes_services(db_settings.copy())
+    )
     return change_service.list_changes(last_sequence=last_sequence,
                                        limit=limit)
