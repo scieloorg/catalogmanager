@@ -27,9 +27,9 @@ class ArticleManagerMissingAssetFileException(Exception):
 
 class ArticleManager:
 
-    def __init__(self, articles_db_manager, changes_db_manager):
+    def __init__(self, articles_db_manager, changes_services):
         self.article_db_service = DatabaseService(
-            articles_db_manager, changes_db_manager)
+            articles_db_manager, changes_services)
 
     def receive_package(self, id, xml_file, files=None):
         article = self.receive_xml_file(id, xml_file)
@@ -37,8 +37,7 @@ class ArticleManager:
         return article.unexpected_files_list, article.missing_files_list
 
     def receive_xml_file(self, id, xml_file):
-        article = ArticleDocument(id)
-        article.xml_file = xml_file
+        article = ArticleDocument(id, xml_file)
 
         article_record = Record(
             document_id=article.id,
@@ -83,18 +82,17 @@ class ArticleManager:
 
     def get_article_file(self, article_id):
         article_record = self.get_article_data(article_id)
-        article = ArticleDocument(article_id)
         try:
             attachment = self.article_db_service.get_attachment(
                 document_id=article_id,
                 file_id=article_record['content']['xml']
             )
-            article.xml_file = File(file_name=article_record['content']['xml'],
-                                    content=attachment)
-            return article.xml_file.content
+            xml_file = File(file_name=article_record['content']['xml'],
+                            content=attachment)
+            return xml_file.content
         except DocumentNotFound:
             raise ArticleManagerException(
-                'Missing XML file {}'.format(article_id)
+                'XML file {} not found'.format(article_id)
             )
 
     def get_asset_files(self, article_id):

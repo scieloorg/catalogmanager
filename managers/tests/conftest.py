@@ -4,11 +4,15 @@ from pyramid import testing
 
 from managers.article_manager import ArticleManager
 from managers.models.file import File
+from persistence.seqnum_generator import SeqNumGenerator
 from persistence.databases import (
     InMemoryDBManager,
-    CouchDBManager
+    CouchDBManager,
 )
-from persistence.services import DatabaseService
+from persistence.services import (
+    DatabaseService,
+    ChangesService,
+)
 
 
 @pytest.fixture(scope="module")
@@ -115,18 +119,52 @@ def xml_test():
 
 
 @pytest.fixture
-def setup(request, functional_config, change_service):
-    database_service = DatabaseService(change_service[0], change_service[1])
+def seqnumber_generator(request):
+    s = SeqNumGenerator(
+        InMemoryDBManager(database_name='test3'),
+        'CHANGE'
+    )
+
+    def fin():
+        s.db_manager.drop_database()
+
+    request.addfinalizer(fin)
+    return s
+
+
+@pytest.fixture
+def changes_service(request, seqnumber_generator):
+    return ChangesService(
+        InMemoryDBManager(database_name='test2'),
+        seqnumber_generator
+    )
+
+
+@pytest.fixture
+def databaseservice_params(functional_config, changes_service):
+    return (
+        InMemoryDBManager(database_name='test1'),
+        changes_service
+    )
+
+
+@pytest.fixture
+def setup(request, functional_config, databaseservice_params):
+    database_service = DatabaseService(
+        databaseservice_params[0],
+        databaseservice_params[1])
 
     def fin():
         database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
+        database_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
 
 
 @pytest.fixture
-def inmemory_receive_package(change_service, test_package_A):
-    article_manager = ArticleManager(change_service[0], change_service[1])
+def inmemory_receive_package(databaseservice_params, test_package_A):
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1])
     return article_manager.receive_package(id='ID',
                                            xml_file=test_package_A[0],
                                            files=test_package_A[1:])
@@ -157,9 +195,20 @@ def dbserver_service(functional_config, database_config):
     articles_database_config['database_name'] = "articles"
     changes_database_config = couchdb_config.copy()
     changes_database_config['database_name'] = "changes"
+    seqnum_database_config = couchdb_config.copy()
+    seqnum_database_config['database_name'] = "seqnum"
+
+    seqnumber_generator = SeqNumGenerator(
+        CouchDBManager(**seqnum_database_config),
+        'CHANGE'
+    )
+    changes_service = ChangesService(
+        CouchDBManager(**changes_database_config),
+        seqnumber_generator
+    )
     return (
         CouchDBManager(**articles_database_config),
-        CouchDBManager(**changes_database_config)
+        changes_service
     )
 
 

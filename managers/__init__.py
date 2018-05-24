@@ -1,15 +1,33 @@
-
 from managers.article_manager import ArticleManager
 from managers.models.article_model import ArticleDocument
 from managers.models.file import File
 from persistence.databases import CouchDBManager
-from persistence.services import DatabaseService
+from persistence.services import (
+    DatabaseService,
+    ChangesService,
+)
+from persistence.seqnum_generator import SeqNumGenerator
 
 
 def _get_changes_dbmanager(database_config_copy):
     changes_database_config = database_config_copy
     changes_database_config['database_name'] = "changes"
     return CouchDBManager(**changes_database_config)
+
+
+def _get_changes_services(db_settings):
+    database_config = db_settings
+
+    changes_seqnum_database_config = database_config.copy()
+    changes_seqnum_database_config['database_name'] = "changes_seqnum"
+
+    return ChangesService(
+        _get_changes_dbmanager(database_config.copy()),
+        SeqNumGenerator(
+            CouchDBManager(**changes_seqnum_database_config),
+            'CHANGES_SEQ'
+        )
+    )
 
 
 def _get_article_manager(**db_settings):
@@ -19,7 +37,7 @@ def _get_article_manager(**db_settings):
 
     return ArticleManager(
         CouchDBManager(**articles_database_config),
-        _get_changes_dbmanager(database_config.copy())
+        _get_changes_services(db_settings)
     )
 
 
@@ -138,8 +156,8 @@ def set_assets_public_url(article_id, xml_content, assets_filenames,
 
     :returns: conteúdo do XML atualizado
     """
-    article = ArticleDocument(article_id)
-    article.xml_file = File(file_name="xml_file.xml", content=xml_content)
+    xml_file = File(file_name="xml_file.xml", content=xml_content)
+    article = ArticleDocument(article_id, xml_file)
     for name in article.assets:
         if name in assets_filenames:
             article.assets[name].href = public_url.format(article_id,
@@ -167,7 +185,7 @@ def list_changes(last_sequence, limit, **db_settings):
     """
     change_service = DatabaseService(
         None,
-        _get_changes_dbmanager(db_settings.copy())
+        _get_changes_services(db_settings.copy())
     )
     return change_service.list_changes(last_sequence=last_sequence,
                                        limit=limit)

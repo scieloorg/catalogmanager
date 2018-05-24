@@ -9,7 +9,12 @@ from persistence.databases import (
     CouchDBManager,
     InMemoryDBManager,
 )
-from persistence.services import DatabaseService
+
+from persistence.services import (
+    DatabaseService,
+    ChangesService,
+)
+from persistence.seqnum_generator import SeqNumGenerator
 
 
 @pytest.yield_fixture
@@ -43,14 +48,52 @@ def change_db_settings():
     }
 
 
+@pytest.fixture
+def seqnum_db_settings():
+    return {
+        'database_uri': 'http://localhost:5984',
+        'database_username': 'admin',
+        'database_password': 'password',
+        'database_name': 'seqnum',
+    }
+
+
 @pytest.fixture(params=[
     CouchDBManager,
     InMemoryDBManager
 ])
-def database_service(request, article_db_settings, change_db_settings):
+def seqnumber_generator(request, seqnum_db_settings):
+    s = SeqNumGenerator(
+        request.param(**seqnum_db_settings),
+        'CHANGE'
+    )
+
+    def fin():
+        s.db_manager.drop_database()
+
+    request.addfinalizer(fin)
+    return s
+
+
+@pytest.fixture(params=[
+    CouchDBManager,
+    InMemoryDBManager
+])
+def changes_service(request, change_db_settings, seqnumber_generator):
+    return ChangesService(
+        request.param(**change_db_settings),
+        seqnumber_generator
+    )
+
+
+@pytest.fixture(params=[
+    CouchDBManager,
+    InMemoryDBManager
+])
+def database_service(request, article_db_settings, changes_service):
     return DatabaseService(
         request.param(**article_db_settings),
-        request.param(**change_db_settings)
+        changes_service
     )
 
 
@@ -58,19 +101,25 @@ def database_service(request, article_db_settings, change_db_settings):
 def setup(request, persistence_config, database_service):
     def fin():
         database_service.db_manager.drop_database()
-        database_service.changes_db_manager.drop_database()
+        database_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
 
 
 @pytest.fixture
-def inmemory_db_setup(request, persistence_config):
+def inmemory_db_setup(request, persistence_config, change_db_settings):
     inmemory_db_service = DatabaseService(
         InMemoryDBManager(database_name='articles'),
-        InMemoryDBManager(database_name='changes')
+        ChangesService(
+            InMemoryDBManager(database_name='changes'),
+            SeqNumGenerator(
+                InMemoryDBManager(database_name='seqnum'),
+                'CHANGE'
+            )
+        )
     )
 
     def fin():
-        inmemory_db_service.changes_db_manager.drop_database()
+        inmemory_db_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
     return inmemory_db_service
 
