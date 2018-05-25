@@ -13,7 +13,7 @@ def get_article_record(content={'Test': 'ChangeRecord'}):
                       created_date=datetime.utcnow())
 
 
-def test_register_create_change(setup, database_service):
+def test_register_create_change(database_service):
     article_record = get_article_record()
     change_id = database_service.changes_service.register_change(
         article_record,
@@ -29,7 +29,7 @@ def test_register_create_change(setup, database_service):
     assert check_change['created_date'] is not None
 
 
-def test_register_update_change(setup, database_service):
+def test_register_update_change(database_service):
     article_record = get_article_record({'Test': 'ChangeRecord2'})
     change_id = database_service.changes_service.register_change(
         article_record,
@@ -45,7 +45,7 @@ def test_register_update_change(setup, database_service):
     assert check_change['created_date'] is not None
 
 
-def test_register_delete_change(setup, database_service):
+def test_register_delete_change(database_service):
     article_record = get_article_record({'Test': 'ChangeRecord3'})
     change_id = database_service.changes_service.register_change(
         article_record,
@@ -61,7 +61,7 @@ def test_register_delete_change(setup, database_service):
     assert check_change['created_date'] is not None
 
 
-def test_add_attachment_create_change(setup, database_service, xml_test):
+def test_add_attachment_create_change(database_service, xml_test):
     article_record = get_article_record({'Test': 'ChangeRecord4'})
     database_service.register(
         article_record['document_id'],
@@ -93,7 +93,7 @@ def test_add_attachment_create_change(setup, database_service, xml_test):
     assert check_change['created_date'] is not None
 
 
-def test_update_attachment_create_change(setup, database_service, xml_test):
+def test_update_attachment_create_change(database_service, xml_test):
     article_record = get_article_record({'Test': 'ChangeRecord5'})
     database_service.register(
         article_record['document_id'],
