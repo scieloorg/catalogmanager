@@ -25,7 +25,7 @@ def test_list_changes_calls_db_manager_find(inmemory_db_setup,
             (QueryOperator.GREATER_THAN, last_sequence)
         ]
     }
-    sort = [{'created_date': SortOrder.ASC.value}]
+    sort = [{'change_id': SortOrder.ASC.value}]
     inmemory_db_setup.list_changes(last_sequence=last_sequence,
                                    limit=limit)
     _changes_db_manager.find.assert_called_once_with(
