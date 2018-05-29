@@ -50,6 +50,7 @@ def testapp(request, db_settings):
                                           db_settings['password'])
         try:
             db_server.delete('changes')
+            db_server.delete('changes_seqnum')
             db_server.delete('articles')
         except couchdb.http.ResourceNotFound:
             pass

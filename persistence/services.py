@@ -36,21 +36,22 @@ class ChangesService:
                         document_record,
                         change_type,
                         attachment_id=None):
+        sequencial = self.seqnum_generator.new()
         change_record = {
-            'change_id': uuid4().hex,
+            'change_id': sequencial,
             'document_id': document_record['document_id'],
             'document_type': document_record['document_type'],
             'type': change_type.value,
             'created_date': str(datetime.utcnow().timestamp()),
-            'seqnum': self.seqnum_generator.new(),
+            'record_id': str(sequencial),
         }
         if attachment_id:
             change_record.update({'attachment_id': attachment_id})
         self.changes_db_manager.create(
-            change_record['change_id'],
+            change_record['record_id'],
             change_record
         )
-        return change_record['change_id']
+        return change_record['record_id']
 
 
 class DatabaseService:
@@ -248,10 +249,11 @@ class DatabaseService:
         ]
         filter = {
             'change_id': [
-                (QueryOperator.GREATER_THAN, last_sequence)
+                (QueryOperator.GREATER_THAN,
+                 last_sequence if last_sequence else None)
             ]
         }
-        sort = [{'created_date': SortOrder.ASC.value}]
+        sort = [{'change_id': SortOrder.ASC.value}]
         changes = self.changes_service.changes_db_manager.find(
                                                fields=fields,
                                                limit=limit,

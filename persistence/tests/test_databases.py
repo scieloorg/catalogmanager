@@ -7,7 +7,6 @@ from uuid import uuid4
 from persistence.databases import DocumentNotFound, sort_results
 from persistence.services import (
     ChangesService,
-    DatabaseService,
     ChangeType)
 from persistence.models import get_record, RecordType
 
@@ -20,7 +19,7 @@ def get_article_record(content={'Test': 'Test'}):
                       created_date=datetime.utcnow())
 
 
-def test_register_document(setup, database_service):
+def test_register_document(database_service):
     article_record = get_article_record()
     database_service.register(
         article_record['document_id'],
@@ -38,7 +37,6 @@ def test_register_document(setup, database_service):
 
 @patch.object(ChangesService, 'register_change')
 def test_register_document_register_change(mocked_register_change,
-                                           setup,
                                            database_service):
     article_record = get_article_record()
     database_service.register(
@@ -50,7 +48,7 @@ def test_register_document_register_change(mocked_register_change,
                                               ChangeType.CREATE)
 
 
-def test_read_document(setup, database_service):
+def test_read_document(database_service):
     article_record = get_article_record({'Test': 'Test2'})
     database_service.register(
         article_record['document_id'],
@@ -65,7 +63,7 @@ def test_read_document(setup, database_service):
     assert record_check['created_date'] is not None
 
 
-def test_read_document_not_found(setup, database_service):
+def test_read_document_not_found(database_service):
     pytest.raises(
         DocumentNotFound,
         database_service.read,
@@ -73,7 +71,7 @@ def test_read_document_not_found(setup, database_service):
     )
 
 
-def test_update_document(setup, database_service):
+def test_update_document(database_service):
     article_record = get_article_record({'Test': 'Test3'})
     database_service.register(
         article_record['document_id'],
@@ -98,7 +96,6 @@ def test_update_document(setup, database_service):
 
 @patch.object(ChangesService, 'register_change')
 def test_update_document_register_change(mocked_register_change,
-                                         setup,
                                          database_service):
     article_record = get_article_record({'Test': 'Test3'})
     database_service.register(
@@ -117,7 +114,7 @@ def test_update_document_register_change(mocked_register_change,
                                               ChangeType.UPDATE)
 
 
-def test_update_document_not_found(setup, database_service):
+def test_update_document_not_found(database_service):
     article_record = get_article_record({'Test': 'Test4'})
     pytest.raises(
         DocumentNotFound,
@@ -127,7 +124,7 @@ def test_update_document_not_found(setup, database_service):
     )
 
 
-def test_delete_document(setup, database_service):
+def test_delete_document(database_service):
     article_record = get_article_record({'Test': 'Test5'})
     database_service.register(
         article_record['document_id'],
@@ -146,7 +143,6 @@ def test_delete_document(setup, database_service):
 
 @patch.object(ChangesService, 'register_change')
 def test_delete_document_register_change(mocked_register_change,
-                                         setup,
                                          database_service):
     article_record = get_article_record({'Test': 'Test5'})
     database_service.register(
@@ -164,7 +160,7 @@ def test_delete_document_register_change(mocked_register_change,
                                               ChangeType.DELETE)
 
 
-def test_delete_document_not_found(setup, database_service):
+def test_delete_document_not_found(database_service):
     article_record = get_article_record({'Test': 'Test6'})
     pytest.raises(
         DocumentNotFound,
@@ -174,7 +170,7 @@ def test_delete_document_not_found(setup, database_service):
     )
 
 
-def test_put_attachment_to_document(setup, database_service, xml_test):
+def test_put_attachment_to_document(database_service, xml_test):
     article_record = get_article_record({'Test': 'Test7'})
     database_service.register(
         article_record['document_id'],
@@ -200,8 +196,7 @@ def test_put_attachment_to_document(setup, database_service, xml_test):
     )
 
 
-def test_put_attachment_to_document_update_dates(setup,
-                                                 database_service,
+def test_put_attachment_to_document_update_dates(database_service,
                                                  xml_test):
     article_record = get_article_record({'Test': 'Test9'})
     database_service.register(
@@ -229,8 +224,7 @@ def test_put_attachment_to_document_update_dates(setup,
     assert dates_v2[1] > dates_v1[0]
 
 
-def test_put_attachment_to_document_not_found(setup,
-                                              database_service,
+def test_put_attachment_to_document_not_found(database_service,
                                               xml_test):
     article_record = get_article_record({'Test': 'Test8'})
     pytest.raises(
@@ -246,7 +240,7 @@ def test_put_attachment_to_document_not_found(setup,
     )
 
 
-def test_read_document_with_attachments(setup, database_service, xml_test):
+def test_read_document_with_attachments(database_service, xml_test):
     article_record = get_article_record({'Test': 'Test10'})
     file_id = "href_file"
     attachment_list = [
@@ -274,7 +268,7 @@ def test_read_document_with_attachments(setup, database_service, xml_test):
         assert attachment in record_check['attachments']
 
 
-def test_get_attachment_from_document(setup, database_service, xml_test):
+def test_get_attachment_from_document(database_service, xml_test):
     article_record = get_article_record({'Test': 'Test11'})
     database_service.register(
         article_record['document_id'],
@@ -297,8 +291,7 @@ def test_get_attachment_from_document(setup, database_service, xml_test):
     assert attachment == xml_test.encode('utf-8')
 
 
-def test_get_attachment_from_document_not_found(setup,
-                                                database_service,
+def test_get_attachment_from_document_not_found(database_service,
                                                 xml_test):
     article_record = get_article_record({'Test': 'Test12'})
     pytest.raises(
@@ -309,7 +302,7 @@ def test_get_attachment_from_document_not_found(setup,
     )
 
 
-def test_get_attachment_not_found(setup, database_service, xml_test):
+def test_get_attachment_not_found(database_service, xml_test):
     article_record = get_article_record({'Test': 'Test13'})
     file_id = "href_file"
     attachment_list = [
@@ -411,7 +404,7 @@ def test_sort_result():
     assert expected == got
 
 
-def test_add_attachment_properties(setup, database_service, xml_test):
+def test_add_attachment_properties(database_service, xml_test):
     file_properties1 = {
             'content_type': "text/xml",
             'content_size': len(xml_test)
@@ -437,7 +430,7 @@ def test_add_attachment_properties(setup, database_service, xml_test):
     assert expected[key] == article_record[key]
 
 
-def test_get_attachment_properties(setup, database_service, xml_test):
+def test_get_attachment_properties(database_service, xml_test):
 
     article_record = get_article_record({'Test': 'Test11'})
     database_service.register(
@@ -471,7 +464,6 @@ def test_get_attachment_properties(setup, database_service, xml_test):
 
 
 def test_find_documents_by_selected_field_returns_according_to_filter(
-    setup,
     database_service,
     test_documents_records,
     find_criteria_result

@@ -13,6 +13,7 @@ from persistence.databases import (
 from persistence.services import (
     DatabaseService,
     ChangesService,
+    SortOrder
 )
 from persistence.seqnum_generator import SeqNumGenerator
 
@@ -79,30 +80,22 @@ def seqnumber_generator(request, seqnum_db_settings):
     CouchDBManager,
     InMemoryDBManager
 ])
-def changes_service(request, change_db_settings, seqnumber_generator):
-    return ChangesService(
-        request.param(**change_db_settings),
-        seqnumber_generator
+def database_service(request, article_db_settings, change_db_settings,
+                     seqnumber_generator):
+    DBManager = request.param
+    db_service = DatabaseService(
+        DBManager(**article_db_settings),
+        ChangesService(
+            DBManager(**change_db_settings),
+            seqnumber_generator
+        )
     )
 
-
-@pytest.fixture(params=[
-    CouchDBManager,
-    InMemoryDBManager
-])
-def database_service(request, article_db_settings, changes_service):
-    return DatabaseService(
-        request.param(**article_db_settings),
-        changes_service
-    )
-
-
-@pytest.fixture
-def setup(request, persistence_config, database_service):
     def fin():
-        database_service.db_manager.drop_database()
-        database_service.changes_service.changes_db_manager.drop_database()
+        db_service.db_manager.drop_database()
+        db_service.changes_service.changes_db_manager.drop_database()
     request.addfinalizer(fin)
+    return db_service
 
 
 @pytest.fixture
@@ -203,10 +196,73 @@ def filter_limit_result(request, test_documents_records):
     return (find_criteria, expected)
 
 
+@pytest.fixture
+def filter_greater_than_orded_by_result(request, test_documents_records):
+    initial_id = '{:0>17}'.format(5)
+    find_criteria = {
+        'filter': {
+            'document_id': [
+                (QueryOperator.GREATER_THAN, initial_id)
+            ]
+        },
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': [{'document_id': SortOrder.ASC.value}]
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records
+        if document_record['document_id'] > initial_id
+    )
+    return (find_criteria, expected)
+
+
+@pytest.fixture
+def filter_orded_by_result(request, test_documents_records):
+    find_criteria = {
+        'filter': {},
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': [{'document_id': SortOrder.ASC.value}]
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records
+    )
+    return (find_criteria, expected)
+
+
+@pytest.fixture
+def filter_orded_by_desc_result(request, test_documents_records):
+    find_criteria = {
+        'filter': {},
+        'fields': ['document_id', 'field'],
+        'limit': 10,
+        'sort': [{'document_id': SortOrder.DESC.value}]
+    }
+    expected = tuple(
+        {
+            field: document_record[field]
+            for field in ['document_id', 'field']
+        }
+        for document_record in test_documents_records[::-1]
+    )
+    return (find_criteria, expected)
+
+
 @pytest.fixture(params=[
         pytest.lazy_fixture('no_filter_all'),
         pytest.lazy_fixture('filter_greater_than_result'),
         pytest.lazy_fixture('filter_limit_result'),
+        pytest.lazy_fixture('filter_greater_than_orded_by_result'),
+        pytest.lazy_fixture('filter_orded_by_result'),
+        pytest.lazy_fixture('filter_orded_by_desc_result'),
     ]
 )
 def find_criteria_result(request):
