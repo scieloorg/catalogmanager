@@ -8,6 +8,10 @@ from pyramid.paster import get_appsettings
 from pyramid.response import Response
 from pyramid.view import view_config, notfound_view_config
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 
 # Create a service to serve our OpenAPI spec
 swagger = Service(name='OpenAPI',
@@ -38,8 +42,23 @@ def includeme(config):
     config.scan("api.views")
 
 
+def hide(param_name, param_value, name='password'):
+    return param_value if name not in param_name else '*'*2*len(param_value)
+
+
 def main(global_config, **settings):
     config = Configurator(settings=settings)
+
+    LOGGER.info(
+        {
+            'CatalogManager started': {
+                param_name: hide(param_name, param_value)
+                for param_name, param_value in settings.items()
+                if param_name.startswith('catalogmanager')
+            }
+        }
+    )
+
     config.include(includeme)
 
     config.add_route('home', '/')
