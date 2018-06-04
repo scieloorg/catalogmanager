@@ -1,8 +1,17 @@
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
+
+from prometheus_client import Summary
 
 from .databases import QueryOperator
+
+
+REQUEST_TIME_UPD_CHANGE = Summary(
+    'request_processing_upd_chg_seconds', 'Time spent processing upd change')
+REQUEST_TIME_UPD_DOC = Summary(
+    'request_processing_upd_doc_seconds', 'Time spent processing upd doc')
+REQUEST_TIME_UPD_ATT = Summary(
+    'request_processing_upd_att_seconds', 'Time spent processing upd att')
 
 
 class ChangeType(Enum):
@@ -32,6 +41,7 @@ class ChangesService:
         self.changes_db_manager = changes_db_manager
         self.seqnum_generator = seqnum_generator
 
+    @REQUEST_TIME_UPD_CHANGE.time()
     def register_change(self,
                         document_record,
                         change_type,
@@ -70,6 +80,7 @@ class DatabaseService:
         self.db_manager = db_manager
         self.changes_service = changes_service
 
+    @REQUEST_TIME_UPD_DOC.time()
     def register(self, document_id, document_record):
         """
         Persiste registro de um documento e a mudança na base de dados.
@@ -114,6 +125,7 @@ class DatabaseService:
                 self.db_manager.list_attachments(document_id)
         return document_record
 
+    @REQUEST_TIME_UPD_DOC.time()
     def update(self, document_id, document_record):
         """
         Atualiza o registro de um documento e a mudança na base de dados.
@@ -163,6 +175,7 @@ class DatabaseService:
         """
         return self.db_manager.find(selector, fields, sort)
 
+    @REQUEST_TIME_UPD_ATT.time()
     def put_attachment(self, document_id, file_id, content, file_properties):
         """
         Anexa arquivo no registro de um documento pelo ID do documento e
