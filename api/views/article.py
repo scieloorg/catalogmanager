@@ -2,7 +2,6 @@ import io
 from pathlib import Path
 
 from pyramid.httpexceptions import (
-        HTTPCreated,
         HTTPNotFound,
         HTTPInternalServerError,
         )
@@ -14,7 +13,7 @@ import managers
 
 @resource(collection_path='/articles', path='/articles/{id}', renderer='json',
           tags=['articles'])
-class Article:
+class ArticleAPI:
 
     def __init__(self, request, context=None):
         self.request = request
@@ -25,6 +24,19 @@ class Article:
         content = file_field.file.read()
         return managers.create_file(filename=file_path.name,
                                     content=content)
+
+    def collection_post(self):
+        xml_file_field = self.request.POST.get('xml_file')
+        xml_file = self._get_file_property(xml_file_field)
+        managers.post_article(
+            article_id=self.request.POST['article_id'],
+            xml_file=xml_file,
+            **self.request.db_settings
+        )
+        body = {
+            'url': '/rawfiles/7ca9f9b2687cb/' + xml_file_field.filename
+        }
+        return Response(status_code=201, json=body)
 
     def put(self):
         """Receive Article document package which must contain a XML file and
@@ -42,18 +54,20 @@ class Article:
             #novo recurso ou da atualização de um já existente para
             #a emissão correta dos códigos HTTP -- 201 e 200, respectivamente.
             managers.put_article(
-                article_id=self.request.matchdict['id'],
+                article_id=self.request.POST['id'],
                 xml_file=xml_file,
                 assets_files=assets_files,
                 **self.request.db_settings
             )
+            body = {
+                'url': '/rawfiles/7ca9f9b2687cb/' + xml_file_field.filename
+            }
+            return Response(status_code=200, json=body)
         except managers.article_manager.ArticleManagerException as e:
             #XXX a exceção tratada aqui está sinalizando uma miríade de
             #situações excepcionais, que abarca erro de dado fornecido pelo
             #usuário, erro no servidor, e recursos não encontrados.
             raise HTTPInternalServerError(detail=e.message)
-        else:
-            raise HTTPCreated()
 
     def get(self):
         """Returns Article document metadata."""
@@ -62,7 +76,7 @@ class Article:
                 article_id=self.request.matchdict['id'],
                 **self.request.db_settings
             )
-            return article_data
+            return Response(status_code=200, json=article_data)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
 

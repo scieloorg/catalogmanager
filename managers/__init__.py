@@ -56,6 +56,13 @@ def create_file(filename, content):
     return File(file_name=filename, content=content)
 
 
+def post_article(xml_file, **db_settings):
+    """"""
+    article_manager = _get_article_manager(**db_settings)
+    article_manager.add_document()
+    return xml_file.get_version()
+
+
 def put_article(article_id, xml_file, assets_files=[], **db_settings):
     """
     Registra Documento de Artigo, com XML e seus ativos digitais e cria

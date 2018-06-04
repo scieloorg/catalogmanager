@@ -3,6 +3,7 @@ import os
 import couchdb
 import pytest
 import webtest
+from pyramid.paster import get_appsettings
 
 from api import main
 
@@ -30,24 +31,22 @@ def test_package_A(test_fixture_dir):
 
 @pytest.fixture
 def db_settings():
-    return {
-        'db_host': 'http://127.0.0.1',
-        'db_port': '5984',
-        'username': 'admin',
-        'password': 'password'
-    }
+    return get_appsettings('development.ini')
 
 
 @pytest.fixture
 def testapp(request, db_settings):
-    settings = {'__file__': 'development.ini'}
-    test_app = main(settings)
+    test_app = main({}, **db_settings)
 
     def drop_database():
-        db_server = couchdb.Server('{}:{}'.format(db_settings['db_host'],
-                                                  db_settings['db_port']))
-        db_server.resource.credentials = (db_settings['username'],
-                                          db_settings['password'])
+        db_server = couchdb.Server('{}:{}'.format(
+            db_settings['catalogmanager.db.host'],
+            db_settings['catalogmanager.db.port'])
+        )
+        db_server.resource.credentials = (
+            db_settings['catalogmanager.db.username'],
+            db_settings['catalogmanager.db.password']
+        )
         try:
             db_server.delete('changes')
             db_server.delete('changes_seqnum')

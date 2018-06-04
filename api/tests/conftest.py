@@ -1,45 +1,18 @@
 
 from pathlib import Path
 
-import couchdb
 import pytest
-from pyramid.paster import get_appsettings
-from webtest import TestApp
-
-from api import main
+from pyramid import testing
 
 
 @pytest.fixture
-def db_settings():
-    #XXX apenas a implementação in-memory deveria ser usada como dependência
-    #dos testes.  A instância real do CouchDB nunca deveria ser contactada.
-    ini_settings = get_appsettings('development.ini')
-    return {
-        'database_uri': '{}:{}'.format(
-            ini_settings['catalogmanager.db.host'],
-            ini_settings['catalogmanager.db.port']
-        ),
-        'database_username': ini_settings['catalogmanager.db.username'],
-        'database_password': ini_settings['catalogmanager.db.password']
+def dummy_request():
+    request = testing.DummyRequest()
+    request.db_settings = {
+        'host': 'http://localhost',
+        'port': '12345'
     }
-
-
-@pytest.fixture
-def testapp(request, db_settings):
-    settings = {'__file__': 'development.ini'}
-    test_app = main(settings)
-
-    def drop_database():
-        db_server = couchdb.Server(db_settings['database_uri'])
-        db_server.resource.credentials = (db_settings['database_username'],
-                                          db_settings['database_password'])
-        try:
-            db_server.delete('changes')
-            db_server.delete('articles')
-        except couchdb.http.ResourceNotFound:
-            pass
-    request.addfinalizer(drop_database)
-    return TestApp(test_app)
+    return request
 
 
 @pytest.fixture
