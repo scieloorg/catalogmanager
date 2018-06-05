@@ -2,9 +2,10 @@ import io
 from pathlib import Path
 
 from pyramid.httpexceptions import (
-        HTTPNotFound,
-        HTTPInternalServerError,
-        )
+    HTTPNotFound,
+    HTTPInternalServerError,
+    HTTPBadRequest
+)
 from pyramid.response import Response
 from cornice.resource import resource
 
@@ -22,21 +23,27 @@ class ArticleAPI:
     def _get_file_property(self, file_field):
         file_path = Path(file_field.filename)
         content = file_field.file.read()
-        return managers.create_file(filename=file_path.name,
-                                    content=content)
+        try:
+            return managers.create_file(filename=file_path.name,
+                                        content=content)
+        except managers.exceptions.ManagerFileError as e:
+            raise HTTPBadRequest(detail=e.message)
 
     def collection_post(self):
-        xml_file_field = self.request.POST.get('xml_file')
-        xml_file = self._get_file_property(xml_file_field)
-        managers.post_article(
-            article_id=self.request.POST['article_id'],
-            xml_file=xml_file,
-            **self.request.db_settings
-        )
-        body = {
-            'url': '/rawfiles/7ca9f9b2687cb/' + xml_file_field.filename
-        }
-        return Response(status_code=201, json=body)
+        try:
+            xml_file_field = self.request.POST.get('xml_file')
+            xml_file = self._get_file_property(xml_file_field)
+            managers.post_article(
+                article_id=self.request.POST['article_id'],
+                xml_file=xml_file,
+                **self.request.db_settings
+            )
+            body = {
+                'url': '/rawfiles/7ca9f9b2687cb/' + xml_file_field.filename
+            }
+            return Response(status_code=201, json=body)
+        except managers.article_manager.ArticleManagerException as e:
+            raise HTTPInternalServerError(detail=e.message)
 
     def put(self):
         """Receive Article document package which must contain a XML file and

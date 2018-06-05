@@ -1,4 +1,5 @@
 from managers.article_manager import ArticleManager
+from managers.exceptions import ManagerFileError
 from managers.models.article_model import ArticleDocument
 from managers.models.file import File
 from persistence.databases import CouchDBManager

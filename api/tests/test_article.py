@@ -3,7 +3,11 @@ from unittest.mock import patch
 
 import pytest
 from lxml import etree
-from pyramid.httpexceptions import HTTPInternalServerError, HTTPNotFound
+from pyramid.httpexceptions import (
+    HTTPInternalServerError,
+    HTTPNotFound,
+    HTTPBadRequest
+)
 from webob.multidict import MultiDict
 
 import managers
@@ -350,6 +354,52 @@ def test_http_get_asset_file_succeeded(mocked_get_asset_file,
     assert response.status == '200 OK'
     assert response.body == expected[1]
     assert response.content_type == expected[0]
+
+
+@patch.object(managers, 'create_file')
+@patch.object(managers, 'post_article')
+def test_post_article_invalid_xml(mocked_post_article,
+                                  mocked_create_file,
+                                  dummy_request,
+                                  test_xml_file):
+    xml_file = MockCGIFieldStorage("test_xml_file.xml",
+                                   BytesIO(test_xml_file.encode('utf-8')))
+    error_msg = 'Invalid XML Content'
+    mocked_create_file.side_effect = \
+        managers.exceptions.ManagerFileError(
+            message=error_msg
+        )
+    dummy_request.POST = {
+        'article_id': xml_file.filename,
+        'xml_file': xml_file
+    }
+
+    article_api = ArticleAPI(dummy_request)
+    with pytest.raises(HTTPBadRequest) as excinfo:
+        article_api.collection_post()
+    assert excinfo.value.message == error_msg
+
+
+@patch.object(managers, 'post_article')
+def test_post_article_internal_error(mocked_post_article,
+                                     dummy_request,
+                                     test_xml_file):
+    xml_file = MockCGIFieldStorage("test_xml_file.xml",
+                                   BytesIO(test_xml_file.encode('utf-8')))
+    error_msg = 'Error Catalog Manager: {}'.format(123456)
+    mocked_post_article.side_effect = \
+        managers.article_manager.ArticleManagerException(
+            message=error_msg
+        )
+    dummy_request.POST = {
+        'article_id': xml_file.filename,
+        'xml_file': xml_file
+    }
+
+    article_api = ArticleAPI(dummy_request)
+    with pytest.raises(HTTPInternalServerError) as excinfo:
+        article_api.collection_post()
+    assert excinfo.value.message == error_msg
 
 
 @patch.object(managers, 'post_article')
