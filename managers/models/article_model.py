@@ -126,3 +126,12 @@ class ArticleDocument:
             for name, asset in self.assets.items()
             if asset.file is None
         ]
+
+    def set_record(self, record):
+        self.article_id = record['document_id']
+        self.document_type = record['document_type']
+        self.content = record['content']
+        self.created_date = record['created_date']
+        self.updated_date = record['updated_date']
+        self.document_rev = record['document_rev']
+        self.attachments = record['attachments']

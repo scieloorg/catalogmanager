@@ -69,3 +69,9 @@ def test_update_href(test_package_A, test_packA_filenames):
 
     assert len(items) == 1
     assert not article.xml_tree.compare(content)
+
+
+def test_record_set(test_package_A, test_packA_filenames):
+    article = ArticleDocument('ID', test_package_A[0])
+    article.set_record({'document_id': 'x'})
+    assert article.article_id == 'x'
