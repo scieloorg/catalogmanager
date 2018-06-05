@@ -8,8 +8,23 @@ from pyramid.httpexceptions import (
         )
 from pyramid.response import Response
 from cornice.resource import resource
+from prometheus_client import Summary
 
 import managers
+
+
+REQUEST_TIME_API_ARTICLE_GET = Summary(
+    'api_article_get_request_processing_seconds',
+    'Time spent processing api article get')
+REQUEST_TIME_API_XML_GET = Summary(
+    'api_xml_get_request_processing_seconds',
+    'Time spent processing api xml get ')
+REQUEST_TIME_API_ASSET_GET = Summary(
+    'api_asset_get_request_processing_seconds',
+    'Time spent processing api asset get ')
+REQUEST_TIME_API_ARTICLE_PUT = Summary(
+    'api_article_put_request_processing_seconds',
+    'Time spent processing api article put')
 
 
 @resource(collection_path='/articles', path='/articles/{id}', renderer='json',
@@ -26,6 +41,7 @@ class Article:
         return managers.create_file(filename=file_path.name,
                                     content=content)
 
+    @REQUEST_TIME_API_ARTICLE_PUT.time()
     def put(self):
         """Receive Article document package which must contain a XML file and
         assets files referenced."""
@@ -55,6 +71,7 @@ class Article:
         else:
             raise HTTPCreated()
 
+    @REQUEST_TIME_API_ARTICLE_GET.time()
     def get(self):
         """Returns Article document metadata."""
         try:
@@ -74,6 +91,7 @@ class ArticleXML:
         self.request = request
         self.context = context
 
+    @REQUEST_TIME_API_XML_GET.time()
     def get(self):
         """Returns XML Article file with updated public URLs to its assets."""
         try:
@@ -106,6 +124,7 @@ class ArticleAsset:
         self.request = request
         self.context = context
 
+    @REQUEST_TIME_API_ASSET_GET.time()
     def get(self):
         """Returns Asset file."""
         try:
