@@ -2,9 +2,6 @@
 from managers.models.article_model import (
     ArticleDocument,
 )
-from managers.xml.xml_tree import (
-    XMLTree,
-)
 
 
 def test_article(test_package_A, test_packA_filenames):
