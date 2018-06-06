@@ -5,6 +5,7 @@ from pyramid.httpexceptions import (
         HTTPCreated,
         HTTPNotFound,
         HTTPInternalServerError,
+        HTTPServiceUnavailable,
         )
 from pyramid.response import Response
 from cornice.resource import resource
@@ -65,6 +66,27 @@ class Article:
             return article_data
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
+
+
+@resource(path='/articles/{id}/_manifest', renderer='json')
+class ArticleManifest:
+
+    def __init__(self, request, context=None):
+        self.request = request
+        self.context = context
+
+    def get(self):
+        """Returns Article document manifest."""
+        try:
+            article_data = managers.get_article_data(
+                article_id=self.request.matchdict['id'],
+                **self.request.db_settings
+            )
+            return article_data
+        except managers.article_manager.ArticleManagerException as e:
+            raise HTTPNotFound(detail=e.message)
+        except:
+            raise HTTPServiceUnavailable()
 
 
 @resource(path='/articles/{id}/xml', renderer='xml')

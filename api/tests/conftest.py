@@ -25,6 +25,21 @@ def db_settings():
 
 
 @pytest.fixture
+def invalid_db_settings():
+    #XXX apenas a implementação in-memory deveria ser usada como dependência
+    #dos testes.  A instância real do CouchDB nunca deveria ser contactada.
+    ini_settings = get_appsettings('development.ini')
+    return {
+        'database_uri': '{}:{}'.format(
+            ini_settings['catalogmanager.db.host'],
+            ini_settings['catalogmanager.db.port']
+        ),
+        'database_username': ini_settings['catalogmanager.db.username'],
+        'database_password': 'x'
+    }
+
+
+@pytest.fixture
 def testapp(request, db_settings):
     settings = {'__file__': 'development.ini'}
     test_app = main(settings)

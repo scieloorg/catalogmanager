@@ -5,6 +5,7 @@ from unittest.mock import patch
 import webtest
 from lxml import etree
 import managers
+from persistence.databases import DBFailed
 
 
 def _get_file_property(filename, content, size):
@@ -19,6 +20,17 @@ def test_http_get_home(testapp):
     result = testapp.get('/', status=200)
     assert result.status == '200 OK'
     assert result.body == b''
+
+
+@patch.object(managers, 'get_article_data')
+def test_http_get_article_manifest_db_failed(mocked_get_article_data,
+                                                 db_settings,
+                                                 testapp):
+    mocked_get_article_data.side_effect = DBFailed
+    result = testapp.get(
+        '/articles/{}/_manifest'.format('x'),
+        expect_errors=True)
+    assert result.status == '503 Service Unavailable'
 
 
 @patch.object(managers, 'get_article_data')

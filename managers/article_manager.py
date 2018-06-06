@@ -4,7 +4,10 @@ from persistence.models import (
         get_record,
         RecordType,
     )
-from persistence.databases import DocumentNotFound
+from persistence.databases import (
+    DocumentNotFound,
+    DBFailed
+    )
 from persistence.services import DatabaseService
 from .models.article_model import (
     ArticleDocument,
@@ -79,6 +82,8 @@ class ArticleManager:
             raise ArticleManagerException(
                 'ArticleDocument {} not found'.format(article_id)
             )
+        except:
+            raise DBFailed
 
     def get_article_file(self, article_id):
         article_record = self.get_article_data(article_id)
