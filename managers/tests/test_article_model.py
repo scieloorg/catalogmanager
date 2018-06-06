@@ -71,7 +71,39 @@ def test_update_href(test_package_A, test_packA_filenames):
     assert not article.xml_tree.compare(content)
 
 
-def test_record_set(test_package_A, test_packA_filenames):
+def test_record_set(test_package_A):
     article = ArticleDocument('ID', test_package_A[0])
-    article.set_record({'document_id': 'x'})
+    article.set_record({
+        'document_id': 'x',
+        'document_type': 'X',
+        'created_date': 'Xc',
+        'updated_date': 'X3',
+        'document_rev': 'Xba',
+        'attachments': 'Xaaga',
+        'content': b'<root></root>',
+    })
+    assert article.content == b'<root></root>'
     assert article.article_id == 'x'
+    assert article.document_type == 'X'
+    assert article.created_date == 'Xc'
+    assert article.updated_date == 'X3'
+    assert article.document_rev == 'Xba'
+    assert article.attachments == 'Xaaga'
+
+
+def test_article_content_set(test_package_A):
+    article = ArticleDocument('ID', test_package_A[0])
+    article.content = b'<root></root>'
+    assert article.content == b'<root></root>'
+
+
+def test_article_content_set_empty_str(test_package_A):
+    article = ArticleDocument('ID', test_package_A[0])
+    article.content = b''
+    assert article.content == b''
+
+
+def test_article_content_set_None(test_package_A):
+    article = ArticleDocument('ID', test_package_A[0])
+    article.content = None
+    assert article.content is None

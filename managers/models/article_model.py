@@ -128,10 +128,10 @@ class ArticleDocument:
         ]
 
     def set_record(self, record):
-        self.article_id = record['document_id']
-        self.document_type = record['document_type']
-        self.content = record['content']
-        self.created_date = record['created_date']
-        self.updated_date = record['updated_date']
-        self.document_rev = record['document_rev']
-        self.attachments = record['attachments']
+        self.article_id = record.get('document_id')
+        self.document_type = record.get('document_type')
+        self.content = record.get('content')
+        self.created_date = record.get('created_date')
+        self.updated_date = record.get('updated_date')
+        self.document_rev = record.get('document_rev')
+        self.attachments = record.get('attachments')
