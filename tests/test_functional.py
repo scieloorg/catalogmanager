@@ -36,14 +36,14 @@ def test_add_article_register_change(testapp, test_package_A):
             )
             changes_expected['latest'] = latest
     params = OrderedDict([
-        ("article_id", article_id),
+        ("id", article_id),
         ("xml_file", webtest.forms.Upload(xml_file_path))
     ])
     result = testapp.put(url,
                          params=params,
                          upload_files=assets_field,
                          content_type='multipart/form-data')
-    assert result.status_code == 201
+    assert result.status_code == 200
 
     changes_expected['results'].insert(0,
                                        {

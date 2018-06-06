@@ -75,14 +75,20 @@ def main(global_config, **settings):
     config.add_route('metrics', '/metrics')
 
     def couchdb_settings(request):
-        ini_settings = get_appsettings(global_config['__file__'])
+        ini_config = request.registry.settings
         return {
             'database_uri': '{}:{}'.format(
-                ini_settings['catalogmanager.db.host'],
-                ini_settings['catalogmanager.db.port']
+                ini_config.get('catalogmanager.db.host', ''),
+                ini_config.get('catalogmanager.db.port', '')
             ),
-            'database_username': ini_settings['catalogmanager.db.username'],
-            'database_password': ini_settings['catalogmanager.db.password']
+            'database_username': ini_config.get(
+                'catalogmanager.db.username',
+                ''
+            ),
+            'database_password': ini_config.get(
+                'catalogmanager.db.password',
+                ''
+            )
         }
 
     config.add_request_method(couchdb_settings, 'db_settings', reify=True)
