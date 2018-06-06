@@ -1,33 +1,27 @@
 from unittest.mock import patch
 
-from pyramid import testing
-
 from api.views.change import ChangeAPI
 
 
 @patch('managers.list_changes')
 def test_change_api_collection_post_calls_list_changes(mocked_list_changes,
-                                                       db_settings,
-                                                       testapp):
-    request = testing.DummyRequest()
-    request.GET = {
+                                                       dummy_request):
+    dummy_request.GET = {
         'since': '123456',
         'limit': 100,
     }
-    request.db_settings = db_settings
-    ChangeAPI.collection_get(ChangeAPI(request))
+    ChangeAPI.collection_get(ChangeAPI(dummy_request))
 
     mocked_list_changes.assert_called_once_with(
-        last_sequence=request.GET['since'],
-        limit=request.GET['limit'],
-        **db_settings
+        last_sequence=dummy_request.GET['since'],
+        limit=dummy_request.GET['limit'],
+        **dummy_request.db_settings
     )
 
 
 @patch('managers.list_changes')
 def test_change_api_collection_post_return_changes_list(mocked_list_changes,
-                                                        db_settings,
-                                                        testapp):
+                                                        dummy_request):
     expected = [
         {
             "change_id": "{}".format(id),
@@ -38,12 +32,10 @@ def test_change_api_collection_post_return_changes_list(mocked_list_changes,
         for id in range(123457, 123466)
     ]
     mocked_list_changes.return_value = expected
-    request = testing.DummyRequest()
-    request.GET = {
+    dummy_request.GET = {
         'since': '123456',
         'limit': 100,
     }
-    request.db_settings = db_settings
-    response = ChangeAPI.collection_get(ChangeAPI(request))
+    response = ChangeAPI.collection_get(ChangeAPI(dummy_request))
     assert response.status_code == 200
     assert response.json == expected

@@ -8,6 +8,9 @@ from pyramid.paster import get_appsettings
 from pyramid.response import Response
 from pyramid.view import view_config, notfound_view_config
 
+from prometheus_client import generate_latest
+
+
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -29,6 +32,14 @@ def openAPI_spec(request):
 @view_config(route_name='home')
 def home(request):
     return Response('')
+
+
+@view_config(route_name='metrics')
+def metrics(request):
+    return Response(
+        body=generate_latest(),
+        charset='utf-8',
+        content_type='text/plain')
 
 
 @notfound_view_config()
@@ -58,20 +69,26 @@ def main(global_config, **settings):
             }
         }
     )
-
     config.include(includeme)
 
     config.add_route('home', '/')
+    config.add_route('metrics', '/metrics')
 
     def couchdb_settings(request):
-        ini_settings = get_appsettings(global_config['__file__'])
+        ini_config = request.registry.settings
         return {
             'database_uri': '{}:{}'.format(
-                ini_settings['catalogmanager.db.host'],
-                ini_settings['catalogmanager.db.port']
+                ini_config.get('catalogmanager.db.host', ''),
+                ini_config.get('catalogmanager.db.port', '')
             ),
-            'database_username': ini_settings['catalogmanager.db.username'],
-            'database_password': ini_settings['catalogmanager.db.password']
+            'database_username': ini_config.get(
+                'catalogmanager.db.username',
+                ''
+            ),
+            'database_password': ini_config.get(
+                'catalogmanager.db.password',
+                ''
+            )
         }
 
     config.add_request_method(couchdb_settings, 'db_settings', reify=True)

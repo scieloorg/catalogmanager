@@ -74,6 +74,9 @@ class ArticleManager:
                     file_properties=asset.file.properties()
                 )
 
+    def add_document(self, article_document):
+        pass
+
     def get_article_data(self, article_id):
         try:
             article_record = self.article_db_service.read(article_id)

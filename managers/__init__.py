@@ -1,4 +1,5 @@
 from managers.article_manager import ArticleManager
+from managers.exceptions import ManagerFileError
 from managers.models.article_model import ArticleDocument
 from managers.models.file import File
 from persistence.databases import CouchDBManager
@@ -54,6 +55,13 @@ def create_file(filename, content):
     Objeto File, que deverá ser informado nas funções do managers
     """
     return File(file_name=filename, content=content)
+
+
+def post_article(xml_file, **db_settings):
+    """"""
+    article_manager = _get_article_manager(**db_settings)
+    article_manager.add_document()
+    return xml_file.get_version()
 
 
 def put_article(article_id, xml_file, assets_files=[], **db_settings):
