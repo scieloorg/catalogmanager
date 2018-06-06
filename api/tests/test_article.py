@@ -29,6 +29,13 @@ def _get_file_property(filename, content, size):
     }
 
 
+class MockCGIFieldStorage(object):
+
+    def __init__(self, name, file):
+        self.filename = name
+        self.file = file
+
+
 @patch.object(managers, 'get_article_data')
 def test_http_get_article_manifest_db_failed(
         mocked_get_article_data,
@@ -40,11 +47,16 @@ def test_http_get_article_manifest_db_failed(
         article_manifest_api.get()
 
 
-class MockCGIFieldStorage(object):
-
-    def __init__(self, name, file):
-        self.filename = name
-        self.file = file
+@patch.object(managers, 'get_article_data')
+def test_http_get_article_manifest_article_not_found(
+        mocked_get_article_data,
+        dummy_request):
+    mocked_get_article_data.side_effect = \
+        managers.article_manager.ArticleManagerException('')
+    dummy_request.matchdict = {'id': 'x'}
+    article_manifest_api = ArticleManifest(dummy_request)
+    with pytest.raises(HTTPNotFound):
+        article_manifest_api.get()
 
 
 @patch.object(managers, 'get_article_data')

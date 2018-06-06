@@ -109,7 +109,10 @@ def get_article_data(article_id, **db_settings):
     :returns: dicionário com os metadados
     """
     article_manager = _get_article_manager(**db_settings)
-    return article_manager.get_article_data(article_id)
+
+    record = article_manager.get_article_data(article_id)
+
+    return record
 
 
 def get_article_file(article_id, **db_settings):

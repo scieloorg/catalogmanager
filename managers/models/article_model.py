@@ -43,11 +43,12 @@ class ArticleDocument:
 
         >>> doc = ArticleDocument('art01', <instância de File>)
     """
-    def __init__(self, article_id, xml_file):
+    def __init__(self, article_id, data):
         self.id = article_id
         self.assets = {}
         self.unexpected_files_list = []
-        self.xml_file = xml_file
+        self.xml_file = data.get('xml_file')
+        self.set_data(article_id, data)
 
     @property
     def xml_file(self):
@@ -127,11 +128,11 @@ class ArticleDocument:
             if asset.file is None
         ]
 
-    def set_record(self, record):
-        self.article_id = record.get('document_id')
-        self.document_type = record.get('document_type')
-        self.content = record.get('content')
-        self.created_date = record.get('created_date')
-        self.updated_date = record.get('updated_date')
-        self.document_rev = record.get('document_rev')
-        self.attachments = record.get('attachments')
+    def set_data(self, article_id, data):
+        self.article_id = article_id
+        self.document_type = data.get('document_type')
+        self.manifest = data.get('content')
+        self.created_date = data.get('created_date')
+        self.updated_date = data.get('updated_date')
+        self.document_rev = data.get('document_rev')
+        self.attachments = data.get('attachments')

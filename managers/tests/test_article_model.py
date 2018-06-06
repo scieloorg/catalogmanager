@@ -5,7 +5,7 @@ from managers.models.article_model import (
 
 
 def test_article(test_package_A, test_packA_filenames):
-    article = ArticleDocument('ID', test_package_A[0])
+    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
     article.update_asset_files(test_package_A[1:])
     expected = {
         'assets': [asset for asset in test_packA_filenames[1:]],
@@ -19,7 +19,7 @@ def test_article(test_package_A, test_packA_filenames):
 
 
 def test_missing_files_list(test_package_B):
-    article = ArticleDocument('ID', test_package_B[0])
+    article = ArticleDocument('ID', {'xml_file': test_package_B[0]})
     article.update_asset_files(test_package_B[1:])
 
     assert len(article.assets) == 3
@@ -37,7 +37,7 @@ def test_missing_files_list(test_package_B):
 
 
 def test_unexpected_files_list(test_package_C, test_packC_filenames):
-    article = ArticleDocument('ID', test_package_C[0])
+    article = ArticleDocument('ID', {'xml_file': test_package_C[0]})
     article.update_asset_files(test_package_C[1:])
 
     assert len(article.assets) == 2
@@ -56,7 +56,7 @@ def test_unexpected_files_list(test_package_C, test_packC_filenames):
 def test_update_href(test_package_A, test_packA_filenames):
     new_href = 'novo href'
     filename = '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    article = ArticleDocument('ID', test_package_A[0])
+    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
     article.update_asset_files(test_package_A[1:])
     content = article.xml_tree.content
     asset = article.assets.get(filename)
@@ -72,17 +72,20 @@ def test_update_href(test_package_A, test_packA_filenames):
 
 
 def test_record_set(test_package_A):
-    article = ArticleDocument('ID', test_package_A[0])
-    article.set_record({
-        'document_id': 'x',
-        'document_type': 'X',
-        'created_date': 'Xc',
-        'updated_date': 'X3',
-        'document_rev': 'Xba',
-        'attachments': 'Xaaga',
-        'content': b'<root></root>',
-    })
-    assert article.content == b'<root></root>'
+    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
+    article.set_data(
+        'x',
+        {
+            'document_id': 'x',
+            'document_type': 'X',
+            'created_date': 'Xc',
+            'updated_date': 'X3',
+            'document_rev': 'Xba',
+            'attachments': 'Xaaga',
+            'content': b'<root></root>',
+        }
+    )
+    assert article.manifest == b'<root></root>'
     assert article.article_id == 'x'
     assert article.document_type == 'X'
     assert article.created_date == 'Xc'
@@ -91,19 +94,6 @@ def test_record_set(test_package_A):
     assert article.attachments == 'Xaaga'
 
 
-def test_article_content_set(test_package_A):
-    article = ArticleDocument('ID', test_package_A[0])
-    article.content = b'<root></root>'
-    assert article.content == b'<root></root>'
-
-
-def test_article_content_set_empty_str(test_package_A):
-    article = ArticleDocument('ID', test_package_A[0])
-    article.content = b''
-    assert article.content == b''
-
-
-def test_article_content_set_None(test_package_A):
-    article = ArticleDocument('ID', test_package_A[0])
-    article.content = None
-    assert article.content is None
+def test_manifest_get(test_package_A):
+    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
+    assert article.manifest is None

@@ -80,7 +80,11 @@ class ArticleManager:
     def get_article_data(self, article_id):
         try:
             article_record = self.article_db_service.read(article_id)
-            return article_record
+            article_document = ArticleDocument(
+                article_record['document_id'],
+                article_record
+            )
+            return article_document
         except DocumentNotFound:
             raise ArticleManagerException(
                 'ArticleDocument {} not found'.format(article_id)
