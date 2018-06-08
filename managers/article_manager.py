@@ -40,7 +40,8 @@ class ArticleManager:
         return article.unexpected_files_list, article.missing_files_list
 
     def receive_xml_file(self, id, xml_file):
-        article = ArticleDocument(id, xml_file)
+        article = ArticleDocument(id)
+        article.xml_file = xml_file
 
         article_record = Record(
             document_id=article.id,
@@ -77,13 +78,13 @@ class ArticleManager:
     def add_document(self, article_document):
         pass
 
-    def get_article_data(self, article_id):
+    def get_article_document(self, article_id):
         try:
             article_record = self.article_db_service.read(article_id)
             article_document = ArticleDocument(
-                article_record['document_id'],
-                article_record
+                article_record['document_id']
             )
+            article_document.set_data(article_record)
             return article_document
         except DocumentNotFound:
             raise ArticleManagerException(
@@ -93,23 +94,21 @@ class ArticleManager:
             raise DBFailed
 
     def get_article_file(self, article_id):
-        article_record = self.get_article_data(article_id)
         try:
+            article_document = self.get_article_document(article_id)
             attachment = self.article_db_service.get_attachment(
                 document_id=article_id,
-                file_id=article_record['content']['xml']
+                file_id=article_document.xml_name
             )
-            xml_file = File(file_name=article_record['content']['xml'],
-                            content=attachment)
-            return xml_file.content
+            return attachment
         except DocumentNotFound:
             raise ArticleManagerException(
                 'XML file {} not found'.format(article_id)
             )
 
     def get_asset_files(self, article_id):
-        article_record = self.get_article_data(article_id)
-        assets = article_record['content'].get('assets') or []
+        article_document = self.get_article_document(article_id)
+        assets = article_document.assets or []
         asset_files = {}
         missing = []
         for file_id in assets:

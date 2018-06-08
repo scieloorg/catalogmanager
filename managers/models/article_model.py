@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import os
 from ..xml.article_xml_tree import ArticleXMLTree
 
 
@@ -41,14 +42,16 @@ class ArticleDocument:
 
     Exemplo de uso:
 
-        >>> doc = ArticleDocument('art01', <instância de File>)
+        >>> doc = ArticleDocument('art01')
     """
-    def __init__(self, article_id, data):
+    def __init__(self, article_id):
         self.id = article_id
         self.assets = {}
         self.unexpected_files_list = []
-        self.xml_file = data.get('xml_file')
-        self.set_data(article_id, data)
+        self._xml_file = None
+
+        self.xml_name = None
+        self.xml_content = None
 
     @property
     def xml_file(self):
@@ -68,11 +71,12 @@ class ArticleDocument:
     @xml_file.setter
     def xml_file(self, xml_file):
         self._xml_file = xml_file
-        self.xml_tree = ArticleXMLTree(self._xml_file.content)
-        self.assets = {
-            name: AssetDocument(node)
-            for name, node in self.xml_tree.asset_nodes.items()
-        }
+        if xml_file is not None:
+            self.xml_tree = ArticleXMLTree(self._xml_file.content)
+            self.assets = {
+                name: AssetDocument(node)
+                for name, node in self.xml_tree.asset_nodes.items()
+            }
 
     def update_asset_files(self, files):
         """Associa a sequência de ativos ``files`` aos metadados de um Artigo,
@@ -128,11 +132,61 @@ class ArticleDocument:
             if asset.file is None
         ]
 
-    def set_data(self, article_id, data):
-        self.article_id = article_id
-        self.document_type = data.get('document_type')
-        self.manifest = data.get('content')
-        self.created_date = data.get('created_date')
-        self.updated_date = data.get('updated_date')
-        self.document_rev = data.get('document_rev')
-        self.attachments = data.get('attachments')
+    def _v0_to_v1(self, record):
+        if record.get('id') is not None:
+            return record
+        _record = {}
+        _record['id'] = record.get('document_id')
+
+        _url = '/rawfiles/{}/{}'
+        attachments = record.get('attachments', [])
+
+        version = {}
+        version['data'] = None
+        if len(attachments) > 0:
+            version['data'] = _url.format(_record['id'], attachments[0])
+
+            assets = []
+            for att in attachments[1:]:
+                asset = {}
+                asset[att] = [_url.format(_record['id'], att)]
+                assets.append(asset)
+            version['assets'] = assets
+        versions = [version]
+        _record['versions'] = versions
+        return _record
+
+    def set_data(self, data):
+        content = self._v0_to_v1(data)
+        self.manifest = content
+        self.id = content['id']
+        if len(content['versions']) > 0:
+            self.xml_name = content['versions'][-1]['data']
+            if self.xml_name and '/' in self.xml_name:
+                self.xml_name = os.path.basename(self.xml_name)
+
+    @property
+    def last(self):
+        versions = self.manifest.get('versions', [])
+        if len(versions) > 0:
+            return versions[-1]
+
+    @property
+    def asset_files_info(self):
+        versions = self.manifest.get('versions', [])
+        if len(versions) > 0:
+            version = versions[-1]
+            assets = {}
+            for asset_data in version.get('assets', {}):
+                for name, asset_versions in asset_data.items():
+                    assets[name] = asset_versions[-1]
+            return assets
+
+    @property
+    def asset_endpoints(self):
+        return self.asset_files_info.values()
+
+    @property
+    def asset_basenames(self):
+        return [os.path.basename(f) for f in self.asset_endpoints]
+

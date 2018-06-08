@@ -1,11 +1,13 @@
 
 from managers.models.article_model import (
     ArticleDocument,
+    AssetDocument,
 )
 
 
 def test_article(test_package_A, test_packA_filenames):
-    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
+    article = ArticleDocument('ID')
+    article.xml_file = test_package_A[0]
     article.update_asset_files(test_package_A[1:])
     expected = {
         'assets': [asset for asset in test_packA_filenames[1:]],
@@ -19,7 +21,8 @@ def test_article(test_package_A, test_packA_filenames):
 
 
 def test_missing_files_list(test_package_B):
-    article = ArticleDocument('ID', {'xml_file': test_package_B[0]})
+    article = ArticleDocument('ID')
+    article.xml_file = test_package_B[0]
     article.update_asset_files(test_package_B[1:])
 
     assert len(article.assets) == 3
@@ -37,7 +40,8 @@ def test_missing_files_list(test_package_B):
 
 
 def test_unexpected_files_list(test_package_C, test_packC_filenames):
-    article = ArticleDocument('ID', {'xml_file': test_package_C[0]})
+    article = ArticleDocument('ID')
+    article.xml_file = test_package_C[0]
     article.update_asset_files(test_package_C[1:])
 
     assert len(article.assets) == 2
@@ -56,7 +60,8 @@ def test_unexpected_files_list(test_package_C, test_packC_filenames):
 def test_update_href(test_package_A, test_packA_filenames):
     new_href = 'novo href'
     filename = '0034-8910-rsp-S01518-87872016050006741-gf01.jpg'
-    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
+    article = ArticleDocument('ID')
+    article.xml_file = test_package_A[0]
     article.update_asset_files(test_package_A[1:])
     content = article.xml_tree.content
     asset = article.assets.get(filename)
@@ -71,29 +76,50 @@ def test_update_href(test_package_A, test_packA_filenames):
     assert not article.xml_tree.compare(content)
 
 
-def test_record_set(test_package_A):
-    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
-    article.set_data(
-        'x',
-        {
+def test_v0_to_v1():
+    record_v0 = {
+        'document_id': '0034-8910-rsp-48-2-0275',
+        'document_type': 'X',
+        'created_date': 'Xc',
+        'updated_date': 'X3',
+        'document_rev': 'Xba',
+        'attachments': [
+            '0034-8910-rsp-48-2-0275.xml',
+            '0034-8910-rsp-48-2-0275-gf01.gif'],
+        'content': {'xml': '0034-8910-rsp-48-2-0275.xml'},
+    }
+    expected = {
+      "id": "0034-8910-rsp-48-2-0275",
+      "versions": [
+        {"data":
+         "/rawfiles/0034-8910-rsp-48-2-0275/0034-8910-rsp-48-2-0275.xml",
+         "assets": [
+           {"0034-8910-rsp-48-2-0275-gf01.gif": [
+                "/rawfiles/0034-8910-rsp-48-2-0275/"
+                "0034-8910-rsp-48-2-0275-gf01.gif"
+                ]}
+            ]
+         }
+      ]
+    }
+    article = ArticleDocument('ID')
+    assert article._v0_to_v1(record_v0) == expected
+
+
+def test_record_v0_set(test_package_A):
+    article = ArticleDocument('ID')
+    record = {
             'document_id': 'x',
             'document_type': 'X',
             'created_date': 'Xc',
             'updated_date': 'X3',
             'document_rev': 'Xba',
-            'attachments': 'Xaaga',
-            'content': b'<root></root>',
+            'attachments': ['a.xml', 'a1.jpg'],
+            'content': {'xml': 'a.xml'},
         }
-    )
-    assert article.manifest == b'<root></root>'
-    assert article.article_id == 'x'
-    assert article.document_type == 'X'
-    assert article.created_date == 'Xc'
-    assert article.updated_date == 'X3'
-    assert article.document_rev == 'Xba'
-    assert article.attachments == 'Xaaga'
+    article.set_data(record)
 
-
-def test_manifest_get(test_package_A):
-    article = ArticleDocument('ID', {'xml_file': test_package_A[0]})
-    assert article.manifest is None
+    assert article.id == 'x'
+    assert article.manifest == article._v0_to_v1(record)
+    assert article.asset_basenames == ['a1.jpg']
+    

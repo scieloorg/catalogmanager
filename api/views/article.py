@@ -97,11 +97,11 @@ class ArticleAPI:
     def get(self):
         """Returns Article document metadata."""
         try:
-            article_data = managers.get_article_data(
+            article_document = managers.get_article_document(
                 article_id=self.request.matchdict['id'],
                 **self.request.db_settings
             )
-            return Response(status_code=200, json=article_data)
+            return Response(status_code=200, json=article_document.manifest)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
 
@@ -116,11 +116,11 @@ class ArticleManifest:
     def get(self):
         """Returns Article document manifest."""
         try:
-            article_data = managers.get_article_data(
+            article_document = managers.get_article_document(
                 article_id=self.request.matchdict['id'],
                 **self.request.db_settings
             )
-            return article_data
+            return Response(status_code=200, json=article_document.manifest)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
         except:
@@ -143,15 +143,15 @@ class ArticleXML:
                 article_id=article_id,
                 **self.request.db_settings
             )
-            article_data = managers.get_article_data(
+            article_document = managers.get_article_document(
                 article_id=article_id,
                 **self.request.db_settings
             )
-            if article_data['content'].get('assets'):
+            if article_document:
                 xml_file_content = managers.set_assets_public_url(
                     article_id=article_id,
                     xml_content=xml_file_content,
-                    assets_filenames=article_data['content']['assets'],
+                    assets_filenames=article_document.asset_basenames,
                     public_url='/articles/{}/assets/{}'
                 )
             return Response(content_type='application/xml',
