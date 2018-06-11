@@ -37,22 +37,22 @@ class MockCGIFieldStorage(object):
         self.file = file
 
 
-@patch.object(managers, 'get_article_manifest')
+@patch.object(managers, 'get_article_document')
 def test_http_get_article_manifest_db_failed(
-        mocked_get_article_manifest,
+        mocked_get_article_document,
         dummy_request):
-    mocked_get_article_manifest.side_effect = DBFailed
+    mocked_get_article_document.side_effect = DBFailed
     dummy_request.matchdict = {'id': 'x'}
     article_manifest_api = ArticleManifest(dummy_request)
     with pytest.raises(HTTPServiceUnavailable):
         article_manifest_api.get()
 
 
-@patch.object(managers, 'get_article_manifest')
+@patch.object(managers, 'get_article_document')
 def test_http_get_article_manifest_not_found(
-        mocked_get_article_manifest,
+        mocked_get_article_document,
         dummy_request):
-    mocked_get_article_manifest.side_effect = \
+    mocked_get_article_document.side_effect = \
         managers.article_manager.ArticleManagerException('')
     dummy_request.matchdict = {'id': 'x'}
     article_manifest_api = ArticleManifest(dummy_request)
@@ -60,7 +60,10 @@ def test_http_get_article_manifest_not_found(
         article_manifest_api.get()
 
 
-def test_http_get_article_manifest_succeeded(dummy_request):
+@patch.object(managers, 'get_article_document')
+def test_http_get_article_manifest_succeeded(
+        mocked_get_article_document,
+        dummy_request):
     article_id = 'ID123456'
     expected = {
       "id": "0034-8910-rsp-48-2-0275",
@@ -77,14 +80,17 @@ def test_http_get_article_manifest_succeeded(dummy_request):
       ]
     }
     article_document = ArticleDocument(article_id)
-    article_document.set_data(expected)
+    article_document.manifest = expected
+
+    mocked_get_article_document.return_value = article_document
 
     dummy_request.matchdict = {'id': article_id}
 
     article_api = ArticleManifest(dummy_request)
+
     response = article_api.get()
     assert response.status == '200 OK'
-    assert response.json == article_document.manifest
+    assert response.json == expected
 
 
 @patch.object(managers, 'get_article_file')
@@ -121,9 +127,9 @@ def test_http_get_xml_file_not_found(mocked_get_article_file, dummy_request):
 
 
 @patch.object(managers, 'get_article_file')
-@patch.object(managers, 'get_article_document')
-def test_http_get_xml_file_calls_get_article_document(
-        mocked_get_article_document,
+@patch.object(managers, 'get_article_data')
+def test_http_get_xml_file_calls_get_article_data(
+        mocked_get_article_data,
         mocked_get_article_file,
         dummy_request,
         test_xml_file):
@@ -133,18 +139,18 @@ def test_http_get_xml_file_calls_get_article_document(
 
     article_xml = ArticleXML(dummy_request)
     article_xml.get()
-    mocked_get_article_document.assert_called_once_with(
+    mocked_get_article_data.assert_called_once_with(
         article_id=article_id,
         **dummy_request.db_settings
     )
 
 
 @patch.object(managers, 'get_article_file')
-@patch.object(managers, 'get_article_document')
+@patch.object(managers, 'get_article_data')
 @patch.object(managers, 'set_assets_public_url')
 def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
     mocked_set_assets_public_url,
-    mocked_get_article_document,
+    mocked_get_article_data,
     mocked_get_article_file,
     dummy_request,
     test_article_files,
@@ -155,7 +161,14 @@ def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
         asset_file.name
         for asset_file in test_article_files[1:]
     ]
-    mocked_get_article_document.xml_name = test_article_files[0]
+    mocked_get_article_data.return_value = {
+        "document_id": article_id,
+        "document_type": "ART",
+        "content": {
+            'xml': test_article_files[0],
+            'assets': assets
+        },
+    }
     mocked_get_article_file.return_value = test_xml_file.encode('utf-8')
     mocked_set_assets_public_url.return_value = b'Test123'
     dummy_request.matchdict = {'id': article_id}
@@ -170,18 +183,24 @@ def test_http_get_xml_file_calls_set_assets_public_url_if_there_is_assets(
 
 
 @patch.object(managers, 'get_article_file')
-@patch.object(managers, 'get_article_document')
+@patch.object(managers, 'get_article_data')
 @patch.object(managers, 'set_assets_public_url')
 def test_http_get_xml_file_doesnt_calls_set_assets_public_url_if_no_assets(
     mocked_set_assets_public_url,
-    mocked_get_article_document,
+    mocked_get_article_data,
     mocked_get_article_file,
     dummy_request,
     test_article_files,
     test_xml_file
 ):
     article_id = 'ID123456'
-    mocked_get_article_document.xml_name = "test.xml"
+    mocked_get_article_data.return_value = {
+        "document_id": article_id,
+        "document_type": "ART",
+        "content": {
+            'xml': "test.xml",
+        },
+    }
     mocked_get_article_file.return_value = test_xml_file.encode('utf-8')
     dummy_request.matchdict = {'id': article_id}
     article_xml = ArticleXML(dummy_request)
@@ -190,8 +209,8 @@ def test_http_get_xml_file_doesnt_calls_set_assets_public_url_if_no_assets(
 
 
 @patch.object(managers, 'get_article_file')
-@patch.object(managers, 'get_article_document')
-def test_http_get_xml_file_succeeded(mocked_get_article_document,
+@patch.object(managers, 'get_article_data')
+def test_http_get_xml_file_succeeded(mocked_get_article_data,
                                      mocked_get_article_file,
                                      dummy_request,
                                      test_article_files,
@@ -208,7 +227,14 @@ def test_http_get_xml_file_succeeded(mocked_get_article_document,
         '/articles/{}/assets/{}'.format(article_id, asset_file.name)
         for asset_file in test_article_files[1:]
     ]
-    mocked_get_article_document.xml_name = test_article_files[0]
+    mocked_get_article_data.return_value = {
+        "document_id": article_id,
+        "document_type": "ART",
+        "content": {
+            'xml': test_article_files[0],
+            'assets': assets
+        },
+    }
     mocked_get_article_file.return_value = test_xml_file.encode('utf-8')
     dummy_request.matchdict = {'id': article_id}
 

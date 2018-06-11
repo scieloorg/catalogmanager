@@ -57,8 +57,13 @@ def test_add_article_register_change(testapp, test_package_A):
     assert result.status_code == 200
     assert result.json is not None
     res_dict = result.json
-    assert res_dict.get("id") == article_id
-    assert res_dict.get("versions") is not None
+    assert res_dict.get("document_id") == article_id
+    assert res_dict.get("content") is not None
+    assert res_dict["content"]["xml"] == os.path.basename(xml_file_path)
+    res_assets = res_dict["content"].get("assets")
+    assert isinstance(res_assets, list)
+    for asset_file in assets_files:
+        assert os.path.basename(asset_file) in res_assets
 
     # Deve ser possível ter uma URL para resgatar o arquivo XML e os ativos
     # digitais
@@ -89,7 +94,9 @@ def test_add_article_register_change(testapp, test_package_A):
     assert result.json is not None
     assert len(result.json) > len(changes_expected['results'])
     for resp_result, expected in zip(result.json, changes_expected['results']):
-        assert resp_result.id == expected['document_id']
+        assert resp_result['document_id'] == expected['document_id']
+        assert resp_result['document_type'] == expected['document_type']
+        assert resp_result['type'] == expected['type']
 
     last_sequence = result.json[-1]['change_id']
     result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,

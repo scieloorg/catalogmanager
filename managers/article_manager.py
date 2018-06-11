@@ -78,6 +78,17 @@ class ArticleManager:
     def add_document(self, article_document):
         pass
 
+    def get_article_data(self, article_id):
+        try:
+            article_record = self.article_db_service.read(article_id)
+            return article_record
+        except DocumentNotFound:
+            raise ArticleManagerException(
+                'ArticleDocument {} not found'.format(article_id)
+            )
+        except:
+            raise DBFailed
+
     def get_article_document(self, article_id):
         try:
             article_record = self.article_db_service.read(article_id)
@@ -94,20 +105,22 @@ class ArticleManager:
             raise DBFailed
 
     def get_article_file(self, article_id):
+        article_record = self.get_article_data(article_id)
         try:
-            article_document = self.get_article_document(article_id)
             attachment = self.article_db_service.get_attachment(
                 document_id=article_id,
-                file_id=article_document.xml_name
+                file_id=article_record['content']['xml']
             )
-            return attachment
+            xml_file = File(file_name=article_record['content']['xml'],
+                            content=attachment)
+            return xml_file.content
         except DocumentNotFound:
             raise ArticleManagerException(
                 'XML file {} not found'.format(article_id)
             )
 
     def get_asset_files(self, article_id):
-        article_document = self.get_article_document(article_id)
+        article_document = self.get_article_data(article_id)
         assets = article_document.assets or []
         asset_files = {}
         missing = []

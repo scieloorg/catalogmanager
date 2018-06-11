@@ -97,11 +97,11 @@ class ArticleAPI:
     def get(self):
         """Returns Article document metadata."""
         try:
-            article_document = managers.get_article_document(
+            record = managers.get_article_data(
                 article_id=self.request.matchdict['id'],
                 **self.request.db_settings
             )
-            return Response(status_code=200, json=article_document.manifest)
+            return Response(status_code=200, json=record)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
 
@@ -143,15 +143,15 @@ class ArticleXML:
                 article_id=article_id,
                 **self.request.db_settings
             )
-            article_document = managers.get_article_document(
+            article_data = managers.get_article_data(
                 article_id=article_id,
                 **self.request.db_settings
             )
-            if article_document:
+            if article_data['content'].get('assets'):
                 xml_file_content = managers.set_assets_public_url(
                     article_id=article_id,
                     xml_content=xml_file_content,
-                    assets_filenames=article_document.asset_basenames,
+                    assets_filenames=article_data['content']['assets'],
                     public_url='/articles/{}/assets/{}'
                 )
             return Response(content_type='application/xml',
