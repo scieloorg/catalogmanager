@@ -12,6 +12,7 @@ pyramid_debugtoolbar==4.4
 pytest==3.4.2
 pytest-cov==2.5.1
 pytest-lazy-fixture==0.4.0
+raven==6.9.0
 waitress==1.1.0
 WebOb==1.8.0rc1
 WebTest==2.0.29
