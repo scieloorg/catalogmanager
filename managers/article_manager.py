@@ -120,8 +120,8 @@ class ArticleManager:
             )
 
     def get_asset_files(self, article_id):
-        article_document = self.get_article_data(article_id)
-        assets = article_document.assets or []
+        article_record = self.get_article_data(article_id)
+        assets = article_record['content'].get('assets') or []
         asset_files = {}
         missing = []
         for file_id in assets:

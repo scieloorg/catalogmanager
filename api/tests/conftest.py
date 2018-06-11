@@ -5,12 +5,6 @@ import pytest
 from pyramid import testing
 
 
-"""
-        'database_uri': 'http://localhost:6789',
-        'database_username': 'username',
-        'database_password': 'password',
-"""
-
 @pytest.fixture
 def dummy_request():
     request = testing.DummyRequest()

@@ -97,11 +97,11 @@ class ArticleAPI:
     def get(self):
         """Returns Article document metadata."""
         try:
-            record = managers.get_article_data(
+            article_data = managers.get_article_data(
                 article_id=self.request.matchdict['id'],
                 **self.request.db_settings
             )
-            return Response(status_code=200, json=record)
+            return Response(status_code=200, json=article_data)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
 
