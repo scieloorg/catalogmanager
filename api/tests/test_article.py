@@ -37,6 +37,42 @@ class MockCGIFieldStorage(object):
         self.file = file
 
 
+@patch.object(managers, 'get_article_data')
+def test_http_get_article_not_found(mocked_get_article_data, dummy_request):
+    article_id = 'ID123456'
+    error_msg = 'Article {} not found'.format(article_id)
+    mocked_get_article_data.side_effect = \
+        managers.article_manager.ArticleManagerException(
+            message=error_msg
+        )
+    dummy_request.matchdict = {'id': article_id}
+
+    article_api = ArticleAPI(dummy_request)
+    with pytest.raises(HTTPNotFound) as excinfo:
+        article_api.get()
+    assert excinfo.value.message == error_msg
+
+
+@patch.object(managers, 'get_article_data')
+def test_http_get_article_succeeded(mocked_get_article_data, dummy_request):
+    article_id = 'ID123456'
+    expected = {
+        "document_id": article_id,
+        "document_type": "ART",
+        "content": {
+            'xml': "test.xml",
+            'assets': ["img1.png", "img2.png", "img3.png"]
+        },
+    }
+    mocked_get_article_data.return_value = expected
+    dummy_request.matchdict = {'id': article_id}
+
+    article_api = ArticleAPI(dummy_request)
+    response = article_api.get()
+    assert response.status == '200 OK'
+    assert response.json == expected
+
+
 @patch.object(managers, 'get_article_file')
 def test_http_get_xml_file_article_not_found(mocked_get_article_file,
                                              dummy_request):
@@ -72,11 +108,10 @@ def test_http_get_xml_file_not_found(mocked_get_article_file, dummy_request):
 
 @patch.object(managers, 'get_article_file')
 @patch.object(managers, 'get_article_data')
-def test_http_get_xml_file_calls_get_article_data(
-        mocked_get_article_data,
-        mocked_get_article_file,
-        dummy_request,
-        test_xml_file):
+def test_http_get_xml_file_calls_get_article_data(mocked_get_article_data,
+                                                  mocked_get_article_file,
+                                                  dummy_request,
+                                                  test_xml_file):
     article_id = 'ID123456'
     mocked_get_article_file.return_value = test_xml_file.encode('utf-8')
     dummy_request.matchdict = {'id': article_id}

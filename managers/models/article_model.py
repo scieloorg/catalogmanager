@@ -166,27 +166,13 @@ class ArticleDocument:
                 self.xml_name = os.path.basename(self.xml_name)
 
     @property
-    def last(self):
-        versions = self.manifest.get('versions', [])
-        if len(versions) > 0:
-            return versions[-1]
-
-    @property
-    def asset_files_info(self):
-        versions = self.manifest.get('versions', [])
-        if len(versions) > 0:
+    def assets_last_version(self):
+        versions = self.manifest.get('versions')
+        if versions is not None:
             version = versions[-1]
-            assets = {}
-            for asset_data in version.get('assets', {}):
-                for name, asset_versions in asset_data.items():
-                    assets[name] = asset_versions[-1]
+            assets = []
+            _assets = version.get('assets', [])
+            for asset in _assets:
+                for asset_name, asset_versions in asset.items():
+                    assets.append({asset_name: [asset_versions[-1]]})
             return assets
-
-    @property
-    def asset_endpoints(self):
-        return self.asset_files_info.values()
-
-    @property
-    def asset_basenames(self):
-        return [os.path.basename(f) for f in self.asset_endpoints]
-

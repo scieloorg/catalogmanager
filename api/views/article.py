@@ -2,10 +2,10 @@ import io
 from pathlib import Path
 
 from pyramid.httpexceptions import (
-        HTTPNotFound,
-        HTTPInternalServerError,
-        HTTPServiceUnavailable,
-        HTTPBadRequest,
+    HTTPNotFound,
+    HTTPInternalServerError,
+    HTTPBadRequest,
+    HTTPServiceUnavailable,
 )
 from pyramid.response import Response
 from cornice.resource import resource

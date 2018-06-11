@@ -1,11 +1,10 @@
 
 from managers.models.article_model import (
     ArticleDocument,
-    AssetDocument,
 )
 
 
-def test_article(test_package_A, test_packA_filenames):
+def article(test_package_A, test_packA_filenames):
     article = ArticleDocument('ID')
     article.xml_file = test_package_A[0]
     article.update_asset_files(test_package_A[1:])
@@ -121,5 +120,33 @@ def test_record_v0_set(test_package_A):
 
     assert article.id == 'x'
     assert article.manifest == article._v0_to_v1(record)
-    assert article.asset_basenames == ['a1.jpg']
-    
+    assert article.id == article.manifest['id']
+
+
+def test_assets_last_version():
+    manifest = {
+      "id": "0034-8910-rsp-48-2-0275",
+      "versions": [
+        {
+            "data": "/rawfiles/7ca9f9b2687cb/0034-8910-rsp-48-2-0275.xml",
+            "assets": [
+                {"0034-8910-rsp-48-2-0275-gf01.gif": [
+                    "/rawfiles/8e644999a8fa4/0034-8910-rsp-48-2-0275-gf01.gif",
+                    "/rawfiles/bf139b9aa3066/0034-8910-rsp-48-2-0275-gf01.gif"
+                    ]
+                },
+            ]
+        },
+      ]
+    }
+    expected = [
+        {
+            "0034-8910-rsp-48-2-0275-gf01.gif": [
+                "/rawfiles/bf139b9aa3066/0034-8910-rsp-48-2-0275-gf01.gif"]
+        }
+    ]
+
+    article = ArticleDocument('ID')
+    article.set_data(manifest)
+    assert article.assets_last_version == expected
+
