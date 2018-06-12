@@ -4,7 +4,7 @@ from persistence.models import (
         get_record,
         RecordType,
     )
-from persistence.databases import DocumentNotFound
+from persistence.databases import DocumentNotFound, DBFailed, UpdateFailure
 from persistence.services import DatabaseService
 from .models.article_model import (
     ArticleDocument,
@@ -30,6 +30,14 @@ class ArticleManager:
     def __init__(self, articles_db_manager, changes_services):
         self.article_db_service = DatabaseService(
             articles_db_manager, changes_services)
+
+    def delete_article(self, article_id):
+        try:
+            document_record = self.article_db_service.read(article_id)
+            self.article_db_service.delete(article_id, document_record)
+        except UpdateFailure as e:
+            raise UpdateFailure(e.message)
+        raise DBFailed
 
     def receive_package(self, id, xml_file, files=None):
         article = self.receive_xml_file(id, xml_file)

@@ -4,13 +4,15 @@ from pathlib import Path
 from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPInternalServerError,
-    HTTPBadRequest
+    HTTPBadRequest,
+    HTTPServiceUnavailable,
 )
 from pyramid.response import Response
 from cornice.resource import resource
 from prometheus_client import Summary
 
 import managers
+import persistence
 
 
 REQUEST_TIME_API_ARTICLE_GET = Summary(
@@ -103,6 +105,21 @@ class ArticleAPI:
             return Response(status_code=200, json=article_data)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPNotFound(detail=e.message)
+
+    def delete(self):
+        """Delete Article."""
+        try:
+            article_data = managers.delete_article(
+                article_id=self.request.DELETE['id'],
+                **self.request.db_settings
+            )
+            return Response(status_code=200, json=article_data)
+        except managers.article_manager.ArticleManagerException as e:
+            raise HTTPNotFound(detail=e.message)
+        except persistence.databases.UpdateFailure as e:
+            raise HTTPBadRequest(detail=e.message)
+        except persistence.databases.DBFailed as e:
+            raise HTTPServiceUnavailable()
 
 
 @resource(path='/articles/{id}/xml', renderer='xml')

@@ -17,6 +17,10 @@ class DocumentNotFound(Exception):
     pass
 
 
+class DBFailed(Exception):
+    pass
+
+
 class QueryOperator(Enum):
     GREATER_THAN = 'gt'
     GREATER_THAN_EQUAL = 'ge'

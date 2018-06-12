@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from persistence.databases import DocumentNotFound
+from persistence.databases import DocumentNotFound, DBFailed, UpdateFailure
 from persistence.services import DatabaseService
 from persistence.models import RecordType
 from managers.article_manager import (
@@ -208,3 +208,39 @@ def test_get_asset_files(databaseservice_params, test_package_A):
     assert len(msg) == 0
     for asset in files:
         assert asset.content in asset_contents
+
+
+@patch.object(DatabaseService, 'delete', side_effect=DBFailed)
+def test_delete_article_db_failed(
+        mocked_dataservices_delete,
+        setup,
+        databaseservice_params,
+        inmemory_receive_package):
+    article_id = 'ID'
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1]
+    )
+    pytest.raises(
+        DBFailed,
+        article_manager.delete_article,
+        article_id)
+
+
+@patch.object(DatabaseService, 'delete')
+def test_delete_article_update_failure(
+        mocked_dataservices_delete,
+        setup,
+        databaseservice_params,
+        inmemory_receive_package):
+    article_id = 'ID'
+    error_msg = 'Article ID not allowed to delete'
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1]
+    )
+    mocked_dataservices_delete.side_effect = \
+        UpdateFailure(error_msg)
+    with pytest.raises(UpdateFailure) as excinfo:
+        article_manager.delete_article(article_id)
+    assert excinfo.value.message == error_msg
