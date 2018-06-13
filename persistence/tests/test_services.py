@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import patch
 
 from persistence.databases import QueryOperator
 from persistence.services import ChangeType, SortOrder
@@ -9,31 +9,31 @@ def test_list_changes_calls_db_manager_find(inmemory_db_setup,
                                             xml_test):
 
     _changes_db_manager = inmemory_db_setup.changes_service.changes_db_manager
-    _changes_db_manager.find = Mock()
-    _changes_db_manager.find.return_value = []
-    last_sequence = '123456'
-    limit = 10
-    expected_fields = [
-        'change_id',
-        'document_id',
-        'document_type',
-        'type',
-        'created_date'
-    ]
-    filter = {
-        'change_id': [
-            (QueryOperator.GREATER_THAN, last_sequence)
+    with patch.object(_changes_db_manager, 'find'):
+        _changes_db_manager.find.return_value = []
+        last_sequence = '123456'
+        limit = 10
+        expected_fields = [
+            'change_id',
+            'document_id',
+            'document_type',
+            'type',
+            'created_date'
         ]
-    }
-    sort = [{'change_id': SortOrder.ASC.value}]
-    inmemory_db_setup.list_changes(last_sequence=last_sequence,
-                                   limit=limit)
-    _changes_db_manager.find.assert_called_once_with(
-        fields=expected_fields,
-        limit=limit,
-        filter=filter,
-        sort=sort
-    )
+        filter = {
+            'change_id': [
+                (QueryOperator.GREATER_THAN, last_sequence)
+            ]
+        }
+        sort = [{'change_id': SortOrder.ASC.value}]
+        inmemory_db_setup.list_changes(last_sequence=last_sequence,
+                                       limit=limit)
+        _changes_db_manager.find.assert_called_once_with(
+            fields=expected_fields,
+            limit=limit,
+            filter=filter,
+            sort=sort
+        )
 
 
 def test_list_changes_returns_db_manager_find_all(inmemory_db_setup,

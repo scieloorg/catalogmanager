@@ -93,6 +93,10 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         doc = self.read(id)
         return doc.get(self._attachments_properties_key, {}).get(file_id)
 
+    @abc.abstractmethod
+    def insert_file(self, file_id, content) -> None:
+        return NotImplemented
+
 
 class InMemoryDBManager(BaseDBManager):
 
@@ -232,6 +236,11 @@ class InMemoryDBManager(BaseDBManager):
     def list_attachments(self, id):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
+
+    def insert_file(self, file_id, content):
+        file = self.database.get(id)
+        if not file:
+            self.database.update({file_id: content})
 
 
 class CouchDBManager(BaseDBManager):
@@ -386,6 +395,17 @@ class CouchDBManager(BaseDBManager):
     def list_attachments(self, id):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
+
+    def insert_file(self, file_id, content):
+        file = self.database.get(file_id)
+        if not file:
+            self.create(id=file_id, document={})
+            doc = self.database.get(file_id)
+            self.database.put_attachment(
+                doc=doc,
+                content=content,
+                filename=file_id
+            )
 
 
 def sort_results(results, sort):

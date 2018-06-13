@@ -76,24 +76,37 @@ def seqnumber_generator(request, seqnum_db_settings):
     return s
 
 
-@pytest.fixture(params=[
-    CouchDBManager,
-    InMemoryDBManager
-])
-def database_service(request, article_db_settings, change_db_settings,
-                     seqnumber_generator):
+@pytest.fixture(
+    params=[
+        CouchDBManager,
+        InMemoryDBManager
+    ]
+)
+def database_service(request,
+                     article_db_settings,
+                     change_db_settings,
+                     seqnum_db_settings):
     DBManager = request.param
+    s = SeqNumGenerator(
+        DBManager(**seqnum_db_settings),
+        'CHANGE'
+    )
     db_service = DatabaseService(
         DBManager(**article_db_settings),
         ChangesService(
             DBManager(**change_db_settings),
-            seqnumber_generator
+            s
         )
     )
 
     def fin():
-        db_service.db_manager.drop_database()
-        db_service.changes_service.changes_db_manager.drop_database()
+        try:
+            db_service.db_manager.drop_database()
+            db_service.changes_service.changes_db_manager.drop_database()
+            s.db_manager.drop_database()
+        except Exception:
+            pass
+
     request.addfinalizer(fin)
     return db_service
 
@@ -112,9 +125,20 @@ def inmemory_db_setup(request, persistence_config, change_db_settings):
     )
 
     def fin():
-        inmemory_db_service.changes_service.changes_db_manager.drop_database()
+        try:
+            inmemory_db_service.db_manager.drop_database()
+            inmemory_db_service.changes_service.changes_db_manager.\
+                drop_database()
+            inmemory_db_service.changes_service.db_manager.drop_database()
+        except Exception:
+            pass
     request.addfinalizer(fin)
     return inmemory_db_service
+
+
+@pytest.fixture(params=[CouchDBManager, InMemoryDBManager])
+def db_manager_test(request, article_db_settings):
+    return request.param(**article_db_settings)
 
 
 @pytest.fixture
