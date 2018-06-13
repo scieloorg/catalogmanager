@@ -3,7 +3,7 @@ from enum import Enum
 
 from prometheus_client import Summary
 
-from .databases import QueryOperator
+from .databases import QueryOperator, DocumentNotFound, UpdateFailure
 
 
 REQUEST_TIME_CHANGES_UPD = Summary(
@@ -126,11 +126,14 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         document = self.db_manager.read(document_id)
+        if 'deleted_date' in document.keys():
+            raise DocumentNotFound
         document_record = {
             'document_id': document['document_id'],
             'document_type': document['document_type'],
             'content': document['content'],
             'created_date': document['created_date'],
+            '_rev': document['document_rev'] or document['_rev'],
             'document_rev': document['document_rev'],
         }
         if document.get('updated_date'):
@@ -157,9 +160,12 @@ class DatabaseService:
         document_record.update({
             'updated_date': str(datetime.utcnow().timestamp())
         })
-        self.db_manager.update(document_id, document_record)
-        self.changes_service.register_change(
-            document_record, ChangeType.UPDATE)
+        try:
+            self.db_manager.update(document_id, document_record)
+            self.changes_service.register_change(
+                document_record, ChangeType.UPDATE)
+        except DocumentNotFound:
+            raise DocumentNotFound
 
     def delete(self, document_id, document_record):
         """
@@ -169,12 +175,21 @@ class DatabaseService:
         document_id: ID do documento a ser deletado
         document_record: registro de documento a ser deletado
 
-        Erro:
+        Erros:
         DocumentNotFound: documento não encontrado na base de dados.
+        UpdateFailure: documento não apagado da base de dados.
         """
-        self.db_manager.delete(document_id)
-        self.changes_service.register_change(
-            document_record, ChangeType.DELETE)
+        document_record.update({
+            'deleted_date': str(datetime.utcnow().timestamp()),
+        })
+        try:
+            __ = self.read(document_id)
+            self.db_manager.new_update(document_id, document_record)
+            self.changes_service.register_change(
+                document_record, ChangeType.DELETE)
+        except UpdateFailure:
+            raise UpdateFailure(
+                'Document {} not allowed to delete'.format(document_id))
 
     @REQUEST_TIME_DOC_FIND.time()
     def find(self, selector, fields, sort):

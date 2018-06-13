@@ -118,6 +118,7 @@ class InMemoryDBManager(BaseDBManager):
 
     def create(self, id, document):
         document['revision'] = 1
+        document['_rev'] = 1
         self.database.update({id: document})
 
     def read(self, id):
@@ -125,6 +126,8 @@ class InMemoryDBManager(BaseDBManager):
         if not doc:
             raise DocumentNotFound
         doc['document_rev'] = doc['revision']
+        doc['_rev'] = doc['_rev']
+
         return doc
 
     def update(self, id, document):
@@ -134,6 +137,15 @@ class InMemoryDBManager(BaseDBManager):
                 'You are trying to update a record which data is out of date')
         _document.update(document)
         _document['revision'] += 1
+        self.database.update({id: _document})
+
+    def new_update(self, id, document):
+        _document = self.read(id)
+        if _document.get('_rev') != document.get('_rev'):
+            raise UpdateFailure(
+                'UpdateFailure')
+        _document.update(document)
+        _document['_rev'] += 1
         self.database.update({id: _document})
 
     def delete(self, id):
@@ -276,6 +288,19 @@ class CouchDBManager(BaseDBManager):
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         return doc
+
+    def new_update(self, id, document):
+        """
+        Para atualizar documento no CouchDB, é necessário informar a
+        revisão do documento atual. Por isso, é obtido o documento atual
+        para que os dados dele sejam atualizados com o registro informado.
+        """
+        try:
+            self.database[id] = document
+        except couchdb.http.ResourceNotFound:
+            raise DocumentNotFound
+        except:
+            raise UpdateFailure('UpdateFailure')
 
     def update(self, id, document):
         """

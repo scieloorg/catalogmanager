@@ -3,6 +3,26 @@ from unittest.mock import Mock
 from persistence.databases import QueryOperator
 from persistence.services import ChangeType, SortOrder
 
+from unittest.mock import patch
+
+import pytest
+from datetime import datetime
+from uuid import uuid4
+
+from persistence.models import get_record, RecordType
+from persistence.databases import DocumentNotFound, UpdateFailure
+from persistence.services import (
+    ChangesService,
+)
+
+
+def get_article_record(content={'Test': 'Test'}):
+    document_id = uuid4().hex
+    return get_record(document_id=document_id,
+                      document_type=RecordType.ARTICLE,
+                      content=content,
+                      created_date=datetime.utcnow())
+
 
 def test_list_changes_calls_db_manager_find(inmemory_db_setup,
                                             test_changes_records,
@@ -113,3 +133,66 @@ def test_list_changes_returns_db_manager_find_no_changes(inmemory_db_setup,
     check_list = inmemory_db_setup.list_changes(last_sequence=last_sequence,
                                                 limit=limit)
     assert len(check_list) == 0
+
+
+def test_delete_document(database_service):
+    article_record = get_article_record({'Test': 'Test5'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    record_check = database_service.read(article_record['document_id'])
+    database_service.delete(
+        article_record['document_id'],
+        record_check
+    )
+    pytest.raises(DocumentNotFound,
+                  database_service.read,
+                  article_record['document_id'])
+
+
+@patch.object(ChangesService, 'register_change')
+def test_delete_document_register_change(mocked_register_change,
+                                         database_service):
+    article_record = get_article_record({'Test': 'Test5'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    record_check = database_service.read(article_record['document_id'])
+    database_service.delete(
+        article_record['document_id'],
+        record_check
+    )
+
+    mocked_register_change.assert_called_with(record_check,
+                                              ChangeType.DELETE)
+
+
+def test_delete_document_not_found(database_service):
+    article_record = get_article_record({'Test': 'Test6'})
+    pytest.raises(
+        DocumentNotFound,
+        database_service.delete,
+        article_record['document_id'],
+        article_record
+    )
+
+
+def test_delete_document_update_failure(database_service):
+    article_record = get_article_record({'Test': 'Test10'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+    read = database_service.read(article_record['document_id'])
+    updated = read.copy()
+    database_service.db_manager.new_update(
+        article_record['document_id'], updated)
+
+    error_msg = 'Document {} not allowed to delete'.format(
+                article_record['document_id'])
+    with pytest.raises(UpdateFailure, message=error_msg):
+        database_service.delete(article_record['document_id'], read)

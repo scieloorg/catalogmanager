@@ -4,7 +4,7 @@ import pytest
 from datetime import datetime
 from uuid import uuid4
 
-from persistence.databases import DocumentNotFound, sort_results
+from persistence.databases import DocumentNotFound, sort_results, UpdateFailure
 from persistence.services import (
     ChangesService,
     ChangeType)
@@ -116,55 +116,10 @@ def test_update_document_register_change(mocked_register_change,
 
 def test_update_document_not_found(database_service):
     article_record = get_article_record({'Test': 'Test4'})
+    database_service.db_manager.drop_database()
     pytest.raises(
         DocumentNotFound,
-        database_service.delete,
-        article_record['document_id'],
-        article_record
-    )
-
-
-def test_delete_document(database_service):
-    article_record = get_article_record({'Test': 'Test5'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-
-    record_check = database_service.read(article_record['document_id'])
-    database_service.delete(
-        article_record['document_id'],
-        record_check
-    )
-    pytest.raises(DocumentNotFound,
-                  database_service.read,
-                  article_record['document_id'])
-
-
-@patch.object(ChangesService, 'register_change')
-def test_delete_document_register_change(mocked_register_change,
-                                         database_service):
-    article_record = get_article_record({'Test': 'Test5'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-
-    record_check = database_service.read(article_record['document_id'])
-    database_service.delete(
-        article_record['document_id'],
-        record_check
-    )
-
-    mocked_register_change.assert_called_with(record_check,
-                                              ChangeType.DELETE)
-
-
-def test_delete_document_not_found(database_service):
-    article_record = get_article_record({'Test': 'Test6'})
-    pytest.raises(
-        DocumentNotFound,
-        database_service.delete,
+        database_service.update,
         article_record['document_id'],
         article_record
     )
@@ -489,3 +444,28 @@ def compare_documents(document, expected):
             assert document[k] == expected[k]
     else:
         assert document == expected
+
+
+def test_databases_update(database_service):
+    article_record = get_article_record({'teste': 'teste'})
+    database_service.db_manager.create(
+        article_record['document_id'],
+        article_record
+    )
+    read1 = database_service.db_manager.read(
+        article_record['document_id']
+    )
+    read2 = database_service.db_manager.read(
+        article_record['document_id']
+    )
+    read1.update({'text': 'read1'})
+    read2.update({'text': 'read2'})
+
+    database_service.db_manager.update(article_record['document_id'], read2)
+
+    pytest.raises(
+        UpdateFailure,
+        database_service.db_manager.update,
+        article_record['document_id'],
+        read1
+    )

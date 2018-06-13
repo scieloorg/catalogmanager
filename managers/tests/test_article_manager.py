@@ -244,3 +244,19 @@ def test_delete_article_update_failure(
     with pytest.raises(UpdateFailure) as excinfo:
         article_manager.delete_article(article_id)
     assert excinfo.value.message == error_msg
+
+
+@patch.object(DatabaseService, 'delete')
+@patch.object(DatabaseService, 'read')
+def test_delete_article_success(
+        mocked_dataservices_read,
+        mocked_dataservices_delete,
+        setup,
+        databaseservice_params,
+        inmemory_receive_package):
+    article_id = 'ID'
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1]
+    )
+    assert article_manager.delete_article(article_id) is None
