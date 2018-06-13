@@ -18,17 +18,6 @@ from persistence.services import (
 from persistence.seqnum_generator import SeqNumGenerator
 
 
-@pytest.yield_fixture
-def persistence_config(request):
-    yield testing.setUp()
-    testing.tearDown()
-
-
-@pytest.fixture
-def fake_change_list():
-    return ['Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6']
-
-
 @pytest.fixture
 def article_db_settings():
     return {
@@ -37,6 +26,11 @@ def article_db_settings():
         'database_password': 'password',
         'database_name': 'articles',
     }
+
+
+@pytest.fixture
+def article_dbinmemory_settings():
+    return {'database_uri': '/rawfile', 'database_name': 'articles'}
 
 
 @pytest.fixture
@@ -112,13 +106,15 @@ def database_service(request,
 
 
 @pytest.fixture
-def inmemory_db_setup(request, persistence_config, change_db_settings):
+def inmemory_db_setup(request):
+    db_host = '/rawfile'
     inmemory_db_service = DatabaseService(
-        InMemoryDBManager(database_name='articles'),
+        InMemoryDBManager(database_uri=db_host, database_name='articles'),
         ChangesService(
-            InMemoryDBManager(database_name='changes'),
+            InMemoryDBManager(database_uri=db_host, database_name='changes'),
             SeqNumGenerator(
-                InMemoryDBManager(database_name='seqnum'),
+                InMemoryDBManager(database_uri=db_host,
+                                  database_name='seqnum'),
                 'CHANGE'
             )
         )
@@ -136,9 +132,15 @@ def inmemory_db_setup(request, persistence_config, change_db_settings):
     return inmemory_db_service
 
 
-@pytest.fixture(params=[CouchDBManager, InMemoryDBManager])
-def db_manager_test(request, article_db_settings):
-    return request.param(**article_db_settings)
+@pytest.fixture(
+    params=[
+        (CouchDBManager, article_db_settings),
+        (InMemoryDBManager, article_dbinmemory_settings)
+    ]
+)
+def db_manager_test(request):
+    db_settings = request.param[1]()
+    return request.param[0](**db_settings)
 
 
 @pytest.fixture

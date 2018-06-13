@@ -499,7 +499,9 @@ def test_add_file_insert_file_into_database_ok(
         file_id='href_file1',
         content=xml_test.encode('utf-8')
     )
-    file = db_manager_test.database.get('href_file1')
+    file = db_manager_test.database.get(
+        '/'.join([db_manager_test._database_url, 'href_file1'])
+    )
     assert file is not None
 
 
@@ -534,5 +536,7 @@ def test_add_file_dbmanager_insert_into_database(inmemory_db_setup, xml_test):
         file_id='href_file1',
         content=xml_test.encode('utf-8'),
     )
-    file = inmemory_db_setup.db_manager.database.get('href_file1')
+    file = inmemory_db_setup.db_manager.database.get(
+        '/'.join([inmemory_db_setup.db_manager._database_url, 'href_file1'])
+    )
     assert file is not None
