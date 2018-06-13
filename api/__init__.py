@@ -8,6 +8,9 @@ from pyramid.paster import get_appsettings
 from pyramid.response import Response
 from pyramid.view import view_config, notfound_view_config
 
+from prometheus_client import generate_latest
+
+
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -29,6 +32,14 @@ def openAPI_spec(request):
 @view_config(route_name='home')
 def home(request):
     return Response('')
+
+
+@view_config(route_name='metrics')
+def metrics(request):
+    return Response(
+        body=generate_latest(),
+        charset='utf-8',
+        content_type='text/plain')
 
 
 @notfound_view_config()
@@ -58,10 +69,10 @@ def main(global_config, **settings):
             }
         }
     )
-
     config.include(includeme)
 
     config.add_route('home', '/')
+    config.add_route('metrics', '/metrics')
 
     def couchdb_settings(request):
         ini_config = request.registry.settings

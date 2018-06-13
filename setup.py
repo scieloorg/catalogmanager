@@ -10,6 +10,7 @@ requires = [
     'waitress',
     'lxml',
     'cornice>=3.4.0',
+    'prometheus_client>=0.2.0',
 ]
 
 test_requires = [

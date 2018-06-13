@@ -1,7 +1,32 @@
 from datetime import datetime
 from enum import Enum
 
+from prometheus_client import Summary
+
 from .databases import QueryOperator
+
+
+REQUEST_TIME_CHANGES_UPD = Summary(
+    'changes_service_upd_request_processing_seconds',
+    'Time spent processing changes service upd ')
+REQUEST_TIME_CHANGES_LIST = Summary(
+    'changes_service_list_request_processing_seconds',
+    'Time spent processing changes service list ')
+REQUEST_TIME_DOC_UPD = Summary(
+    'db_service_doc_upd_request_processing_seconds',
+    'Time spent processing db_service doc upd')
+REQUEST_TIME_DOC_READ = Summary(
+    'db_service_doc_read_request_processing_seconds',
+    'Time spent processing db_service doc read')
+REQUEST_TIME_DOC_FIND = Summary(
+    'db_service_doc_FIND_request_processing_seconds',
+    'Time spent processing db_service doc find')
+REQUEST_TIME_ATT_READ = Summary(
+    'db_service_att_read_request_processing_seconds',
+    'Time spent processing db_service att read')
+REQUEST_TIME_ATT_UPD = Summary(
+    'db_service_att_upd_request_processing_seconds',
+    'Time spent processing db_service att upd ')
 
 
 class ChangeType(Enum):
@@ -31,6 +56,7 @@ class ChangesService:
         self.changes_db_manager = changes_db_manager
         self.seqnum_generator = seqnum_generator
 
+    @REQUEST_TIME_CHANGES_UPD.time()
     def register_change(self,
                         document_record,
                         change_type,
@@ -83,6 +109,7 @@ class DatabaseService:
         self.db_manager = db_manager
         self.changes_service = changes_service
 
+    @REQUEST_TIME_DOC_UPD.time()
     def register(self, document_id, document_record):
         """
         Persiste registro de um documento e a mudança na base de dados.
@@ -98,6 +125,7 @@ class DatabaseService:
         self.changes_service.register_change(
             document_record, ChangeType.CREATE)
 
+    @REQUEST_TIME_DOC_READ.time()
     def read(self, document_id):
         """
         Obtém registro de um documento pelo ID do documento na base de dados.
@@ -127,6 +155,7 @@ class DatabaseService:
                 self.db_manager.list_attachments(document_id)
         return document_record
 
+    @REQUEST_TIME_DOC_UPD.time()
     def update(self, document_id, document_record):
         """
         Atualiza o registro de um documento e a mudança na base de dados.
@@ -161,6 +190,7 @@ class DatabaseService:
         self.changes_service.register_change(
             document_record, ChangeType.DELETE)
 
+    @REQUEST_TIME_DOC_FIND.time()
     def find(self, selector, fields, sort):
         """
         Busca registros de documento por criterios de selecao na base de dados.
@@ -176,6 +206,7 @@ class DatabaseService:
         """
         return self.db_manager.find(selector, fields, sort)
 
+    @REQUEST_TIME_ATT_UPD.time()
     def put_attachment(self, document_id, file_id, content, file_properties):
         """
         Anexa arquivo no registro de um documento pelo ID do documento e
@@ -203,6 +234,7 @@ class DatabaseService:
             )
         self.update(document_id, document_record)
 
+    @REQUEST_TIME_ATT_READ.time()
     def get_attachment(self, document_id, file_id):
         """
         Recupera arquivo anexos ao registro de um documento pelo ID do
@@ -247,6 +279,7 @@ class DatabaseService:
         self.db_manager.insert_file(file_id=file_id, content=content)
         self.changes_service.register(file_id, ChangeType.CREATE)
 
+    @REQUEST_TIME_CHANGES_LIST.time()
     def list_changes(self, last_sequence, limit):
         """
         Busca registros de mudança a partir do sequencial informado e retorna
