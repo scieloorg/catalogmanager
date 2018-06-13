@@ -267,6 +267,7 @@ class DatabaseService:
         """
         return self.db_manager.get_attachment_properties(document_id, file_id)
 
+    @REQUEST_TIME_ATT_UPD.time()
     def add_file(self, file_id, content):
         """
         Persiste conteúdo de arquivo na base de dados identificado com ID
