@@ -10,7 +10,7 @@ def dummy_request():
     request = testing.DummyRequest()
     request.db_settings = {
         'host': 'http://localhost',
-        'port': '12345'
+        'port': '12345',
     }
     return request
 
