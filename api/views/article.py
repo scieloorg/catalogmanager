@@ -122,6 +122,27 @@ class ArticleAPI:
             raise HTTPServiceUnavailable()
 
 
+@resource(path='/articles/{id}/_manifest', renderer='json')
+class ArticleManifest:
+
+    def __init__(self, request, context=None):
+        self.request = request
+        self.context = context
+
+    def get(self):
+        """Returns Article document manifest."""
+        try:
+            article_document = managers.get_article_document(
+                article_id=self.request.matchdict['id'],
+                **self.request.db_settings
+            )
+            return Response(status_code=200, json=article_document.manifest)
+        except managers.article_manager.ArticleManagerException as e:
+            raise HTTPNotFound(detail=e.message)
+        except:
+            raise HTTPServiceUnavailable()
+
+
 @resource(path='/articles/{id}/xml', renderer='xml')
 class ArticleXML:
 

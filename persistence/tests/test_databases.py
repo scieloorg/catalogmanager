@@ -4,7 +4,13 @@ import pytest
 from datetime import datetime
 from uuid import uuid4
 
-from persistence.databases import DocumentNotFound, sort_results, UpdateFailure
+from persistence.databases import (
+    DocumentNotFound,
+    sort_results,
+    DBFailed,
+    UpdateFailure,
+    CouchDBManager,
+)
 from persistence.services import (
     ChangesService,
     ChangeType)
@@ -61,6 +67,15 @@ def test_read_document(database_service):
     assert record_check['document_type'] == article_record['document_type']
     assert record_check['content'] == article_record['content']
     assert record_check['created_date'] is not None
+
+
+def test_db_failed(article_db_settings):
+    article_db_settings['database_password'] = ''
+    db_manager = CouchDBManager(**article_db_settings)
+    with pytest.raises(
+        DBFailed
+    ):
+        db_manager.database
 
 
 def test_read_document_not_found(database_service):

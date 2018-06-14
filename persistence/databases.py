@@ -269,6 +269,8 @@ class CouchDBManager(BaseDBManager):
             self._database = self._db_server[self._database_name]
         except couchdb.http.ResourceNotFound:
             self._database = self._db_server.create(self._database_name)
+        except:
+            raise DBFailed
         return self._database
 
     def drop_database(self):
