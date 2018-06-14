@@ -25,33 +25,12 @@ def get_article_record(content={'Test': 'Test'}):
                       created_date=datetime.utcnow())
 
 
-def test_register_document(database_service):
-    article_record = get_article_record()
-    database_service.register(
-        article_record['document_id'],
-        article_record
+def test_read_document_not_found(database_service):
+    pytest.raises(
+        DocumentNotFound,
+        database_service.db_manager.read,
+        '336abebdd31894idnaoexistente'
     )
-
-    check_list = database_service.find({}, [], [])
-    assert isinstance(check_list[0], dict)
-    article_check = check_list[0]
-    assert article_check['document_id'] == article_record['document_id']
-    assert article_check['document_type'] == article_record['document_type']
-    assert article_check['content'] == article_record['content']
-    assert article_check['created_date'] is not None
-
-
-@patch.object(ChangesService, 'register_change')
-def test_register_document_register_change(mocked_register_change,
-                                           database_service):
-    article_record = get_article_record()
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-
-    mocked_register_change.assert_called_with(article_record,
-                                              ChangeType.CREATE)
 
 
 def test_read_document(database_service):
@@ -79,12 +58,33 @@ def test_db_failed(article_db_settings):
         db_manager.database
 
 
-def test_read_document_not_found(database_service):
-    pytest.raises(
-        DocumentNotFound,
-        database_service.db_manager.read,
-        '336abebdd31894idnaoexistente'
+def test_register_document(database_service):
+    article_record = get_article_record()
+    database_service.register(
+        article_record['document_id'],
+        article_record
     )
+
+    check_list = database_service.find({}, [], [])
+    assert isinstance(check_list[0], dict)
+    article_check = check_list[0]
+    assert article_check['document_id'] == article_record['document_id']
+    assert article_check['document_type'] == article_record['document_type']
+    assert article_check['content'] == article_record['content']
+    assert article_check['created_date'] is not None
+
+
+@patch.object(ChangesService, 'register_change')
+def test_register_document_register_change(mocked_register_change,
+                                           database_service):
+    article_record = get_article_record()
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    mocked_register_change.assert_called_with(article_record,
+                                              ChangeType.CREATE)
 
 
 def test_update_document(database_service):
