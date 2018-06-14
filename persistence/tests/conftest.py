@@ -1,7 +1,6 @@
 from datetime import datetime
 from random import randint
 
-from pyramid import testing
 import pytest
 
 from persistence.databases import (

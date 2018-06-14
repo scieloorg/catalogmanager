@@ -79,7 +79,7 @@ class ChangesService:
         return change_record['record_id']
 
     def register(self, record_id, change_type):
-        sequencial = str(self.seqnum_generator.new())
+        sequencial = self.seqnum_generator.new()
         change_record = {
             'change_id': sequencial,
             'document_id': record_id,
@@ -87,7 +87,7 @@ class ChangesService:
             'created_date': str(datetime.utcnow().timestamp()),
         }
         self.changes_db_manager.create(
-            sequencial,
+            str(sequencial),
             change_record
         )
         return sequencial
