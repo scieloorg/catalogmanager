@@ -126,7 +126,7 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         document = self.db_manager.read(document_id)
-        if 'deleted_date' in document.keys():
+        if 'deleted_date' in document:
             raise DocumentNotFound
         document_record = {
             'document_id': document['document_id'],
@@ -136,13 +136,37 @@ class DatabaseService:
             '_rev': document['document_rev'] or document['_rev'],
             'document_rev': document['document_rev'],
         }
-        if document.get('updated_date'):
-            document_record['updated_date'] = document['updated_date']
+        for optional in ['updated_date', 'deleted_date']:
+            if optional in document.keys():
+                document_record[optional] = document[optional]
         attachments = self.db_manager.list_attachments(document_id)
         if attachments:
             document_record['attachments'] = \
                 self.db_manager.list_attachments(document_id)
         return document_record
+
+    @REQUEST_TIME_DOC_UPD.time()
+    def new_update(self, document_id, document_record):
+        """
+        Atualiza o registro de um documento e a mudança na base de dados.
+
+        Params:
+        document_id: ID do documento a ser atualizado
+        document_record: registro de documento a ser atualizado
+
+        Erro:
+        DocumentNotFound: documento não encontrado na base de dados.
+        UpdateFailure: dados do document_record estão desatualizados.
+        """
+        document_record.update({
+            'updated_date': str(datetime.utcnow().timestamp())
+        })
+        try:
+            self.db_manager.new_update(document_id, document_record)
+            self.changes_service.register_change(
+                document_record, ChangeType.UPDATE)
+        except DocumentNotFound:
+            raise DocumentNotFound
 
     @REQUEST_TIME_DOC_UPD.time()
     def update(self, document_id, document_record):
@@ -179,11 +203,15 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         UpdateFailure: documento não apagado da base de dados.
         """
+        # tenta ler o registro
+        read = self.db_manager.read(document_id)
+        if 'deleted_date' in read.keys():
+            raise DocumentNotFound
+
         document_record.update({
             'deleted_date': str(datetime.utcnow().timestamp()),
         })
         try:
-            __ = self.read(document_id)
             self.db_manager.new_update(document_id, document_record)
             self.changes_service.register_change(
                 document_record, ChangeType.DELETE)

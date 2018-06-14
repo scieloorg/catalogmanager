@@ -438,34 +438,32 @@ def test_find_documents_by_selected_field_returns_according_to_filter(
 def compare_documents(document, expected):
     if document == expected:
         assert document == expected
-    elif len(document) == len(expected) + 1:
-        # para ignorar "revision"
+    else:
         for k in expected.keys():
             assert document[k] == expected[k]
-    else:
-        assert document == expected
 
 
-def test_databases_update(database_service):
+def test_databases_new_update(database_service):
     article_record = get_article_record({'teste': 'teste'})
     database_service.db_manager.create(
         article_record['document_id'],
         article_record
     )
-    read1 = database_service.db_manager.read(
+    read = database_service.db_manager.read(
         article_record['document_id']
     )
-    read2 = database_service.db_manager.read(
-        article_record['document_id']
-    )
+    read1 = read.copy()
+    read2 = read.copy()
+
     read1.update({'text': 'read1'})
     read2.update({'text': 'read2'})
 
-    database_service.db_manager.update(article_record['document_id'], read2)
+    database_service.db_manager.new_update(
+        article_record['document_id'], read2)
 
     pytest.raises(
         UpdateFailure,
-        database_service.db_manager.update,
+        database_service.db_manager.new_update,
         article_record['document_id'],
         read1
     )

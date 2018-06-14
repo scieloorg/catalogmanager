@@ -189,7 +189,7 @@ def test_delete_document_update_failure(database_service):
     )
     read = database_service.read(article_record['document_id'])
     updated = read.copy()
-    database_service.db_manager.new_update(
+    database_service.update(
         article_record['document_id'], updated)
 
     error_msg = 'Document {} not allowed to delete'.format(
