@@ -61,7 +61,8 @@ def test_read_document(database_service):
         article_record
     )
 
-    record_check = database_service.read(article_record['document_id'])
+    record_check = database_service.db_manager.read(
+        article_record['document_id'])
     assert record_check is not None
     assert record_check['document_id'] == article_record['document_id']
     assert record_check['document_type'] == article_record['document_type']
@@ -81,7 +82,7 @@ def test_db_failed(article_db_settings):
 def test_read_document_not_found(database_service):
     pytest.raises(
         DocumentNotFound,
-        database_service.read,
+        database_service.db_manager.read,
         '336abebdd31894idnaoexistente'
     )
 
@@ -459,6 +460,32 @@ def compare_documents(document, expected):
 
 
 def test_databases_new_update(database_service):
+    article_record = get_article_record({'teste': 'teste'})
+    database_service.db_manager.create(
+        article_record['document_id'],
+        article_record
+    )
+    read = database_service.db_manager.read(
+        article_record['document_id']
+    )
+    read1 = read.copy()
+    read2 = read.copy()
+
+    read1.update({'text': 'read1'})
+    read2.update({'text': 'read2'})
+
+    database_service.db_manager.new_update(
+        article_record['document_id'], read2)
+
+    pytest.raises(
+        UpdateFailure,
+        database_service.db_manager.new_update,
+        article_record['document_id'],
+        read1
+    )
+
+
+def test_databases_read_not_found(database_service):
     article_record = get_article_record({'teste': 'teste'})
     database_service.db_manager.create(
         article_record['document_id'],

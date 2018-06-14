@@ -24,6 +24,29 @@ def get_article_record(content={'Test': 'Test'}):
                       created_date=datetime.utcnow())
 
 
+def test_read_document(database_service):
+    article_record = get_article_record({'Test': 'Test2'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    record_check = database_service.read(article_record['document_id'])
+    assert record_check is not None
+    assert record_check['document_id'] == article_record['document_id']
+    assert record_check['document_type'] == article_record['document_type']
+    assert record_check['content'] == article_record['content']
+    assert record_check['created_date'] is not None
+
+
+def test_read_document_not_found(database_service):
+    pytest.raises(
+        DocumentNotFound,
+        database_service.read,
+        '336abebdd31894idnaoexistente'
+    )
+
+
 def test_list_changes_calls_db_manager_find(inmemory_db_setup,
                                             test_changes_records,
                                             xml_test):

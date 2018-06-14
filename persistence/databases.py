@@ -294,8 +294,7 @@ class CouchDBManager(BaseDBManager):
     def new_update(self, id, document):
         """
         Para atualizar documento no CouchDB, é necessário informar a
-        revisão do documento atual. Por isso, é obtido o documento atual
-        para que os dados dele sejam atualizados com o registro informado.
+        revisão do documento atual.
         """
         document[self._rev_key] = document[self.rev_key]
         try:

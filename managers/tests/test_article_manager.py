@@ -8,7 +8,7 @@ from persistence.databases import (
     UpdateFailure,
 )
 from persistence.services import DatabaseService
-
+from persistence.models import get_record, RecordType
 from managers.models.article_model import (
     ArticleDocument,
 )
@@ -228,13 +228,13 @@ def test_get_asset_files(databaseservice_params, test_package_A):
         assert asset.content in asset_contents
 
 
-@patch.object(DatabaseService, 'delete', side_effect=DBFailed)
+@patch.object(DatabaseService, 'read')
 def test_delete_article_db_failed(
-        mocked_dataservices_delete,
+        mocked_dataservices_read,
         setup,
-        databaseservice_params,
-        inmemory_receive_package):
+        databaseservice_params):
     article_id = 'ID'
+    mocked_dataservices_read.side_effect = DBFailed
     article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
@@ -249,14 +249,18 @@ def test_delete_article_db_failed(
 def test_delete_article_update_failure(
         mocked_dataservices_delete,
         setup,
-        databaseservice_params,
-        inmemory_receive_package):
+        databaseservice_params):
     article_id = 'ID'
     error_msg = 'Article ID not allowed to delete'
     article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
     )
+    article_manager.article_db_service.register(
+        article_id,
+        get_record(article_id)
+    )
+
     mocked_dataservices_delete.side_effect = \
         UpdateFailure(error_msg)
     with pytest.raises(UpdateFailure) as excinfo:
@@ -264,17 +268,17 @@ def test_delete_article_update_failure(
     assert excinfo.value.message == error_msg
 
 
-@patch.object(DatabaseService, 'delete')
-@patch.object(DatabaseService, 'read')
 def test_delete_article_success(
-        mocked_dataservices_read,
-        mocked_dataservices_delete,
         setup,
-        databaseservice_params,
-        inmemory_receive_package):
+        databaseservice_params):
     article_id = 'ID'
     article_manager = ArticleManager(
         databaseservice_params[0],
         databaseservice_params[1]
+    )
+    article_record = get_record(article_id)
+    article_manager.article_db_service.register(
+        article_id,
+        article_record
     )
     assert article_manager.delete_article(article_id) is None

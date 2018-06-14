@@ -160,12 +160,9 @@ class DatabaseService:
         document_record.update({
             'updated_date': str(datetime.utcnow().timestamp())
         })
-        try:
-            self.db_manager.new_update(document_id, document_record)
-            self.changes_service.register_change(
-                document_record, ChangeType.UPDATE)
-        except DocumentNotFound:
-            raise DocumentNotFound
+        self.db_manager.new_update(document_id, document_record)
+        self.changes_service.register_change(
+            document_record, ChangeType.UPDATE)
 
     @REQUEST_TIME_DOC_UPD.time()
     def update(self, document_id, document_record):
@@ -183,12 +180,9 @@ class DatabaseService:
         document_record.update({
             'updated_date': str(datetime.utcnow().timestamp())
         })
-        try:
-            self.db_manager.update(document_id, document_record)
-            self.changes_service.register_change(
-                document_record, ChangeType.UPDATE)
-        except DocumentNotFound:
-            raise DocumentNotFound
+        self.db_manager.update(document_id, document_record)
+        self.changes_service.register_change(
+            document_record, ChangeType.UPDATE)
 
     def delete(self, document_id, document_record):
         """
