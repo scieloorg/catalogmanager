@@ -101,7 +101,7 @@ class ArticleManager:
             raise ArticleManagerException(
                 'ArticleDocument {} not found'.format(article_id)
             )
-        except:
+        except DBFailed:
             raise DBFailed
 
     def get_article_file(self, article_id):
