@@ -295,6 +295,7 @@ class CouchDBManager(BaseDBManager):
         revisão do documento atual. Por isso, é obtido o documento atual
         para que os dados dele sejam atualizados com o registro informado.
         """
+        document[self._rev_key] = document[self.rev_key]
         try:
             self.database[id] = document
         except couchdb.http.ResourceNotFound:

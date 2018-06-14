@@ -133,7 +133,6 @@ class DatabaseService:
             'document_type': document['document_type'],
             'content': document['content'],
             'created_date': document['created_date'],
-            '_rev': document['document_rev'] or document['_rev'],
             'document_rev': document['document_rev'],
         }
         for optional in ['updated_date', 'deleted_date']:
@@ -204,9 +203,7 @@ class DatabaseService:
         UpdateFailure: documento não apagado da base de dados.
         """
         # tenta ler o registro
-        read = self.db_manager.read(document_id)
-        if 'deleted_date' in read.keys():
-            raise DocumentNotFound
+        self.read(document_id)
 
         document_record.update({
             'deleted_date': str(datetime.utcnow().timestamp()),
