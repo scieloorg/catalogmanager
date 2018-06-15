@@ -130,20 +130,20 @@ class InMemoryDBManager(BaseDBManager):
         doc[self.rev_key] = doc[self._rev_key]
         return doc
 
-    def update(self, id, document):
-        _document = self.read(id)
-        if _document.get(self._rev_key) != document.get(self.rev_key):
-            raise UpdateFailure(
-                'You are trying to update a record which data is out of date')
-        _document.update(document)
-        _document[self._rev_key] += 1
-        self.database.update({id: _document})
-
     def new_update(self, id, document):
         _document = self.read(id)
         if _document.get(self._rev_key) != document.get(self.rev_key):
             raise UpdateFailure(
-                'UpdateFailure')
+                'You are trying to update a record which is out of date')
+        _document.update(document)
+        _document[self._rev_key] += 1
+        self.database.update({id: _document})
+
+    def update(self, id, document):
+        _document = self.read(id)
+        if _document.get(self._rev_key) != document.get(self.rev_key):
+            raise UpdateFailure(
+                'You are trying to update a record which is out of date')
         _document.update(document)
         _document[self._rev_key] += 1
         self.database.update({id: _document})
@@ -294,7 +294,7 @@ class CouchDBManager(BaseDBManager):
     def new_update(self, id, document):
         """
         Para atualizar documento no CouchDB, é necessário informar a
-        revisão do documento atual.
+        revisão do documento atual. A revisão vem em document.
         """
         document[self._rev_key] = document[self.rev_key]
         try:
@@ -302,7 +302,8 @@ class CouchDBManager(BaseDBManager):
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         except:
-            raise UpdateFailure('UpdateFailure')
+            raise UpdateFailure(
+                'You are trying to update a record which is out of date')
 
     def update(self, id, document):
         """
@@ -313,7 +314,7 @@ class CouchDBManager(BaseDBManager):
         doc = self.read(id)
         if doc.get(self._rev_key) != document.get(self.rev_key):
             raise UpdateFailure(
-                'You are trying to update a record which data is out of date')
+                'You are trying to update a record which is out of date')
 
         doc.update(document)
         self.database[id] = doc
