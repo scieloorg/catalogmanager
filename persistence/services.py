@@ -3,7 +3,7 @@ from enum import Enum
 
 from prometheus_client import Summary
 
-from .databases import QueryOperator, DocumentNotFound, UpdateFailure
+from .databases import QueryOperator, UpdateFailure
 
 
 REQUEST_TIME_CHANGES_UPD = Summary(
@@ -126,8 +126,6 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         document = self.db_manager.read(document_id)
-        if 'deleted_date' in document:
-            raise DocumentNotFound
         document_record = {
             'document_id': document['document_id'],
             'document_type': document['document_type'],

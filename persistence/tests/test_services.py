@@ -170,9 +170,8 @@ def test_delete_document(database_service):
         article_record['document_id'],
         record_check
     )
-    pytest.raises(DocumentNotFound,
-                  database_service.read,
-                  article_record['document_id'])
+    deleted = database_service.read(article_record['document_id'])
+    assert 'deleted_date' in deleted.keys()
 
 
 @patch.object(ChangesService, 'register_change')
@@ -192,16 +191,6 @@ def test_delete_document_register_change(mocked_register_change,
 
     mocked_register_change.assert_called_with(record_check,
                                               ChangeType.DELETE)
-
-
-def test_delete_document_not_found(database_service):
-    article_record = get_article_record({'Test': 'Test6'})
-    pytest.raises(
-        DocumentNotFound,
-        database_service.delete,
-        article_record['document_id'],
-        article_record
-    )
 
 
 def test_delete_document_update_failure(database_service):
