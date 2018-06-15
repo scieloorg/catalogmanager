@@ -130,15 +130,6 @@ class InMemoryDBManager(BaseDBManager):
         doc[self.rev_key] = doc[self._rev_key]
         return doc
 
-    def new_update(self, id, document):
-        _document = self.read(id)
-        if _document.get(self._rev_key) != document.get(self.rev_key):
-            raise UpdateFailure(
-                'You are trying to update a record which is out of date')
-        _document.update(document)
-        _document[self._rev_key] += 1
-        self.database.update({id: _document})
-
     def update(self, id, document):
         _document = self.read(id)
         if _document.get(self._rev_key) != document.get(self.rev_key):
@@ -291,33 +282,29 @@ class CouchDBManager(BaseDBManager):
             raise DocumentNotFound
         return doc
 
-    def new_update(self, id, document):
-        """
-        Para atualizar documento no CouchDB, é necessário informar a
-        revisão do documento atual. A revisão vem em document.
-        """
-        document[self._rev_key] = document[self.rev_key]
-        try:
-            self.database[id] = document
-        except couchdb.http.ResourceNotFound:
-            raise DocumentNotFound
-        except:
-            raise UpdateFailure(
-                'You are trying to update a record which is out of date')
-
     def update(self, id, document):
         """
         Para atualizar documento no CouchDB, é necessário informar a
         revisão do documento atual. Por isso, é obtido o documento atual
         para que os dados dele sejam atualizados com o registro informado.
+
+        Retorno. Uma das opções:
+        - DocumentNotFound
+        - Falha de atualização
         """
-        doc = self.read(id)
-        if doc.get(self._rev_key) != document.get(self.rev_key):
+        read = self.read(id)
+
+        if self._rev_key not in document.keys():
+            if self.rev_key in document.keys():
+                document[self._rev_key] = document[self.rev_key]
+            read.update(document)
+            document = read
+
+        try:
+            self.database[id] = document
+        except:
             raise UpdateFailure(
                 'You are trying to update a record which is out of date')
-
-        doc.update(document)
-        self.database[id] = doc
 
     def delete(self, id):
         doc = self.read(id)

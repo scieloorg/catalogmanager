@@ -459,7 +459,7 @@ def compare_documents(document, expected):
             assert document[k] == expected[k]
 
 
-def test_databases_new_update(database_service):
+def test_databases_update(database_service):
     article_record = get_article_record({'teste': 'teste'})
     database_service.db_manager.create(
         article_record['document_id'],
@@ -474,38 +474,12 @@ def test_databases_new_update(database_service):
     read1.update({'text': 'read1'})
     read2.update({'text': 'read2'})
 
-    database_service.db_manager.new_update(
+    database_service.db_manager.update(
         article_record['document_id'], read2)
 
     pytest.raises(
         UpdateFailure,
-        database_service.db_manager.new_update,
-        article_record['document_id'],
-        read1
-    )
-
-
-def test_databases_read_not_found(database_service):
-    article_record = get_article_record({'teste': 'teste'})
-    database_service.db_manager.create(
-        article_record['document_id'],
-        article_record
-    )
-    read = database_service.db_manager.read(
-        article_record['document_id']
-    )
-    read1 = read.copy()
-    read2 = read.copy()
-
-    read1.update({'text': 'read1'})
-    read2.update({'text': 'read2'})
-
-    database_service.db_manager.new_update(
-        article_record['document_id'], read2)
-
-    pytest.raises(
-        UpdateFailure,
-        database_service.db_manager.new_update,
+        database_service.db_manager.update,
         article_record['document_id'],
         read1
     )

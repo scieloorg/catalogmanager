@@ -145,26 +145,6 @@ class DatabaseService:
         return document_record
 
     @REQUEST_TIME_DOC_UPD.time()
-    def new_update(self, document_id, document_record):
-        """
-        Atualiza o registro de um documento e a mudança na base de dados.
-
-        Params:
-        document_id: ID do documento a ser atualizado
-        document_record: registro de documento a ser atualizado
-
-        Erro:
-        DocumentNotFound: documento não encontrado na base de dados.
-        UpdateFailure: dados do document_record estão desatualizados.
-        """
-        document_record.update({
-            'updated_date': str(datetime.utcnow().timestamp())
-        })
-        self.db_manager.new_update(document_id, document_record)
-        self.changes_service.register_change(
-            document_record, ChangeType.UPDATE)
-
-    @REQUEST_TIME_DOC_UPD.time()
     def update(self, document_id, document_record):
         """
         Atualiza o registro de um documento e a mudança na base de dados.
@@ -196,14 +176,11 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         UpdateFailure: documento não apagado da base de dados.
         """
-        # tenta ler o registro
-        self.read(document_id)
-
         document_record.update({
             'deleted_date': str(datetime.utcnow().timestamp()),
         })
         try:
-            self.db_manager.new_update(document_id, document_record)
+            self.db_manager.update(document_id, document_record)
             self.changes_service.register_change(
                 document_record, ChangeType.DELETE)
         except UpdateFailure:
