@@ -99,7 +99,6 @@ def delete_article(article_id, **db_settings):
 
     :param article_id: ID do Documento do tipo Artigo, para identificação
         referencial
-    :param revision_id: indica a revisão do registro
     :param db_settings: dicionário com as configurações do banco de dados.
         Deve conter:
         - database_uri: URI do banco de dados (host:porta)

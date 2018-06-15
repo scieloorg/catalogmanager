@@ -282,3 +282,7 @@ def test_delete_article_success(
         article_record
     )
     assert article_manager.delete_article(article_id) is None
+    pytest.raises(
+        DocumentNotFound,
+        article_manager.article_db_service.read,
+        article_id)
