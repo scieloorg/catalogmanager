@@ -133,7 +133,7 @@ class DatabaseService:
             'created_date': document['created_date'],
             'document_rev': document['document_rev'],
         }
-        for optional in ['updated_date', 'deleted_date']:
+        for optional in ['updated_date', 'is_removed']:
             if optional in document.keys():
                 document_record[optional] = document[optional]
         attachments = self.db_manager.list_attachments(document_id)
@@ -175,7 +175,7 @@ class DatabaseService:
         UpdateFailure: documento não apagado da base de dados.
         """
         document_record.update({
-            'deleted_date': str(datetime.utcnow().timestamp()),
+            'is_removed': 'True',
         })
         try:
             self.db_manager.update(document_id, document_record)

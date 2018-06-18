@@ -154,7 +154,7 @@ class ArticleDocument:
             version['assets'] = assets
         versions = [version]
         _record['versions'] = versions
-        if record.get('deleted_date'):
+        if record.get('deleted_date') or record.get('is_removed'):
             _record['is_removed'] = 'True'
         return _record
 

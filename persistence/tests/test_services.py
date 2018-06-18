@@ -171,7 +171,7 @@ def test_delete_document(database_service):
         record_check
     )
     deleted = database_service.read(article_record['document_id'])
-    assert 'deleted_date' in deleted.keys()
+    assert deleted['is_removed'] == 'True'
 
 
 @patch.object(ChangesService, 'register_change')
