@@ -24,13 +24,11 @@ def test_fixture_dir():
 
 
 def read_file(fixture_dir, dir_path, filename):
-    xml_file = File(filename)
     file_path = os.path.join(fixture_dir, dir_path, filename)
     if os.path.isfile(file_path):
         with open(file_path, 'rb') as fb:
-            xml_file.content = fb.read()
-            xml_file.size = os.stat(file_path).st_size
-    return xml_file
+            xml_file = File(filename, fb.read())
+            return xml_file
 
 
 @pytest.fixture(scope="module")
@@ -100,9 +98,10 @@ def functional_config(request):
 
 @pytest.fixture
 def change_service(functional_config):
+    db_host = 'http://inmemory'
     return (
-        InMemoryDBManager(database_name='articles'),
-        InMemoryDBManager(database_name='changes')
+        InMemoryDBManager(database_uri=db_host, database_name='articles'),
+        InMemoryDBManager(database_uri=db_host, database_name='changes')
     )
 
 
@@ -120,8 +119,9 @@ def xml_test():
 
 @pytest.fixture
 def seqnumber_generator(request):
+    db_host = 'http://inmemory'
     s = SeqNumGenerator(
-        InMemoryDBManager(database_name='test3'),
+        InMemoryDBManager(database_uri=db_host, database_name='test3'),
         'CHANGE'
     )
 
@@ -134,16 +134,18 @@ def seqnumber_generator(request):
 
 @pytest.fixture
 def changes_service(request, seqnumber_generator):
+    db_host = 'http://inmemory'
     return ChangesService(
-        InMemoryDBManager(database_name='test2'),
+        InMemoryDBManager(database_uri=db_host, database_name='test2'),
         seqnumber_generator
     )
 
 
 @pytest.fixture
 def databaseservice_params(functional_config, changes_service):
+    db_host = 'http://inmemory'
     return (
-        InMemoryDBManager(database_name='test1'),
+        InMemoryDBManager(database_uri=db_host, database_name='test1'),
         changes_service
     )
 
@@ -161,13 +163,20 @@ def setup(request, functional_config, databaseservice_params):
 
 
 @pytest.fixture
-def inmemory_receive_package(databaseservice_params, test_package_A):
-    article_manager = ArticleManager(
-        databaseservice_params[0],
+def set_inmemory_article_manager(setup, databaseservice_params):
+    db_host = 'http://inmemory'
+    return ArticleManager(
+        InMemoryDBManager(database_uri=db_host, database_name='articles'),
+        InMemoryDBManager(database_uri=db_host, database_name='files'),
         databaseservice_params[1])
-    return article_manager.receive_package(id='ID',
-                                           xml_file=test_package_A[0],
-                                           files=test_package_A[1:])
+
+
+@pytest.fixture
+def inmemory_receive_package(set_inmemory_article_manager, test_package_A):
+    return set_inmemory_article_manager.receive_package(
+        id='ID',
+        xml_file=test_package_A[0],
+        files=test_package_A[1:])
 
 
 @pytest.fixture

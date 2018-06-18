@@ -1,6 +1,7 @@
 
-import hashlib
 from unittest.mock import patch
+
+import pytest
 
 import managers
 from persistence.services import DatabaseService
@@ -26,15 +27,16 @@ def test_list_changes_return_from_changeservice_list_changes(
     assert changes == list_changes_expected
 
 
-@patch.object(ArticleManager, 'add_document')
-def test_post_article(
-    mocked_article_manager_add,
-    test_package_A,
-    database_config
-):
-    checksum = hashlib.sha1(test_package_A[0].content).hexdigest()
-    expected = '/'.join([checksum[:13], test_package_A[0].name])
-    db_settings = {
+def test_create_file_succeeded(test_package_A):
+    xml_file = test_package_A[0]
+    file = managers.create_file(filename=xml_file.name,
+                                content=xml_file.content)
+    assert file is not None
+    assert isinstance(file, managers.models.file.File)
+
+
+def test_get_article_manager(database_config):
+    db_config = {
         'database_uri': '{}:{}'.format(
             database_config['db_host'],
             database_config['db_port']
@@ -42,10 +44,75 @@ def test_post_article(
         'database_username': database_config['username'],
         'database_password': database_config['password'],
     }
-    result = managers.post_article(
-        xml_file=test_package_A[0],
-        **db_settings
+    article_manager = managers._get_article_manager(
+        **db_config
     )
-    mocked_article_manager_add.assert_called_once()
-    assert result is not None
-    assert result == expected
+    assert article_manager is not None
+    assert isinstance(article_manager, managers.article_manager.ArticleManager)
+    assert article_manager.article_db_service is not None
+    assert isinstance(article_manager.article_db_service, DatabaseService)
+    assert article_manager.file_db_service is not None
+    assert isinstance(article_manager.file_db_service, DatabaseService)
+
+
+@patch.object(managers, '_get_article_manager')
+@patch.object(managers.models.article_model.ArticleDocument, '__init__')
+def test_post_article_file_error(mocked_article_model,
+                                 mocked__get_article_manager,
+                                 test_package_A,
+                                 set_inmemory_article_manager):
+    mocked__get_article_manager.return_value = set_inmemory_article_manager
+    error_msg = 'Invalid XML Content'
+    mocked_article_model.side_effect = \
+        managers.models.article_model.InvalidXMLContent()
+    with pytest.raises(managers.exceptions.ManagerFileError) as excinfo:
+        managers.post_article(
+            article_id='ID-post-article-123',
+            xml_id=test_package_A[0].name,
+            xml_file=test_package_A[0].content,
+            **{}
+        )
+    assert excinfo.value.message == error_msg
+
+
+@patch.object(managers, '_get_article_manager')
+@patch.object(ArticleManager, 'add_document')
+def test_post_article_insert_file_to_database_error(
+    mocked_article_manager_add,
+    mocked__get_article_manager,
+    test_package_A,
+    set_inmemory_article_manager
+):
+    mocked__get_article_manager.return_value = set_inmemory_article_manager
+    error_msg = 'Database Error'
+    mocked_article_manager_add.side_effect = \
+        managers.article_manager.ArticleManagerException(message=error_msg)
+
+    with pytest.raises(managers.article_manager.ArticleManagerException) \
+            as excinfo:
+        managers.post_article(
+            article_id='ID-post-article-123',
+            xml_id=test_package_A[0].name,
+            xml_file=test_package_A[0].content,
+            **{}
+        )
+    assert excinfo.value.message == error_msg
+
+
+@patch.object(managers, '_get_article_manager')
+def test_post_article_insert_file_to_database_ok(
+    mocked__get_article_manager,
+    test_package_A,
+    set_inmemory_article_manager
+):
+    xml_file = test_package_A[0]
+    mocked__get_article_manager.return_value = set_inmemory_article_manager
+
+    article_url = managers.post_article(
+        article_id='ID-post-article-123',
+        xml_id=xml_file.name,
+        xml_file=xml_file.content,
+        **{}
+    )
+    assert article_url is not None
+    assert article_url.endswith(xml_file.name)

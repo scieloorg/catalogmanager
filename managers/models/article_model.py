@@ -1,6 +1,17 @@
 # coding=utf-8
+import hashlib
+from enum import Enum
 
 from ..xml.article_xml_tree import ArticleXMLTree
+
+
+class InvalidXMLContent(Exception):
+    message = "Invalid XML Content"
+
+
+class DocumentType(Enum):
+    DOCUMENT = 'DOC'
+    ARTICLE = 'ART'
 
 
 class AssetDocument:
@@ -34,20 +45,34 @@ class AssetDocument:
 
 
 class ArticleDocument:
-    """Metadados de um documento do tipo Artigo.
-
-    Os metadados contam com uma referência ao Artigo codificado em XML e
-    referências aos seus ativos digitais.
-
-    Exemplo de uso:
-
-        >>> doc = ArticleDocument('art01', <instância de File>)
-    """
-    def __init__(self, article_id, xml_file):
+    """Metadados de um documento do tipo Artigo."""
+    def __init__(self, article_id):
         self.id = article_id
+        self.versions = []
         self.assets = {}
         self.unexpected_files_list = []
-        self.xml_file = xml_file
+
+    def add_version(self, file_id, xml_content):
+        """Adiciona nova versão de artigo codificado em XML em :attr:`versions`
+        e cria nova referência para atualizar os dados do manifesto do artigo.
+        Caso o conteúdo do XML for inválido, a exceção
+        :class:`InvalidXMLContent` é lançada.
+        """
+        self.xml_tree = ArticleXMLTree(xml_content)
+        if self.xml_tree.xml_error:
+            raise InvalidXMLContent
+        checksum = hashlib.sha1(xml_content).hexdigest()
+        self.xml_file_id = '/'.join([checksum[:13], file_id])
+        self.versions.append({
+            'data': self.xml_file_id,
+            'assets': []
+        })
+
+    def update_version(self, added_file_url):
+        """
+        Atualiza referência do artigo codificado em XML em :attr:`versions`.
+        """
+        self.versions[-1].update({'data': added_file_url})
 
     @property
     def xml_file(self):
@@ -67,7 +92,9 @@ class ArticleDocument:
     @xml_file.setter
     def xml_file(self, xml_file):
         self._xml_file = xml_file
-        self.xml_tree = ArticleXMLTree(self._xml_file.content)
+        self.xml_tree = ArticleXMLTree(xml_file.content)
+        if self.xml_tree.xml_error:
+            raise InvalidXMLContent
         self.assets = {
             name: AssetDocument(node)
             for name, node in self.xml_tree.asset_nodes.items()
@@ -114,6 +141,18 @@ class ArticleDocument:
             asset.name
             for asset in self.assets.values()
         ]
+        return record_content
+
+    def get_record(self):
+        """Obtém um dicionário que descreve a instância de
+        :class:`ArticleDocument` da seguinte maneira: chave ``id``, contendo o
+        ID do artigo e chave ``versions``, contendo uma lista de versões do
+        artigo, com a URI da respectiva codificação XML e seus assets.
+        """
+        record_content = {}
+        record_content['document_id'] = self.id
+        record_content['document_type'] = DocumentType.ARTICLE.value
+        record_content['versions'] = self.versions
         return record_content
 
     @property

@@ -27,9 +27,12 @@ class ArticleManagerMissingAssetFileException(Exception):
 
 class ArticleManager:
 
-    def __init__(self, articles_db_manager, changes_services):
+    def __init__(self, articles_db_manager, files_db_manager,
+                 changes_services):
         self.article_db_service = DatabaseService(
             articles_db_manager, changes_services)
+        self.file_db_service = DatabaseService(
+            files_db_manager, changes_services)
 
     def receive_package(self, id, xml_file, files=None):
         article = self.receive_xml_file(id, xml_file)
@@ -37,7 +40,8 @@ class ArticleManager:
         return article.unexpected_files_list, article.missing_files_list
 
     def receive_xml_file(self, id, xml_file):
-        article = ArticleDocument(id, xml_file)
+        article = ArticleDocument(id)
+        article.xml_file = xml_file
 
         article_record = Record(
             document_id=article.id,
@@ -72,7 +76,14 @@ class ArticleManager:
                 )
 
     def add_document(self, article_document):
-        pass
+        added_file_url = self.file_db_service.add_file(
+            file_id=article_document.xml_file_id,
+            content=article_document.xml_tree.content
+        )
+        article_document.update_version(added_file_url)
+        article_record = article_document.get_record()
+        self.article_db_service.register(article_document.id, article_record)
+        return "/rawfile/" + article_document.xml_file_id
 
     def get_article_data(self, article_id):
         try:

@@ -45,18 +45,22 @@ class ArticleAPI:
             raise HTTPBadRequest(detail=e.message)
 
     def collection_post(self):
+        """
+        Receive new Article document package which must contain a XML file.
+        """
         try:
             xml_file_field = self.request.POST.get('xml_file')
-            xml_file = self._get_file_property(xml_file_field)
-            managers.post_article(
+            xml_id = Path(xml_file_field.filename).name
+            xml_file = xml_file_field.file.read()
+            article_url = managers.post_article(
                 article_id=self.request.POST['article_id'],
+                xml_id=xml_id,
                 xml_file=xml_file,
                 **self.request.db_settings
             )
-            body = {
-                'url': '/rawfiles/7ca9f9b2687cb/' + xml_file_field.filename
-            }
-            return Response(status_code=201, json=body)
+            return Response(status_code=201, json={'url': article_url})
+        except managers.exceptions.ManagerFileError as e:
+            raise HTTPBadRequest(detail=e.message)
         except managers.article_manager.ArticleManagerException as e:
             raise HTTPInternalServerError(detail=e.message)
 

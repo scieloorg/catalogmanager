@@ -69,6 +69,7 @@ def test_register_change_must_keep_sequential_order(database_service):
         isinstance(change_list['change_id'], int)
         for change_list in changes_list
     ])
+    # XXX: Usar sorted(list) ao invés de gerar uma lista ordenada
     assert all([
         changes_list[i]['change_id'] < changes_list[i + 1]['change_id']
         for i in range(len(changes_list) - 1)
