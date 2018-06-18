@@ -8,6 +8,7 @@ from persistence.databases import (
     DocumentNotFound,
     sort_results,
     DBFailed,
+    UpdateFailure,
     CouchDBManager,
 )
 from persistence.services import (
@@ -22,6 +23,39 @@ def get_article_record(content={'Test': 'Test'}):
                       document_type=RecordType.ARTICLE,
                       content=content,
                       created_date=datetime.utcnow())
+
+
+def test_read_document_not_found(database_service):
+    pytest.raises(
+        DocumentNotFound,
+        database_service.db_manager.read,
+        '336abebdd31894idnaoexistente'
+    )
+
+
+def test_read_document(database_service):
+    article_record = get_article_record({'Test': 'Test2'})
+    database_service.register(
+        article_record['document_id'],
+        article_record
+    )
+
+    record_check = database_service.db_manager.read(
+        article_record['document_id'])
+    assert record_check is not None
+    assert record_check['document_id'] == article_record['document_id']
+    assert record_check['document_type'] == article_record['document_type']
+    assert record_check['content'] == article_record['content']
+    assert record_check['created_date'] is not None
+
+
+def test_db_failed(article_db_settings):
+    article_db_settings['database_password'] = ''
+    db_manager = CouchDBManager(**article_db_settings)
+    with pytest.raises(
+        DBFailed
+    ):
+        db_manager.database
 
 
 def test_register_document(database_service):
@@ -51,38 +85,6 @@ def test_register_document_register_change(mocked_register_change,
 
     mocked_register_change.assert_called_with(article_record,
                                               ChangeType.CREATE)
-
-
-def test_read_document(database_service):
-    article_record = get_article_record({'Test': 'Test2'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-
-    record_check = database_service.read(article_record['document_id'])
-    assert record_check is not None
-    assert record_check['document_id'] == article_record['document_id']
-    assert record_check['document_type'] == article_record['document_type']
-    assert record_check['content'] == article_record['content']
-    assert record_check['created_date'] is not None
-
-
-def test_db_failed(article_db_settings):
-    article_db_settings['database_password'] = ''
-    db_manager = CouchDBManager(**article_db_settings)
-    with pytest.raises(
-        DBFailed
-    ):
-        db_manager.database
-
-
-def test_read_document_not_found(database_service):
-    pytest.raises(
-        DocumentNotFound,
-        database_service.read,
-        '336abebdd31894idnaoexistente'
-    )
 
 
 def test_update_document(database_service):
@@ -130,55 +132,10 @@ def test_update_document_register_change(mocked_register_change,
 
 def test_update_document_not_found(database_service):
     article_record = get_article_record({'Test': 'Test4'})
+    database_service.db_manager.drop_database()
     pytest.raises(
         DocumentNotFound,
-        database_service.delete,
-        article_record['document_id'],
-        article_record
-    )
-
-
-def test_delete_document(database_service):
-    article_record = get_article_record({'Test': 'Test5'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-
-    record_check = database_service.read(article_record['document_id'])
-    database_service.delete(
-        article_record['document_id'],
-        record_check
-    )
-    pytest.raises(DocumentNotFound,
-                  database_service.read,
-                  article_record['document_id'])
-
-
-@patch.object(ChangesService, 'register_change')
-def test_delete_document_register_change(mocked_register_change,
-                                         database_service):
-    article_record = get_article_record({'Test': 'Test5'})
-    database_service.register(
-        article_record['document_id'],
-        article_record
-    )
-
-    record_check = database_service.read(article_record['document_id'])
-    database_service.delete(
-        article_record['document_id'],
-        record_check
-    )
-
-    mocked_register_change.assert_called_with(record_check,
-                                              ChangeType.DELETE)
-
-
-def test_delete_document_not_found(database_service):
-    article_record = get_article_record({'Test': 'Test6'})
-    pytest.raises(
-        DocumentNotFound,
-        database_service.delete,
+        database_service.update,
         article_record['document_id'],
         article_record
     )
@@ -497,9 +454,32 @@ def test_find_documents_by_selected_field_returns_according_to_filter(
 def compare_documents(document, expected):
     if document == expected:
         assert document == expected
-    elif len(document) == len(expected) + 1:
-        # para ignorar "revision"
+    else:
         for k in expected.keys():
             assert document[k] == expected[k]
-    else:
-        assert document == expected
+
+
+def test_databases_update(database_service):
+    article_record = get_article_record({'teste': 'teste'})
+    database_service.db_manager.create(
+        article_record['document_id'],
+        article_record
+    )
+    read = database_service.db_manager.read(
+        article_record['document_id']
+    )
+    read1 = read.copy()
+    read2 = read.copy()
+
+    read1.update({'text': 'read1'})
+    read2.update({'text': 'read2'})
+
+    database_service.db_manager.update(
+        article_record['document_id'], read2)
+
+    pytest.raises(
+        UpdateFailure,
+        database_service.db_manager.update,
+        article_record['document_id'],
+        read1
+    )

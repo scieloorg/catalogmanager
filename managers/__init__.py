@@ -93,6 +93,26 @@ def put_article(article_id, xml_file, assets_files=[], **db_settings):
                                            files=assets_files)
 
 
+def delete_article(article_id, **db_settings):
+    """
+    Marca o Documento de Artigo como "apagado"
+
+    :param article_id: ID do Documento do tipo Artigo, para identificação
+        referencial
+    :param db_settings: dicionário com as configurações do banco de dados.
+        Deve conter:
+        - database_uri: URI do banco de dados (host:porta)
+        - database_username: usuário do banco de dados
+        - database_password: senha do banco de dados
+
+    :returns:
+        - HTTPServiceUnavailable
+    """
+    article_manager = _get_article_manager(**db_settings)
+    return article_manager.delete_article(
+                article_id=article_id)
+
+
 def get_article_data(article_id, **db_settings):
     """
     Recupera metadados do Documento de Artigo, usados para controle de

@@ -5,10 +5,10 @@ import pytest
 from persistence.databases import (
     DocumentNotFound,
     DBFailed,
+    UpdateFailure,
 )
 from persistence.services import DatabaseService
-from persistence.models import RecordType
-
+from persistence.models import get_record, RecordType
 from managers.models.article_model import (
     ArticleDocument,
 )
@@ -226,3 +226,62 @@ def test_get_asset_files(databaseservice_params, test_package_A):
     assert len(msg) == 0
     for asset in files:
         assert asset.content in asset_contents
+
+
+@patch.object(DatabaseService, 'read')
+def test_delete_article_db_failed(
+        mocked_dataservices_read,
+        setup,
+        databaseservice_params):
+    article_id = 'ID'
+    mocked_dataservices_read.side_effect = DBFailed
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1]
+    )
+    pytest.raises(
+        DBFailed,
+        article_manager.delete_article,
+        article_id)
+
+
+@patch.object(DatabaseService, 'delete')
+def test_delete_article_update_failure(
+        mocked_dataservices_delete,
+        setup,
+        databaseservice_params):
+    article_id = 'ID'
+    error_msg = 'Article ID not allowed to delete'
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1]
+    )
+    article_manager.article_db_service.register(
+        article_id,
+        get_record(article_id)
+    )
+
+    mocked_dataservices_delete.side_effect = \
+        UpdateFailure(error_msg)
+    with pytest.raises(UpdateFailure) as excinfo:
+        article_manager.delete_article(article_id)
+    assert excinfo.value.message == error_msg
+
+
+def test_delete_article_success(
+        setup,
+        databaseservice_params):
+    article_id = 'ID'
+    article_manager = ArticleManager(
+        databaseservice_params[0],
+        databaseservice_params[1]
+    )
+    article_record = get_record(article_id)
+    article_manager.article_db_service.register(
+        article_id,
+        article_record
+    )
+    assert article_manager.delete_article(article_id) is None
+
+    deleted = article_manager.get_article_document(article_id)
+    assert deleted.manifest.get('is_removed') == 'True'

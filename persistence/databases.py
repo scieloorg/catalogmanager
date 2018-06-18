@@ -32,6 +32,8 @@ class QueryOperator(Enum):
 class BaseDBManager(metaclass=abc.ABCMeta):
 
     _attachments_properties_key = 'attachments_properties'
+    rev_key = 'document_rev'
+    _rev_key = '_rev'
 
     @abc.abstractmethod
     def drop_database(self) -> None:
@@ -104,6 +106,7 @@ class InMemoryDBManager(BaseDBManager):
         self._database_name = kwargs['database_name']
         self._attachments_key = 'attachments'
         self._attachments_properties_key = 'attachments_properties'
+        self._rev_key = 'revision'
         self._database = {}
 
     @property
@@ -117,23 +120,23 @@ class InMemoryDBManager(BaseDBManager):
         self._database = {}
 
     def create(self, id, document):
-        document['revision'] = 1
+        document[self._rev_key] = 1
         self.database.update({id: document})
 
     def read(self, id):
         doc = self.database.get(id)
         if not doc:
             raise DocumentNotFound
-        doc['document_rev'] = doc['revision']
+        doc[self.rev_key] = doc[self._rev_key]
         return doc
 
     def update(self, id, document):
         _document = self.read(id)
-        if _document.get('revision') != document.get('document_rev'):
+        if _document.get(self._rev_key) != document.get(self.rev_key):
             raise UpdateFailure(
-                'You are trying to update a record which data is out of date')
+                'You are trying to update a record which is out of date')
         _document.update(document)
-        _document['revision'] += 1
+        _document[self._rev_key] += 1
         self.database.update({id: _document})
 
     def delete(self, id):
@@ -274,7 +277,7 @@ class CouchDBManager(BaseDBManager):
     def read(self, id):
         try:
             doc = dict(self.database[id])
-            doc['document_rev'] = doc['_rev']
+            doc[self.rev_key] = doc[self._rev_key]
         except couchdb.http.ResourceNotFound:
             raise DocumentNotFound
         return doc
@@ -284,14 +287,24 @@ class CouchDBManager(BaseDBManager):
         Para atualizar documento no CouchDB, é necessário informar a
         revisão do documento atual. Por isso, é obtido o documento atual
         para que os dados dele sejam atualizados com o registro informado.
-        """
-        doc = self.read(id)
-        if doc.get('_rev') != document.get('document_rev'):
-            raise UpdateFailure(
-                'You are trying to update a record which data is out of date')
 
-        doc.update(document)
-        self.database[id] = doc
+        Retorno. Uma das opções:
+        - DocumentNotFound
+        - Falha de atualização
+        """
+        read = self.read(id)
+
+        if self._rev_key not in document.keys():
+            if self.rev_key in document.keys():
+                document[self._rev_key] = document[self.rev_key]
+            read.update(document)
+            document = read
+
+        try:
+            self.database[id] = document
+        except:
+            raise UpdateFailure(
+                'You are trying to update a record which is out of date')
 
     def delete(self, id):
         doc = self.read(id)

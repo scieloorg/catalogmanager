@@ -12,6 +12,7 @@ from pyramid.httpexceptions import (
 from webob.multidict import MultiDict
 
 import managers
+
 from api.views.article import (
     ArticleAPI,
     ArticleXML,
@@ -19,7 +20,7 @@ from api.views.article import (
     ArticleManifest,
 )
 from managers.models.article_model import ArticleDocument
-from persistence.databases import DBFailed
+from persistence.databases import DBFailed, UpdateFailure
 
 
 def _get_file_property(filename, content, size):
@@ -429,6 +430,66 @@ def test_post_article_returns_article_version_url(mocked_post_article,
     assert response.json.get('url').endswith(xml_file.filename)
 
 
+@patch.object(managers, 'delete_article')
+def test_http_article_calls_delete_article_service_unavailable(
+        mocked_delete_article,
+        dummy_request):
+    mocked_delete_article.side_effect = DBFailed
+    dummy_request.DELETE = MultiDict(
+        [('id', 'ID')]
+    )
+    article_api = ArticleAPI(dummy_request)
+    with pytest.raises(HTTPServiceUnavailable):
+        article_api.delete()
+
+
+@patch.object(managers, 'delete_article')
+def test_http_article_calls_delete_article_not_found(
+        mocked_delete_article,
+        dummy_request):
+    mocked_delete_article.side_effect = \
+        managers.article_manager.ArticleManagerException(
+            message='Article ID not registered'
+        )
+    dummy_request.DELETE = MultiDict(
+        [('id', 'ID')]
+    )
+    article_api = ArticleAPI(dummy_request)
+    with pytest.raises(HTTPNotFound):
+        article_api.delete()
+
+
+@patch.object(managers, 'delete_article')
+def test_http_article_calls_delete_article_bad_request(
+        mocked_delete_article,
+        dummy_request):
+    error_msg = 'Article ID is not allowed to delete'
+    mocked_delete_article.side_effect = \
+        UpdateFailure(
+            message=error_msg
+        )
+    dummy_request.DELETE = MultiDict(
+        [('id', 'ID')]
+    )
+    article_api = ArticleAPI(dummy_request)
+    with pytest.raises(HTTPBadRequest) as excinfo:
+        article_api.delete()
+    assert excinfo.value.message == error_msg
+
+
+@patch.object(managers, 'delete_article')
+def test_http_article_calls_delete_article_success(
+        mocked_delete_article,
+        dummy_request):
+    dummy_request.DELETE = MultiDict(
+        [('id', 'ID')]
+    )
+    article_api = ArticleAPI(dummy_request)
+    response = article_api.delete()
+    assert response.status_code == 200
+    assert response.json is not None
+
+
 @patch.object(managers, 'get_article_document')
 def test_http_get_article_manifest_db_failed(
         mocked_get_article_document,
@@ -483,3 +544,4 @@ def test_http_get_article_manifest_succeeded(
     response = article_api.get()
     assert response.status == '200 OK'
     assert response.json == expected
+

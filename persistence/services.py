@@ -3,7 +3,7 @@ from enum import Enum
 
 from prometheus_client import Summary
 
-from .databases import QueryOperator
+from .databases import QueryOperator, UpdateFailure
 
 
 REQUEST_TIME_CHANGES_UPD = Summary(
@@ -133,8 +133,9 @@ class DatabaseService:
             'created_date': document['created_date'],
             'document_rev': document['document_rev'],
         }
-        if document.get('updated_date'):
-            document_record['updated_date'] = document['updated_date']
+        for optional in ['updated_date', 'is_removed']:
+            if optional in document.keys():
+                document_record[optional] = document[optional]
         attachments = self.db_manager.list_attachments(document_id)
         if attachments:
             document_record['attachments'] = \
@@ -169,12 +170,20 @@ class DatabaseService:
         document_id: ID do documento a ser deletado
         document_record: registro de documento a ser deletado
 
-        Erro:
+        Erros:
         DocumentNotFound: documento não encontrado na base de dados.
+        UpdateFailure: documento não apagado da base de dados.
         """
-        self.db_manager.delete(document_id)
-        self.changes_service.register_change(
-            document_record, ChangeType.DELETE)
+        document_record.update({
+            'is_removed': 'True',
+        })
+        try:
+            self.db_manager.update(document_id, document_record)
+            self.changes_service.register_change(
+                document_record, ChangeType.DELETE)
+        except UpdateFailure:
+            raise UpdateFailure(
+                'Document {} not allowed to delete'.format(document_id))
 
     @REQUEST_TIME_DOC_FIND.time()
     def find(self, selector, fields, sort):

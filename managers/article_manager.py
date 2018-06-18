@@ -33,6 +33,10 @@ class ArticleManager:
         self.article_db_service = DatabaseService(
             articles_db_manager, changes_services)
 
+    def delete_article(self, article_id):
+        document_record = self.article_db_service.read(article_id)
+        self.article_db_service.delete(article_id, document_record)
+
     def receive_package(self, id, xml_file, files=None):
         article = self.receive_xml_file(id, xml_file)
         self.receive_asset_files(article, files)
