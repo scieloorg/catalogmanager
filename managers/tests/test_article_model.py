@@ -31,7 +31,8 @@ def test_article_invalid_xml():
 
 def test_article_document_add_version(test_package_A, test_packA_filenames):
     xml_file = test_package_A[0]
-    checksum = hashlib.sha1(xml_file.content).hexdigest()
+    checksum = hashlib.sha1(
+        ArticleXMLTree(xml_file.content).content).hexdigest()
     filename = '/'.join([checksum[:13], xml_file.name])
     expected = {
         'document_id': 'ID',

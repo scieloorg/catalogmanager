@@ -1,4 +1,5 @@
 # coding=utf-8
+import hashlib
 
 from .xml_tree import (
     XMLTree,
@@ -49,3 +50,7 @@ class ArticleXMLTree(XMLTree):
         if self.tree is not None:
             return self.tree.findall(
                 './/*[@{http://www.w3.org/1999/xlink}href]')
+
+    @property
+    def checksum(self):
+        return hashlib.sha1(self.content).hexdigest()

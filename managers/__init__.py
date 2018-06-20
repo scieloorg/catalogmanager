@@ -32,10 +32,9 @@ def _get_changes_services(db_settings):
 
 
 def _get_article_manager(**db_settings):
-    database_config = db_settings
-    articles_database_config = database_config.copy()
+    articles_database_config = db_settings.copy()
     articles_database_config['database_name'] = "articles"
-    files_database_config = database_config.copy()
+    files_database_config = db_settings.copy()
     files_database_config['database_name'] = "files"
 
     return ArticleManager(
@@ -80,13 +79,14 @@ def post_article(article_id, xml_id, xml_file, **db_settings):
         codificado em XML
     :rtype: str
     """
+    article_document = ArticleDocument(article_id)
+    article_manager = _get_article_manager(**db_settings)
     try:
-        article_document = ArticleDocument(article_id)
-        article_manager = _get_article_manager(**db_settings)
         article_document.add_version(xml_id, xml_file)
-        return article_manager.add_document(article_document)
     except InvalidXMLContent as e:
         raise ManagerFileError(message=e.message)
+    else:
+        return article_manager.add_document(article_document)
 
 
 def put_article(article_id, xml_file, assets_files=[], **db_settings):

@@ -56,14 +56,14 @@ def test_get_article_manager(database_config):
 
 
 @patch.object(managers, '_get_article_manager')
-@patch.object(managers.models.article_model.ArticleDocument, '__init__')
-def test_post_article_file_error(mocked_article_model,
+@patch.object(managers.models.article_model.ArticleDocument, 'add_version')
+def test_post_article_file_error(mocked_article_add_version,
                                  mocked__get_article_manager,
                                  test_package_A,
                                  set_inmemory_article_manager):
     mocked__get_article_manager.return_value = set_inmemory_article_manager
     error_msg = 'Invalid XML Content'
-    mocked_article_model.side_effect = \
+    mocked_article_add_version.side_effect = \
         managers.models.article_model.InvalidXMLContent()
     with pytest.raises(managers.exceptions.ManagerFileError) as excinfo:
         managers.post_article(

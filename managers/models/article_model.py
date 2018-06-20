@@ -1,5 +1,4 @@
 # coding=utf-8
-import hashlib
 from enum import Enum
 
 import os
@@ -74,8 +73,7 @@ class ArticleDocument:
         self.xml_tree = ArticleXMLTree(xml_content)
         if self.xml_tree.xml_error:
             raise InvalidXMLContent
-        checksum = hashlib.sha1(xml_content).hexdigest()
-        self.xml_file_id = '/'.join([checksum[:13], file_id])
+        self.xml_file_id = '/'.join([self.xml_tree.checksum[:13], file_id])
         self.versions.append({
             'data': self.xml_file_id,
             'assets': []
