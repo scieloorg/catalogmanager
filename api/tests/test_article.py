@@ -6,12 +6,20 @@ from lxml import etree
 from pyramid.httpexceptions import (
     HTTPInternalServerError,
     HTTPNotFound,
-    HTTPBadRequest
+    HTTPBadRequest,
+    HTTPServiceUnavailable,
 )
 from webob.multidict import MultiDict
 
 import managers
-from api.views.article import ArticleAPI, ArticleXML, ArticleAsset
+from api.views.article import (
+    ArticleAPI,
+    ArticleXML,
+    ArticleAsset,
+    ArticleManifest,
+)
+from managers.models.article_model import ArticleDocument
+from persistence.databases import DBFailed
 
 
 def _get_file_property(filename, content, size):
@@ -420,3 +428,59 @@ def test_post_article_returns_article_version_url(mocked__get_article_manager,
     assert response.json is not None
     assert response.json.get('url').endswith(xml_file.filename)
     assert response.json.get('url').startswith(inmemory_db_settings)
+
+
+@patch.object(managers, 'get_article_document')
+def test_http_get_article_manifest_db_failed(
+        mocked_get_article_document,
+        dummy_request):
+    mocked_get_article_document.side_effect = DBFailed
+    dummy_request.matchdict = {'id': 'x'}
+    article_manifest_api = ArticleManifest(dummy_request)
+    with pytest.raises(HTTPServiceUnavailable):
+        article_manifest_api.get()
+
+
+@patch.object(managers, 'get_article_document')
+def test_http_get_article_manifest_not_found(
+        mocked_get_article_document,
+        dummy_request):
+    mocked_get_article_document.side_effect = \
+        managers.article_manager.ArticleManagerException('')
+    dummy_request.matchdict = {'id': 'x'}
+    article_manifest_api = ArticleManifest(dummy_request)
+    with pytest.raises(HTTPNotFound):
+        article_manifest_api.get()
+
+
+@patch.object(managers, 'get_article_document')
+def test_http_get_article_manifest_succeeded(
+        mocked_get_article_document,
+        dummy_request):
+    article_id = 'ID123456'
+    expected = {
+      "id": "0034-8910-rsp-48-2-0275",
+      "versions": [
+        {"data":
+         "/rawfiles/0034-8910-rsp-48-2-0275/0034-8910-rsp-48-2-0275.xml",
+         "assets": [
+           {"0034-8910-rsp-48-2-0275-gf01.gif": [
+                "/rawfiles/0034-8910-rsp-48-2-0275/"
+                "0034-8910-rsp-48-2-0275-gf01.gif"
+                ]}
+            ]
+         }
+      ]
+    }
+    article_document = ArticleDocument(article_id)
+    article_document.manifest = expected
+
+    mocked_get_article_document.return_value = article_document
+
+    dummy_request.matchdict = {'id': article_id}
+
+    article_api = ArticleManifest(dummy_request)
+
+    response = article_api.get()
+    assert response.status == '200 OK'
+    assert response.json == expected

@@ -2,9 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from persistence.databases import DocumentNotFound, InMemoryDBManager
+from persistence.databases import DBFailed, DocumentNotFound, InMemoryDBManager
 from persistence.services import DatabaseService
-from persistence.models import RecordType
 from managers.article_manager import (
     ArticleManager,
     ArticleManagerException
@@ -178,9 +177,9 @@ def test_get_article_in_database(mocked_dataservices_read,
     article_id = 'ID'
     mocked_dataservices_read.return_value = {'document_id': article_id}
     article_manager = set_inmemory_article_manager
-    article_check = article_manager.get_article_data(article_id)
-    assert article_check is not None
-    assert isinstance(article_check, dict)
+    article_document = article_manager.get_article_document(article_id)
+    assert article_document is not None
+    assert isinstance(article_document, ArticleDocument)
     mocked_dataservices_read.assert_called_with(article_id)
 
 
@@ -195,27 +194,36 @@ def test_get_article_in_database_not_found(mocked_dataservices_read,
     article_manager = set_inmemory_article_manager
     pytest.raises(
         ArticleManagerException,
-        article_manager.get_article_data,
+        article_manager.get_article_document,
         article_id
     )
 
 
-def test_get_article_record(setup,
-                            set_inmemory_article_manager,
-                            inmemory_receive_package):
+@patch.object(DatabaseService, 'read', side_effect=DBFailed)
+def test_get_manifest_db_failed(mocked_dataservices_read,
+                                setup,
+                                set_inmemory_article_manager,
+                                inmemory_receive_package):
+    article_id = 'ID'
+    mocked_dataservices_read.return_value = {'document_id': article_id}
+
+    article_manager = set_inmemory_article_manager
+    pytest.raises(
+        DBFailed,
+        article_manager.get_article_document,
+        article_id
+    )
+
+
+def test_get_article_data(setup,
+                          set_inmemory_article_manager,
+                          inmemory_receive_package):
     article_manager = set_inmemory_article_manager
     article_id = 'ID'
-    article_check = article_manager.get_article_data(article_id)
-    assert article_check is not None
-    assert isinstance(article_check, dict)
-    assert article_check.get('document_id') == article_id
-    assert article_check.get('document_type') == RecordType.ARTICLE.value
-    assert article_check.get('content') is not None
-    assert isinstance(article_check['content'], dict)
-    assert article_check['content'].get('xml') is not None
-    assert article_check.get('created_date') is not None
-    assert article_check.get('attachments') is not None
-    assert isinstance(article_check['attachments'], list)
+    article_document = article_manager.get_article_document(article_id)
+    assert isinstance(article_document, ArticleDocument)
+    assert article_document.id == article_id
+    assert isinstance(article_document.manifest, dict)
 
 
 @patch.object(DatabaseService, 'get_attachment')
@@ -253,10 +261,10 @@ def test_get_article_file(setup,
                           inmemory_receive_package,
                           test_package_A):
     article_manager = set_inmemory_article_manager
-    article_check = article_manager.get_article_file('ID')
-    assert article_check is not None
+    article_document = article_manager.get_article_file('ID')
+    assert article_document is not None
     xml_tree = XMLTree(test_package_A[0].content)
-    assert xml_tree.compare(article_check)
+    assert xml_tree.compare(article_document)
 
 
 @patch.object(DatabaseService, 'get_attachment', side_effect=DocumentNotFound)

@@ -17,6 +17,10 @@ class DocumentNotFound(Exception):
     pass
 
 
+class DBFailed(Exception):
+    pass
+
+
 class QueryOperator(Enum):
     GREATER_THAN = 'gt'
     GREATER_THAN_EQUAL = 'ge'
@@ -265,6 +269,8 @@ class CouchDBManager(BaseDBManager):
             self._database = self._db_server[self._database_name]
         except couchdb.http.ResourceNotFound:
             self._database = self._db_server.create(self._database_name)
+        except:
+            raise DBFailed
         return self._database
 
     def drop_database(self):

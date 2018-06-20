@@ -4,7 +4,9 @@ from persistence.models import (
         get_record,
         RecordType,
     )
-from persistence.databases import DocumentNotFound
+from persistence.databases import (
+    DocumentNotFound,
+)
 from persistence.services import DatabaseService
 from .models.article_model import (
     ArticleDocument,
@@ -89,6 +91,19 @@ class ArticleManager:
         try:
             article_record = self.article_db_service.read(article_id)
             return article_record
+        except DocumentNotFound:
+            raise ArticleManagerException(
+                'ArticleDocument {} not found'.format(article_id)
+            )
+
+    def get_article_document(self, article_id):
+        try:
+            article_record = self.article_db_service.read(article_id)
+            article_document = ArticleDocument(
+                article_record['document_id']
+            )
+            article_document.set_data(article_record)
+            return article_document
         except DocumentNotFound:
             raise ArticleManagerException(
                 'ArticleDocument {} not found'.format(article_id)
