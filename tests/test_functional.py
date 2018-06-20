@@ -7,6 +7,46 @@ import webtest
 from lxml import etree
 
 
+def test_post_article_register_change(testapp, test_package_A):
+    article_id = 'ID-post-article-123'
+    url = '/articles'
+
+    # Um documento é registrado no módulo de persistencia. Ex: Artigo
+    xml_file_path = test_package_A[0]
+    article_url = os.path.basename(xml_file_path)
+    changes_expected = {
+        'results': [{
+            'change_id': 1,
+            'document_id': article_url,
+            'type': 'CREATE'
+        }],
+        'latest': 1
+    }
+    params = OrderedDict([
+        ("article_id", article_id),
+        ("xml_file", webtest.forms.Upload(xml_file_path))
+    ])
+    result = testapp.post(url,
+                          params=params,
+                          content_type='multipart/form-data')
+    assert result.status_code == 201
+    assert result.json is not None
+    assert result.json.get('url').endswith(article_url)
+
+    # Deve ser possível recuperar o registro de mudança do documento de
+    # acordo com os parâmetros informados no serviço
+    last_sequence = ''
+    limit = 10
+    result = testapp.get('/changes?since={}&limit={}'.format(last_sequence,
+                                                             limit))
+    assert result.status_code == 200
+    assert result.json is not None
+    assert len(result.json) > len(changes_expected['results'])
+    for resp_result, expected in zip(result.json, changes_expected['results']):
+        assert resp_result['document_id'].endswith(expected['document_id'])
+        assert resp_result['type'] == expected['type']
+
+
 def test_add_article_register_change(testapp, test_package_A):
     article_id = 'ID-post-article-123'
     url = '/articles/{}'.format(article_id)

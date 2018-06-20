@@ -97,11 +97,16 @@ class BaseDBManager(metaclass=abc.ABCMeta):
         doc = self.read(id)
         return doc.get(self._attachments_properties_key, {}).get(file_id)
 
+    @abc.abstractmethod
+    def insert_file(self, file_id, content) -> None:
+        return NotImplemented
+
 
 class InMemoryDBManager(BaseDBManager):
 
     def __init__(self, **kwargs):
         self._database_name = kwargs['database_name']
+        self._database_url = kwargs['database_uri']
         self._attachments_key = 'attachments'
         self._attachments_properties_key = 'attachments_properties'
         self._database = {}
@@ -237,15 +242,22 @@ class InMemoryDBManager(BaseDBManager):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
 
+    def insert_file(self, file_id, content):
+        id = '/'.join([self._database_url, file_id])
+        file = self.database.get(id)
+        if not file:
+            self.database.update({id: content})
+
 
 class CouchDBManager(BaseDBManager):
 
     def __init__(self, **kwargs):
         self._database_name = kwargs['database_name']
+        self._database_url = kwargs['database_uri']
         self._attachments_key = '_attachments'
         self._attachments_properties_key = 'attachments_properties'
         self._database = None
-        self._db_server = couchdb.Server(kwargs['database_uri'])
+        self._db_server = couchdb.Server(self._database_url)
         self._db_server.resource.credentials = (
             kwargs['database_username'],
             kwargs['database_password']
@@ -392,6 +404,18 @@ class CouchDBManager(BaseDBManager):
     def list_attachments(self, id):
         doc = self.read(id)
         return list(doc.get(self._attachments_key, {}).keys())
+
+    def insert_file(self, file_id, content):
+        id = '/'.join([self._database_url, file_id])
+        file = self.database.get(id)
+        if not file:
+            self.create(id=id, document={})
+            doc = self.database.get(id)
+            self.database.put_attachment(
+                doc=doc,
+                content=content,
+                filename=id
+            )
 
 
 def sort_results(results, sort):

@@ -1,7 +1,17 @@
 # coding=utf-8
+from enum import Enum
 
 import os
 from ..xml.article_xml_tree import ArticleXMLTree
+
+
+class InvalidXMLContent(Exception):
+    message = "Invalid XML Content"
+
+
+class DocumentType(Enum):
+    DOCUMENT = 'DOC'
+    ARTICLE = 'ART'
 
 
 class AssetDocument:
@@ -46,12 +56,34 @@ class ArticleDocument:
     """
     def __init__(self, article_id):
         self.id = article_id
+        self.versions = []
         self.assets = {}
         self.unexpected_files_list = []
         self._xml_file = None
 
         self.xml_name = None
         self.xml_content = None
+
+    def add_version(self, file_id, xml_content):
+        """Adiciona nova versão de artigo codificado em XML em :attr:`versions`
+        e cria nova referência para atualizar os dados do manifesto do artigo.
+        Caso o conteúdo do XML for inválido, a exceção
+        :class:`InvalidXMLContent` é lançada.
+        """
+        self.xml_tree = ArticleXMLTree(xml_content)
+        if self.xml_tree.xml_error:
+            raise InvalidXMLContent
+        self.xml_file_id = '/'.join([self.xml_tree.checksum[:13], file_id])
+        self.versions.append({
+            'data': self.xml_file_id,
+            'assets': []
+        })
+
+    def update_version(self, added_file_url):
+        """
+        Atualiza referência do artigo codificado em XML em :attr:`versions`.
+        """
+        self.versions[-1].update({'data': added_file_url})
 
     @property
     def xml_file(self):
@@ -72,7 +104,9 @@ class ArticleDocument:
     def xml_file(self, xml_file):
         self._xml_file = xml_file
         if xml_file is not None:
-            self.xml_tree = ArticleXMLTree(self._xml_file.content)
+            self.xml_tree = ArticleXMLTree(xml_file.content)
+            if self.xml_tree.xml_error:
+                raise InvalidXMLContent
             self.assets = {
                 name: AssetDocument(node)
                 for name, node in self.xml_tree.asset_nodes.items()
@@ -119,6 +153,18 @@ class ArticleDocument:
             asset.name
             for asset in self.assets.values()
         ]
+        return record_content
+
+    def get_record(self):
+        """Obtém um dicionário que descreve a instância de
+        :class:`ArticleDocument` da seguinte maneira: chave ``id``, contendo o
+        ID do artigo e chave ``versions``, contendo uma lista de versões do
+        artigo, com a URI da respectiva codificação XML e seus assets.
+        """
+        record_content = {}
+        record_content['document_id'] = self.id
+        record_content['document_type'] = DocumentType.ARTICLE.value
+        record_content['versions'] = self.versions
         return record_content
 
     @property

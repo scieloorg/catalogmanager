@@ -1,7 +1,6 @@
 from datetime import datetime
 from random import randint
 
-from pyramid import testing
 import pytest
 
 from persistence.databases import (
@@ -18,17 +17,6 @@ from persistence.services import (
 from persistence.seqnum_generator import SeqNumGenerator
 
 
-@pytest.yield_fixture
-def persistence_config(request):
-    yield testing.setUp()
-    testing.tearDown()
-
-
-@pytest.fixture
-def fake_change_list():
-    return ['Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6']
-
-
 @pytest.fixture
 def article_db_settings():
     return {
@@ -37,6 +25,11 @@ def article_db_settings():
         'database_password': 'password',
         'database_name': 'articles',
     }
+
+
+@pytest.fixture
+def article_dbinmemory_settings():
+    return {'database_uri': '/rawfile', 'database_name': 'articles'}
 
 
 @pytest.fixture
@@ -76,45 +69,77 @@ def seqnumber_generator(request, seqnum_db_settings):
     return s
 
 
-@pytest.fixture(params=[
-    CouchDBManager,
-    InMemoryDBManager
-])
-def database_service(request, article_db_settings, change_db_settings,
-                     seqnumber_generator):
+@pytest.fixture(
+    params=[
+        CouchDBManager,
+        InMemoryDBManager
+    ]
+)
+def database_service(request,
+                     article_db_settings,
+                     change_db_settings,
+                     seqnum_db_settings):
     DBManager = request.param
+    s = SeqNumGenerator(
+        DBManager(**seqnum_db_settings),
+        'CHANGE'
+    )
     db_service = DatabaseService(
         DBManager(**article_db_settings),
         ChangesService(
             DBManager(**change_db_settings),
-            seqnumber_generator
+            s
         )
     )
 
     def fin():
-        db_service.db_manager.drop_database()
-        db_service.changes_service.changes_db_manager.drop_database()
+        try:
+            db_service.db_manager.drop_database()
+            db_service.changes_service.changes_db_manager.drop_database()
+            s.db_manager.drop_database()
+        except Exception:
+            pass
+
     request.addfinalizer(fin)
     return db_service
 
 
 @pytest.fixture
-def inmemory_db_setup(request, persistence_config, change_db_settings):
+def inmemory_db_setup(request):
+    db_host = '/rawfile'
     inmemory_db_service = DatabaseService(
-        InMemoryDBManager(database_name='articles'),
+        InMemoryDBManager(database_uri=db_host, database_name='articles'),
         ChangesService(
-            InMemoryDBManager(database_name='changes'),
+            InMemoryDBManager(database_uri=db_host, database_name='changes'),
             SeqNumGenerator(
-                InMemoryDBManager(database_name='seqnum'),
+                InMemoryDBManager(database_uri=db_host,
+                                  database_name='seqnum'),
                 'CHANGE'
             )
         )
     )
 
     def fin():
-        inmemory_db_service.changes_service.changes_db_manager.drop_database()
+        try:
+            inmemory_db_service.db_manager.drop_database()
+            inmemory_db_service.changes_service.changes_db_manager.\
+                drop_database()
+            inmemory_db_service.changes_service.db_manager.drop_database()
+        except Exception:
+            pass
     request.addfinalizer(fin)
     return inmemory_db_service
+
+
+@pytest.fixture(
+    params=[
+        (CouchDBManager, article_db_settings),
+        (InMemoryDBManager, article_dbinmemory_settings)
+    ]
+)
+def db_manager_test(request):
+    db_settings = request.param[1]()
+    return request.param[0](**db_settings)
 
 
 @pytest.fixture

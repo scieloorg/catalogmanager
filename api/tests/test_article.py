@@ -364,16 +364,14 @@ def test_http_get_asset_file_succeeded(mocked_get_asset_file,
     assert response.content_type == expected[0]
 
 
-@patch.object(managers, 'create_file')
 @patch.object(managers, 'post_article')
 def test_post_article_invalid_xml(mocked_post_article,
-                                  mocked_create_file,
                                   dummy_request,
                                   test_xml_file):
     xml_file = MockCGIFieldStorage("test_xml_file.xml",
                                    BytesIO(test_xml_file.encode('utf-8')))
     error_msg = 'Invalid XML Content'
-    mocked_create_file.side_effect = \
+    mocked_post_article.side_effect = \
         managers.exceptions.ManagerFileError(
             message=error_msg
         )
@@ -410,10 +408,13 @@ def test_post_article_internal_error(mocked_post_article,
     assert excinfo.value.message == error_msg
 
 
-@patch.object(managers, 'post_article')
-def test_post_article_returns_article_version_url(mocked_post_article,
+@patch.object(managers, '_get_article_manager')
+def test_post_article_returns_article_version_url(mocked__get_article_manager,
+                                                  inmemory_article_manager,
                                                   dummy_request,
                                                   test_xml_file):
+    mocked__get_article_manager.return_value = inmemory_article_manager
+    inmemory_db_settings = '/rawfile'
     xml_file = MockCGIFieldStorage("test_xml_file.xml",
                                    BytesIO(test_xml_file.encode('utf-8')))
     dummy_request.POST = {
@@ -423,10 +424,10 @@ def test_post_article_returns_article_version_url(mocked_post_article,
     article_api = ArticleAPI(dummy_request)
     response = article_api.collection_post()
 
-    mocked_post_article.assert_called_once()
     assert response.status_code == 201
     assert response.json is not None
     assert response.json.get('url').endswith(xml_file.filename)
+    assert response.json.get('url').startswith(inmemory_db_settings)
 
 
 @patch.object(managers, 'get_article_document')

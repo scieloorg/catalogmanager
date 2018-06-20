@@ -78,6 +78,20 @@ class ChangesService:
         )
         return change_record['record_id']
 
+    def register(self, record_id, change_type):
+        sequencial = self.seqnum_generator.new()
+        change_record = {
+            'change_id': sequencial,
+            'document_id': record_id,
+            'type': change_type.value,
+            'created_date': str(datetime.utcnow().timestamp()),
+        }
+        self.changes_db_manager.create(
+            str(sequencial),
+            change_record
+        )
+        return sequencial
+
 
 class DatabaseService:
     """
@@ -252,6 +266,19 @@ class DatabaseService:
         DocumentNotFound: documento não encontrado na base de dados.
         """
         return self.db_manager.get_attachment_properties(document_id, file_id)
+
+    @REQUEST_TIME_ATT_UPD.time()
+    def add_file(self, file_id, content):
+        """
+        Persiste conteúdo de arquivo na base de dados identificado com ID
+        informado.
+
+        Params:
+        file_id: ID do arquivo
+        content: conteúdo do arquivo
+        """
+        self.db_manager.insert_file(file_id=file_id, content=content)
+        self.changes_service.register(file_id, ChangeType.CREATE)
 
     @REQUEST_TIME_CHANGES_LIST.time()
     def list_changes(self, last_sequence, limit):

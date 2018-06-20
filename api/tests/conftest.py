@@ -4,15 +4,55 @@ from pathlib import Path
 import pytest
 from pyramid import testing
 
+from managers.article_manager import ArticleManager
+from persistence.databases import InMemoryDBManager
+from persistence.services import ChangesService
+from persistence.seqnum_generator import SeqNumGenerator
+
 
 @pytest.fixture
 def dummy_request():
     request = testing.DummyRequest()
     request.db_settings = {
-        'host': 'http://localhost',
-        'port': '12345',
+        'db_host': 'http://localhost',
+        'db_port': '12345'
     }
     return request
+
+
+@pytest.fixture
+def inmemory_article_manager(request):
+    db_host = 'http://inmemory'
+    articles_dbmanager = InMemoryDBManager(database_uri=db_host,
+                                           database_name='articles')
+    files_dbmanager = InMemoryDBManager(database_uri=db_host,
+                                        database_name='files')
+    changes_dbmanager = InMemoryDBManager(database_uri=db_host,
+                                          database_name='changes')
+    changes_seq_dbmanager = InMemoryDBManager(database_uri=db_host,
+                                              database_name='changes_seqnum')
+
+    def fin():
+        try:
+            articles_dbmanager.drop_database()
+            files_dbmanager.drop_database()
+            changes_dbmanager.drop_database()
+            changes_seq_dbmanager.drop_database()
+        except Exception:
+            pass
+
+    request.addfinalizer(fin)
+    return ArticleManager(
+        articles_dbmanager,
+        files_dbmanager,
+        ChangesService(
+            changes_dbmanager,
+            SeqNumGenerator(
+                changes_seq_dbmanager,
+                'CHANGE'
+            )
+        )
+    )
 
 
 @pytest.fixture

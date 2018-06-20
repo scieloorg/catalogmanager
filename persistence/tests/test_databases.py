@@ -503,3 +503,54 @@ def compare_documents(document, expected):
             assert document[k] == expected[k]
     else:
         assert document == expected
+
+
+def test_add_file_insert_file_into_database_ok(
+    db_manager_test,
+    xml_test
+):
+    db_manager_test.insert_file(
+        file_id='href_file1',
+        content=xml_test.encode('utf-8')
+    )
+    file = db_manager_test.database.get(
+        '/'.join([db_manager_test._database_url, 'href_file1'])
+    )
+    assert file is not None
+
+
+def test_add_file_call_dbmanager_insert_file(database_service, xml_test):
+    with patch.object(database_service.db_manager, 'insert_file') \
+            as mocked_insert_file:
+        database_service.add_file(
+            file_id='href_file1',
+            content=xml_test.encode('utf-8'),
+        )
+        mocked_insert_file.assert_called_once_with(
+            file_id='href_file1',
+            content=xml_test.encode('utf-8')
+        )
+
+
+def test_add_file_call_changeservice_register(inmemory_db_setup, xml_test):
+    with patch.object(inmemory_db_setup.changes_service, 'register') \
+            as mocked_change_register:
+        file_id = '/rawfile/href_file1'
+        inmemory_db_setup.add_file(
+            file_id=file_id,
+            content=xml_test.encode('utf-8'),
+        )
+        mocked_change_register.assert_called_once_with(
+            file_id, ChangeType.CREATE
+        )
+
+
+def test_add_file_dbmanager_insert_into_database(inmemory_db_setup, xml_test):
+    inmemory_db_setup.add_file(
+        file_id='href_file1',
+        content=xml_test.encode('utf-8'),
+    )
+    file = inmemory_db_setup.db_manager.database.get(
+        '/'.join([inmemory_db_setup.db_manager._database_url, 'href_file1'])
+    )
+    assert file is not None

@@ -13,7 +13,13 @@ requires = [
     'prometheus_client>=0.2.0',
 ]
 
-test_requires = ['webtest', 'pytest', 'pytest-cov', 'pytest-lazy-fixture']
+test_requires = [
+    'webtest',
+    'pytest',
+    'pytest-cov',
+    'pytest-lazy-fixture',
+    'freezegun'
+]
 setup_requires = ['pytest-runner']
 
 setup(

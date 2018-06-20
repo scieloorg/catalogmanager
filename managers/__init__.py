@@ -1,6 +1,6 @@
 from managers.article_manager import ArticleManager
 from managers.exceptions import ManagerFileError
-from managers.models.article_model import ArticleDocument
+from managers.models.article_model import ArticleDocument, InvalidXMLContent
 from managers.models.file import File
 from persistence.databases import CouchDBManager
 from persistence.services import (
@@ -32,12 +32,14 @@ def _get_changes_services(db_settings):
 
 
 def _get_article_manager(**db_settings):
-    database_config = db_settings
-    articles_database_config = database_config.copy()
+    articles_database_config = db_settings.copy()
     articles_database_config['database_name'] = "articles"
+    files_database_config = db_settings.copy()
+    files_database_config['database_name'] = "files"
 
     return ArticleManager(
         CouchDBManager(**articles_database_config),
+        CouchDBManager(**files_database_config),
         _get_changes_services(db_settings)
     )
 
@@ -57,11 +59,34 @@ def create_file(filename, content):
     return File(file_name=filename, content=content)
 
 
-def post_article(xml_file, **db_settings):
-    """"""
+def post_article(article_id, xml_id, xml_file, **db_settings):
+    """
+    Registra novo documento de artigo em banco de dados informado, persistindo
+    a versão codificada em XML recebida e um manifesto do artigo contendo a
+    referência para recuperar o arquivo XML.
+
+    :param article_id: ID do Documento do tipo Artigo, para identificação
+        referencial
+    :param xml_id: identificação do arquivo
+    :param xml_file: objeto File-like conteúdo do XML
+    :param db_settings: dicionário com as configurações do banco de dados.
+        Deve conter:
+        - database_uri: URI do banco de dados (host:porta)
+        - database_username: usuário do banco de dados
+        - database_password: senha do banco de dados
+
+    :returns: URL pública para recuperar a versão registrada do artigo
+        codificado em XML
+    :rtype: str
+    """
+    article_document = ArticleDocument(article_id)
     article_manager = _get_article_manager(**db_settings)
-    article_manager.add_document()
-    return xml_file.get_version()
+    try:
+        article_document.add_version(xml_id, xml_file)
+    except InvalidXMLContent as e:
+        raise ManagerFileError(message=e.message)
+    else:
+        return article_manager.add_document(article_document)
 
 
 def put_article(article_id, xml_file, assets_files=[], **db_settings):
